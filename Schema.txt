@@ -1,0 +1,58 @@
+Root
+│
+├── Chatrooms
+│   │
+│   ├── AyELCpLJgYy3TG0JedBH
+│   │   │
+│   │   ├── last_chat: "t1fbuJVbmopIPiy8Uj3T"
+│   │   ├── type: "individual"
+│   │   ├── participants
+│   │   │   ├── "4CQTYBThP7UtoksCK92h"
+│   │   │   └── "ZzWLDHVKTDpIXellYxIM"
+│   │   └── messages
+│   │       └── t1fbuJVbmopIPiy8Uj3T
+│   │           ├── sender_id: "ZzWLDHVKTDpIXellYxIM"
+│   │           ├── text: "Hello! this is Adrian!"
+│   │           └── timestamp
+│   │               ├── _seconds: 1761206416
+│   │               └── _nanoseconds: 99000000
+│   │
+│   └── chatroom_unique_id
+│       ├── type: "individual"
+│       ├── participants
+│       │   ├── "participant1_unique_id"
+│       │   └── "participant2_unique_id"
+│       ├── last_chat: "message_unique_id"
+│       └── messages
+│           └── message_unique_id
+│               ├── sender_id: "sample_user_id"
+│               ├── text: "Hello this is a sample chat!"
+│               └── timestamp
+│                   ├── _seconds: 1761205348
+│                   └── _nanoseconds: 946000000
+│
+└── Users
+    │
+    ├── 4CQTYBThP7UtoksCK92h
+    │   ├── email: "emailNiZedric@gmail.com"
+    │   ├── name: "Zedric Camilotes"
+    │   ├── password: "samplePasswordNiZedric"
+    │   ├── username: "kakaw3"
+    │   └── chatrooms
+    │       └── "AyELCpLJgYy3TG0JedBH"
+    │
+    ├── ZzWLDHVKTDpIXellYxIM
+    │   ├── name: "Adrian Seth Mendoza Tabotabo"
+    │   ├── password: "0922kaonbato"
+    │   ├── email: "adriangwapoz125@gmail.com"
+    │   ├── username: "dreeyanzz"
+    │   └── chatrooms
+    │       └── "AyELCpLJgYy3TG0JedBH"
+    │
+    └── unique_identifier
+        ├── name: "Firstname Middlename Lastname"
+        ├── username: "sampleUsername"
+        ├── password: "samplePassword"
+        ├── email: "sampleEmail@example.com"
+        └── chatrooms
+            └── "sampleChatRoomId"

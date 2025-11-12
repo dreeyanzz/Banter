@@ -1,0 +1,81 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+.vscode/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Rider IDE files
+.idea/
+
+# Build artifacts
+*.exe
+*.dll
+*.pdb
+
+# NuGet packages
+*.nupkg
+*.snupkg
+# Ignore NuGet package folders
+packages/
+# Except build/restore props and targets
+!**/packages/build/
+!**/packages/repositories.config
+
+# DotNet CLI
+.project
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Publish outputs
+publish/
+wwwroot/
+*.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.old
+*.cache
+
+# Logs
+*.log
+
+# Environment and secrets
+*.env
+secrets.json
+banter-7717f-firebase-adminsdk-fbsvc-9cb1cd3095.json
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+
+# JetBrains Rider / ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# Test results
+TestResult*/
+TestResults/
+*.coverage
+*.coveragexml
+
+# Docker
+docker-compose.override.yml
