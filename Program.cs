@@ -1,5 +1,4 @@
-﻿using Google.Cloud.Firestore;
-using Terminal.Gui;
+﻿using Terminal.Gui;
 
 namespace CpE261FinalProject
 {
@@ -22,10 +21,6 @@ namespace CpE261FinalProject
             Application.Top.Add(views: [menuBar]);
 
             LogInWindow.Instance.Show();
-
-            // Window1.Instance.Show();
-            // Window2.Instance.Show();
-            // Window3.Instance.Show();
 
             Application.Run();
             Application.Shutdown();
