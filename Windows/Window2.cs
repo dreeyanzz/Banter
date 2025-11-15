@@ -114,7 +114,6 @@ namespace CpE261FinalProject
             _listener = null;
 
             chatHistory.SetSource(source: new List<string>());
-
             messages.Clear();
             chatHistory.SetSource(source: messages);
             while (messages.Count < chatHistory.Frame.Height)
@@ -131,7 +130,6 @@ namespace CpE261FinalProject
 
             if (SessionHandler.IsLoggedIn == false)
                 return;
-
             if (string.IsNullOrEmpty(value: chatroom_id))
             {
                 window.Add(view: labelEmptyChatroom);
@@ -171,7 +169,6 @@ namespace CpE261FinalProject
             if (!chatroomSnap.Exists)
                 return;
 
-            // Get the list of participant IDs from the `chatroomId`
             if (
                 chatroomSnap.TryGetValue(
                     path: "participants",

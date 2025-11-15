@@ -42,7 +42,7 @@ namespace CpE261FinalProject
             window.RemoveAll();
             ChangeChatroomNameWindow.Instance.Hide();
 
-            if (string.IsNullOrEmpty(SessionHandler.CurrentChatroomId))
+            if (string.IsNullOrEmpty(value: SessionHandler.CurrentChatroomId))
                 return;
 
             string chatroom_type = await FirebaseHelper.GetChatroomTypeById(
@@ -64,12 +64,12 @@ namespace CpE261FinalProject
             window.Add(views: [.. views]);
         }
 
-        private async Task OnChangeChatroomNameButtonClicked()
+        private static async Task OnChangeChatroomNameButtonClicked()
         {
             ChangeChatroomNameWindow.Instance.Show();
         }
 
-        private async Task OnClearMessagesButtonClicked()
+        private static async Task OnClearMessagesButtonClicked()
         {
             int buttonClicked = MessageBox.Query(
                 title: "Message",
@@ -86,9 +86,9 @@ namespace CpE261FinalProject
         private static async Task OnDeleteChatroomButtonClicked()
         {
             int buttonClicked = MessageBox.Query(
-                "Message",
-                "Are you sure you want to delete this chatroom?",
-                ["Yes", "No"]
+                title: "Message",
+                message: "Are you sure you want to delete this chatroom?",
+                buttons: ["Yes", "No"]
             );
 
             if (buttonClicked == 0)
@@ -115,9 +115,9 @@ namespace CpE261FinalProject
             Title = "Chat info",
 
             Height = Dim.Fill(),
-            Width = Dim.Percent(23),
+            Width = Dim.Percent(n: 23),
 
-            X = Pos.Percent(77),
+            X = Pos.Percent(n: 77),
             Y = 0,
 
             ColorScheme = CustomColorScheme.Window,
@@ -128,7 +128,7 @@ namespace CpE261FinalProject
             Text = "Clear Messages",
 
             X = Pos.Center(),
-            Y = Pos.Center() - Pos.At(1),
+            Y = Pos.Center() - Pos.At(n: 1),
 
             ColorScheme = CustomColorScheme.Button,
         };
@@ -138,7 +138,7 @@ namespace CpE261FinalProject
             Text = "Change chatroom name",
 
             X = Pos.Center(),
-            Y = Pos.Y(clearMessagesButton) + Pos.At(1),
+            Y = Pos.Y(view: clearMessagesButton) + Pos.At(n: 1),
 
             ColorScheme = CustomColorScheme.Button,
         };
@@ -148,7 +148,7 @@ namespace CpE261FinalProject
             Text = "Delete Chatroom",
 
             X = Pos.Center(),
-            Y = Pos.AnchorEnd() - Pos.At(1),
+            Y = Pos.AnchorEnd() - Pos.At(n: 1),
 
             ColorScheme = CustomColorScheme.Button,
         };
@@ -158,7 +158,7 @@ namespace CpE261FinalProject
             Text = "Leave Chatroom",
 
             X = Pos.Center(),
-            Y = Pos.Y(deleteChatroomButton) - Pos.At(1),
+            Y = Pos.Y(view: deleteChatroomButton) - Pos.At(n: 1),
 
             ColorScheme = CustomColorScheme.Button,
         };
