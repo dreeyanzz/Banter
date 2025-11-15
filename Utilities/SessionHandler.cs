@@ -135,7 +135,7 @@ namespace CpE261FinalProject
 
                 List<string> ids = [.. chatroomsList.Select(x => x.Id)];
 
-                if (!ids.Contains(SessionHandler.CurrentChatroomId!))
+                if (!ids.Contains(SessionHandler.CurrentChatroomId ?? string.Empty)) //! quite incomprehensive
                     CurrentChatroomId = "";
 
                 foreach (DocumentSnapshot doc in snapshot.Documents)

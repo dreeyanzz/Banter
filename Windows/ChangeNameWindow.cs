@@ -31,7 +31,7 @@ namespace CpE261FinalProject
                 return;
 
             await FirebaseHelper.ChangeChatroomName(
-                chatroom_id: SessionHandler.CurrentChatroomId!,
+                chatroom_id: SessionHandler.CurrentChatroomId!, //! Using `!` here
                 new_name: inputName
             );
         }

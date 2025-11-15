@@ -7,8 +7,6 @@ namespace CpE261FinalProject
         private static readonly LiteDatabase db = new("Cache.db");
         private static readonly ILiteCollection<User> users = db.GetCollection<User>("Users");
 
-        // private static readonly ILiteCollection<User> chatrooms = db.GetCollection<Chatroom>("Chatrooms");
-
         public static event Action<List<User>>? UsersCacheUpdated;
 
         public static void CacheUser(User user)

@@ -31,7 +31,7 @@ namespace CpE261FinalProject
             );
 
             if (buttonClicked == 0)
-                await FirebaseHelper.RemoveChatroomParticipant(
+                await FirebaseHelper.RemoveChatroomParticipant( //! two `!` here!
                     participant_id: SessionHandler.UserId!,
                     chatroom_id: SessionHandler.CurrentChatroomId!
                 );
@@ -52,7 +52,7 @@ namespace CpE261FinalProject
             if (chatroom_type == "group")
             {
                 bool isChatroomAdmin = await FirebaseHelper.ValidateChatroomAdmin(
-                    user_id: SessionHandler.UserId!
+                    user_id: SessionHandler.UserId! //! using `!` here
                 );
                 window.Add(view: changeChatroomNameButton);
                 window.Add(view: leaveChatroomButton);
@@ -79,7 +79,7 @@ namespace CpE261FinalProject
 
             if (buttonClicked == 0)
                 await FirebaseHelper.ClearChatroomMessagesById(
-                    chatroom_id: SessionHandler.CurrentChatroomId!
+                    chatroom_id: SessionHandler.CurrentChatroomId! //! using `!` here!
                 );
         }
 
@@ -94,7 +94,7 @@ namespace CpE261FinalProject
             if (buttonClicked == 0)
             {
                 await FirebaseHelper.DeleteChatroomById(
-                    chatroom_id: SessionHandler.CurrentChatroomId!
+                    chatroom_id: SessionHandler.CurrentChatroomId! //! using `!` here!
                 );
                 SessionHandler.CurrentChatroomId = null;
             }

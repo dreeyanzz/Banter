@@ -88,7 +88,7 @@ namespace CpE261FinalProject
                 username: inputUsername
             );
 
-            participants_ids.Add(item: participant_id!);
+            participants_ids.Add(item: participant_id!); //! using `!` here
             participants.Add(item: inputUsername);
             usersTextField.Text = string.Empty;
         }

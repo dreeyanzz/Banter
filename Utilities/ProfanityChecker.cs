@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace CpE261FinalProject
@@ -256,15 +255,16 @@ namespace CpE261FinalProject
             // 2. Convert to lowercase.
             // 3. Convert leetspeak/symbols (like '0', '4', '@') back to standard letters.
             string normalizedText = new(
-                text.Where(c => char.IsLetterOrDigit(c) || LeetMap.ContainsKey(c)) // Only keep relevant chars
-                    .Select(c =>
-                    {
-                        char lowerC = char.ToLower(c);
-                        return LeetMap.TryGetValue(lowerC, out char mappedChar)
-                            ? mappedChar
-                            : lowerC;
-                    })
-                    .ToArray()
+                [
+                    .. text.Where(c => char.IsLetterOrDigit(c) || LeetMap.ContainsKey(c)) // Only keep relevant chars
+                        .Select(c =>
+                        {
+                            char lowerC = char.ToLower(c);
+                            return LeetMap.TryGetValue(lowerC, out char mappedChar)
+                                ? mappedChar
+                                : lowerC;
+                        }),
+                ]
             );
 
             // --- Step B: Find profane substrings in the normalized text ---
@@ -292,9 +292,7 @@ namespace CpE261FinalProject
                             char.IsLetterOrDigit(originalText[i])
                             || LeetMap.ContainsKey(originalText[i])
                         )
-                        {
                             preMatchCharCount++;
-                        }
                     }
 
                     // Find the original start index by counting only the relevant characters
@@ -308,9 +306,7 @@ namespace CpE261FinalProject
                         )
                         {
                             if (relevantCount == startIndex)
-                            {
                                 originalStart = i;
-                            }
                             relevantCount++;
 
                             if (relevantCount == startIndex + matchLength)
@@ -325,7 +321,7 @@ namespace CpE261FinalProject
                     if (originalStart != -1 && originalEnd != -1)
                     {
                         // Create a replacement string of asterisks covering the original characters
-                        string replacement = new string('*', originalEnd - originalStart + 1);
+                        string replacement = new('*', originalEnd - originalStart + 1);
 
                         // Replace the segment in the original text
                         originalText = originalText

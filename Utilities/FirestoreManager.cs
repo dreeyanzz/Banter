@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
@@ -56,7 +55,7 @@ namespace CpE261FinalProject
             {
                 // Handle initialization errors
                 Console.WriteLine($"Error initializing Firestore: {ex.Message}");
-                Database = null!;
+                Database = null!; //! Using `!` here
             }
         }
     }

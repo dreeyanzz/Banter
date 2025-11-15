@@ -83,7 +83,7 @@ namespace CpE261FinalProject
 
             await FetchAndCacheParticipants(chatroomId: chatroom_id);
             string _chatroomName = await FirebaseHelper.GetChatroomNameById(
-                chatroom_id: SessionHandler.CurrentChatroomId!
+                chatroom_id: SessionHandler.CurrentChatroomId! //! using `!` here
             );
             chatroomName.Text = _chatroomName;
             chatroomName.X = Pos.Center();

@@ -5,40 +5,40 @@ namespace CpE261FinalProject
 {
     public static class FirebaseHelper
     {
-        public static FirestoreDb db = FirestoreManager.Instance.Database;
+        public static readonly FirestoreDb db = FirestoreManager.Instance.Database;
 
         public static async Task ChangeChatroomName(string chatroom_id, string new_name)
         {
-            if (string.IsNullOrWhiteSpace(chatroom_id))
+            if (string.IsNullOrWhiteSpace(value: chatroom_id))
                 throw new ArgumentException(
-                    "Chatroom ID cannot be null or empty.",
-                    nameof(chatroom_id)
+                    message: "Chatroom ID cannot be null or empty.",
+                    paramName: nameof(chatroom_id)
                 );
 
             if (string.IsNullOrWhiteSpace(new_name))
                 throw new ArgumentException(
-                    "New chatroom name cannot be null or empty.",
-                    nameof(new_name)
+                    message: "New chatroom name cannot be null or empty.",
+                    paramName: nameof(new_name)
                 );
 
-            CollectionReference chatroomsRef = db.Collection("Chatrooms");
-            DocumentReference chatroomRef = chatroomsRef.Document(chatroom_id);
+            CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
+            DocumentReference chatroomRef = chatroomsRef.Document(path: chatroom_id);
 
-            // Fetch the document snapshot first to check if it exists
+            // Fetch the document snapshot first to check if it exists (Chatroom)
             DocumentSnapshot snapshot = await chatroomRef.GetSnapshotAsync();
 
             if (!snapshot.Exists)
             {
-                Console.WriteLine($"Chatroom with ID '{chatroom_id}' does not exist.");
+                Console.WriteLine(value: $"Chatroom with ID '{chatroom_id}' does not exist.");
                 return; // Or throw a custom exception if you prefer
             }
 
             // Update the chatroom_name safely
             await chatroomRef.UpdateAsync(
-                new Dictionary<string, object> { { "chatroom_name", new_name } }
+                updates: new Dictionary<string, object> { { "chatroom_name", new_name } }
             );
 
-            Console.WriteLine($"Chatroom '{chatroom_id}' name updated to '{new_name}'.");
+            Console.WriteLine(value: $"Chatroom '{chatroom_id}' name updated to '{new_name}'.");
         }
 
         public static async Task RemoveChatroomParticipant(
@@ -46,8 +46,8 @@ namespace CpE261FinalProject
             string chatroom_id
         )
         {
-            CollectionReference chatroomsRef = db.Collection("Chatrooms");
-            DocumentReference chatroomRef = chatroomsRef.Document(chatroom_id);
+            CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
+            DocumentReference chatroomRef = chatroomsRef.Document(path: chatroom_id);
 
             // Remove the participant from the array
             await chatroomRef.UpdateAsync(
@@ -60,19 +60,28 @@ namespace CpE261FinalProject
 
         public static async Task<bool> ValidateChatroomAdmin(string user_id)
         {
-            List<string> admins = await GetChatroomAdmins(SessionHandler.CurrentChatroomId!);
+            if (string.IsNullOrEmpty(value: user_id))
+                return false;
 
-            return admins.Contains(user_id);
+            List<string>? admins = await GetChatroomAdmins(
+                chatroom_id: SessionHandler.CurrentChatroomId! //! Using `!` here
+            );
+            if (admins == null)
+                return false;
+
+            return admins.Contains(item: user_id);
         }
 
-        public static async Task<List<string>> GetChatroomAdmins(string chatroom_id)
+        public static async Task<List<string>?> GetChatroomAdmins(string chatroom_id)
         {
-            CollectionReference chatroomsRef = db.Collection("Chatrooms");
-            DocumentReference chatroom = chatroomsRef.Document(SessionHandler.CurrentChatroomId);
+            if (string.IsNullOrEmpty(chatroom_id))
+                return null;
+
+            CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
+            DocumentReference chatroom = chatroomsRef.Document(path: chatroom_id);
 
             DocumentSnapshot snapshot = await chatroom.GetSnapshotAsync();
-
-            List<string> admins = snapshot.GetValue<List<string>>("admins");
+            List<string> admins = snapshot.GetValue<List<string>>(path: "admins");
 
             return admins;
         }
@@ -83,55 +92,55 @@ namespace CpE261FinalProject
                 return;
 
             // Always include the current user
-            if (!participants_ids.Contains(SessionHandler.UserId!))
-                participants_ids.Add(SessionHandler.UserId!);
+            if (!participants_ids.Contains(item: SessionHandler.UserId!)) //! Using `!` here
+                participants_ids.Add(item: SessionHandler.UserId!);
 
             string chatroom_type = participants_ids.Count > 2 ? "group" : "individual";
 
             // Fetch names concurrently
             IEnumerable<Task<string>>? nameTasks = participants_ids.Select(
-                FirebaseHelper.GetUserName
+                selector: FirebaseHelper.GetUserName
             );
-            string[]? participants_names = await Task.WhenAll(nameTasks);
+            string[]? participants_names = await Task.WhenAll(tasks: nameTasks);
 
             // Build readable name
-            string chatroom_name = string.Join(", ", participants_names);
+            string chatroom_name = string.Join(separator: ", ", values: participants_names);
 
             Chatroom chatroom_info = new()
             {
                 ChatroomName = chatroom_name,
                 Participants = participants_ids,
                 Type = chatroom_type,
-                Admins = [SessionHandler.UserId!],
+                Admins = [SessionHandler.UserId!], //! Using `!` here
             };
 
-            await db.Collection("Chatrooms").AddAsync(chatroom_info);
+            await db.Collection(path: "Chatrooms").AddAsync(documentData: chatroom_info);
         }
 
         public static async Task DeleteChatroomById(string chatroom_id)
         {
-            CollectionReference chatroomsRef = db.Collection("Chatrooms");
-            DocumentReference chatroom = chatroomsRef.Document(chatroom_id);
+            CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
+            DocumentReference chatroom = chatroomsRef.Document(path: chatroom_id);
 
             await chatroom.DeleteAsync();
         }
 
         public static async Task<string> GetChatroomTypeById(string chatroom_id)
         {
-            CollectionReference chatroomsRef = db.Collection("Chatrooms");
-            DocumentReference chatroom = chatroomsRef.Document(chatroom_id);
+            CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
+            DocumentReference chatroom = chatroomsRef.Document(path: chatroom_id);
 
             DocumentSnapshot snapshot = await chatroom.GetSnapshotAsync();
-            string chatroom_type = snapshot.GetValue<string>("type");
+            string chatroom_type = snapshot.GetValue<string>(path: "type");
 
             return chatroom_type;
         }
 
         public static async Task ClearChatroomMessagesById(string chatroom_id)
         {
-            CollectionReference chatroomsRef = db.Collection("Chatrooms");
-            DocumentReference chatroom = chatroomsRef.Document(chatroom_id);
-            CollectionReference messagesRef = chatroom.Collection("messages");
+            CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
+            DocumentReference chatroom = chatroomsRef.Document(path: chatroom_id);
+            CollectionReference messagesRef = chatroom.Collection(path: "messages");
 
             QuerySnapshot snapshot = await messagesRef.GetSnapshotAsync();
 
@@ -141,38 +150,38 @@ namespace CpE261FinalProject
             WriteBatch batch = db.StartBatch();
 
             foreach (DocumentSnapshot doc in snapshot.Documents)
-                batch.Delete(doc.Reference);
+                batch.Delete(documentReference: doc.Reference);
 
             await batch.CommitAsync();
         }
 
         public static async Task<string> GetChatroomNameById(string chatroom_id)
         {
-            DocumentSnapshot snapshot = await db.Collection("Chatrooms")
+            DocumentSnapshot snapshot = await db.Collection(path: "Chatrooms")
                 .Document(chatroom_id)
                 .GetSnapshotAsync();
 
             if (!snapshot.Exists)
                 return "Unknown Chatroom";
 
-            string chatroom_type = snapshot.GetValue<string>("type");
+            string chatroom_type = snapshot.GetValue<string>(path: "type");
 
             if (chatroom_type == "group")
             {
-                return snapshot.TryGetValue("chatroom_name", out string name)
+                return snapshot.TryGetValue(path: "chatroom_name", value: out string name)
                     ? name
                     : "Unnamed Group";
             }
 
             // Individual chat
-            if (snapshot.TryGetValue("participants", out List<string> participants))
+            if (snapshot.TryGetValue(path: "participants", value: out List<string> participants))
             {
                 foreach (string participant in participants)
                 {
                     if (participant != SessionHandler.UserId)
                     {
-                        string otherName = await FirebaseHelper.GetUserName(participant);
-                        return string.IsNullOrEmpty(otherName) ? "Unknown User" : otherName;
+                        string otherName = await FirebaseHelper.GetUserName(user_id: participant);
+                        return string.IsNullOrEmpty(value: otherName) ? "Unknown User" : otherName;
                     }
                 }
             }
@@ -180,23 +189,24 @@ namespace CpE261FinalProject
             return "Unknown Chatroom";
         }
 
-        public static async Task<Dictionary<string, string>> GetChatroomParticipants(
+        public static async Task<Dictionary<string, string>?> GetChatroomParticipants(
             string chatroom_id
         )
         {
-            CollectionReference chatroomsRef = db.Collection("Chatrooms");
-            DocumentReference docRef = chatroomsRef.Document(chatroom_id);
+            if (string.IsNullOrEmpty(chatroom_id))
+                return null;
 
+            CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
+            DocumentReference docRef = chatroomsRef.Document(path: chatroom_id);
             DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
-            snapshot.TryGetValue("participants", out List<string> participants);
+            snapshot.TryGetValue(path: "participants", value: out List<string> participants);
 
             Dictionary<string, string> idUserMap = [];
-
             foreach (string participant in participants)
             {
-                string name = await GetUserName(participant);
-                idUserMap.Add(participant, name);
+                string name = await GetUserName(user_id: participant);
+                idUserMap.Add(key: participant, value: name);
             }
 
             return idUserMap;
@@ -204,6 +214,8 @@ namespace CpE261FinalProject
 
         public static async Task<string> GetUserName(string user_id)
         {
+            //? Clear these things
+
             Dictionary<string, object>? user_info = await GetUserInfoById(user_id);
 
             if (user_info == null)
@@ -212,7 +224,7 @@ namespace CpE261FinalProject
             if (!user_info.TryGetValue("name", out object? user_name) || user_name == null)
                 return "Unnamed User"; // handle missing name
 
-            return user_name.ToString()!;
+            return user_name.ToString() ?? string.Empty;
         }
 
         /// <summary>
