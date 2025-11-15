@@ -133,17 +133,17 @@ namespace CpE261FinalProject
             {
                 List<(string Id, string Name)> chatroomsList = [];
 
-                List<string> ids = [.. chatroomsList.Select(x => x.Id)];
-
-                if (!ids.Contains(SessionHandler.CurrentChatroomId ?? string.Empty)) //! quite incomprehensive
-                    CurrentChatroomId = "";
-
                 foreach (DocumentSnapshot doc in snapshot.Documents)
                 {
                     string chatroom_name = await FirebaseHelper.GetChatroomNameById(doc.Id);
 
                     chatroomsList.Add((doc.Id, chatroom_name));
                 }
+
+                List<string> chatroomIds = [.. chatroomsList.Select(x => x.Id)]; // no value
+
+                if (!chatroomIds.Contains(SessionHandler.CurrentChatroomId!)) //! quite incomprehensive
+                    CurrentChatroomId = "";
 
                 Chatrooms = chatroomsList;
             });

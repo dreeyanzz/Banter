@@ -8,7 +8,7 @@ namespace CpE261FinalProject
 
         public static Window3 Instance => lazyInstance.Value;
 
-        readonly List<View> views = [clearMessagesButton];
+        private readonly List<View> views = [clearMessagesButton];
 
         private Window3()
         {
@@ -18,6 +18,8 @@ namespace CpE261FinalProject
             leaveChatroomButton.Clicked += async () => await OnLeaveChatroomButton();
             changeChatroomNameButton.Clicked += async () =>
                 await OnChangeChatroomNameButtonClicked();
+
+            window.Enter += (_) => Application.MainLoop.Invoke(action: () => dummyView.SetFocus());
 
             _ = OnCurrentChatroomChanged(); // Initialize
         }
@@ -110,7 +112,7 @@ namespace CpE261FinalProject
             Application.Top.Remove(view: window);
         }
 
-        readonly Window window = new()
+        private readonly Window window = new()
         {
             Title = "Chat info",
 
@@ -123,12 +125,14 @@ namespace CpE261FinalProject
             ColorScheme = CustomColorScheme.Window,
         };
 
-        static readonly Button clearMessagesButton = new()
+        private static readonly Button clearMessagesButton = new()
         {
             Text = "Clear Messages",
 
             X = Pos.Center(),
             Y = Pos.Center() - Pos.At(n: 1),
+
+            HotKeySpecifier = (Rune)0xffff,
 
             ColorScheme = CustomColorScheme.Button,
         };
@@ -140,25 +144,31 @@ namespace CpE261FinalProject
             X = Pos.Center(),
             Y = Pos.Y(view: clearMessagesButton) + Pos.At(n: 1),
 
+            HotKeySpecifier = (Rune)0xffff,
+
             ColorScheme = CustomColorScheme.Button,
         };
 
-        static readonly Button deleteChatroomButton = new()
+        private static readonly Button deleteChatroomButton = new()
         {
             Text = "Delete Chatroom",
 
             X = Pos.Center(),
             Y = Pos.AnchorEnd() - Pos.At(n: 1),
 
+            HotKeySpecifier = (Rune)0xffff,
+
             ColorScheme = CustomColorScheme.Button,
         };
 
-        static readonly Button leaveChatroomButton = new()
+        private static readonly Button leaveChatroomButton = new()
         {
             Text = "Leave Chatroom",
 
             X = Pos.Center(),
             Y = Pos.Y(view: deleteChatroomButton) - Pos.At(n: 1),
+
+            HotKeySpecifier = (Rune)0xffff,
 
             ColorScheme = CustomColorScheme.Button,
         };

@@ -12,7 +12,7 @@ namespace CpE261FinalProject
         public static CreateChatroomWindow Instance => lazyInstance.Value;
 
         private readonly List<string> participants = [];
-        private List<string> participants_ids = [];
+        private readonly List<string> participants_ids = [];
 
         private CreateChatroomWindow()
         {
@@ -38,6 +38,16 @@ namespace CpE261FinalProject
             participantsListView.SetSource(source: participants);
             addButton.Clicked += async () => await OnAddButtonClicked();
             createButton.Clicked += async () => await OnCreateButtonClicked();
+
+            window.Enter += (_) =>
+                Application.MainLoop.Invoke(action: () => usersTextField.SetFocus());
+
+            window.Leave += (_) =>
+            {
+                Hide();
+                participants.Clear();
+                participants_ids.Clear();
+            };
 
             window.Add(
                 views:
@@ -137,6 +147,8 @@ namespace CpE261FinalProject
             X = Pos.AnchorEnd() - Pos.At("Close".Length + 4),
             Y = Pos.At(0),
 
+            HotKeySpecifier = (Rune)0xffff,
+
             ColorScheme = CustomColorScheme.Button,
         };
 
@@ -171,6 +183,9 @@ namespace CpE261FinalProject
             X = Pos.AnchorEnd() - Pos.At("Add".Length + 4),
             Y = Pos.AnchorEnd() - Pos.At(3),
 
+            HotKeySpecifier = (Rune)0xffff,
+            IsDefault = true,
+
             ColorScheme = CustomColorScheme.Button,
         };
         private static readonly Button removeLastButton = new()
@@ -179,6 +194,8 @@ namespace CpE261FinalProject
 
             X = 0,
             Y = Pos.AnchorEnd() - Pos.At(n: 1),
+
+            HotKeySpecifier = (Rune)0xffff,
 
             ColorScheme = CustomColorScheme.Button,
         };
@@ -189,6 +206,8 @@ namespace CpE261FinalProject
             X = Pos.Right(view: removeLastButton),
             Y = Pos.AnchorEnd() - Pos.At(n: 1),
 
+            HotKeySpecifier = (Rune)0xffff,
+
             ColorScheme = CustomColorScheme.Button,
         };
         private readonly Button createButton = new()
@@ -196,7 +215,9 @@ namespace CpE261FinalProject
             Text = "Create",
 
             X = Pos.AnchorEnd() - Pos.At("Create".Length + 4),
-            Y = Pos.AnchorEnd() - Pos.At(1),
+            Y = Pos.AnchorEnd() - Pos.At(n: 1),
+
+            HotKeySpecifier = (Rune)0xffff,
 
             ColorScheme = CustomColorScheme.Button,
         };

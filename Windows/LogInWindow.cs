@@ -24,6 +24,9 @@ namespace CpE261FinalProject
             logInButton.Clicked += OnLogInButtonClicked;
             createAccountButton.Clicked += OnCreateAccountButtonClicked;
 
+            window.Enter += (_) => logInButton.IsDefault = true;
+            window.Leave += (_) => logInButton.IsDefault = false;
+
             window.Add(
                 views:
                 [
@@ -224,6 +227,8 @@ namespace CpE261FinalProject
 
             X = Pos.Right(passwordTextField) + Pos.At(1),
             Y = Pos.Y(passwordTextField),
+
+            HotKeySpecifier = (Rune)0xffff,
         };
 
         private readonly Button logInButton = new()
@@ -231,9 +236,9 @@ namespace CpE261FinalProject
             Text = "Log In",
 
             X = Pos.Center(),
-            Y = Pos.Center() + Pos.At(1),
+            Y = Pos.Center() + Pos.At(n: 1),
 
-            HotKey = Key.Enter,
+            HotKeySpecifier = (Rune)0xffff,
 
             ColorScheme = CustomColorScheme.Button,
         };
@@ -243,7 +248,7 @@ namespace CpE261FinalProject
             Text = "Create Account",
 
             X = Pos.Center(),
-            Y = Pos.Center() + Pos.At(3),
+            Y = Pos.Center() + Pos.At(n: 3),
 
             ColorScheme = CustomColorScheme.Button,
         };

@@ -29,6 +29,8 @@ namespace CpE261FinalProject
                 repeatPasswordTextField.Secret = !repeatPasswordTextField.Secret;
             };
 
+            window.Enter += (_) => Application.MainLoop.Invoke(action: () => dummyView.SetFocus());
+
             window.Add(
                 views:
                 [
@@ -284,6 +286,8 @@ namespace CpE261FinalProject
             X = Pos.Center(),
             Y = Pos.Bottom(repeatPasswordTextField) + Pos.At(1),
 
+            HotKeySpecifier = (Rune)0xffff,
+
             ColorScheme = CustomColorScheme.Button,
         };
 
@@ -330,6 +334,8 @@ namespace CpE261FinalProject
             X = Pos.Percent(65) - Pos.At(20),
             Y = Pos.Bottom(emailTextField) + Pos.At(1),
 
+            HotKeySpecifier = (Rune)0xffff,
+
             ColorScheme = CustomColorScheme.Button,
         };
 
@@ -339,6 +345,8 @@ namespace CpE261FinalProject
 
             X = Pos.Percent(35),
             Y = Pos.Bottom(emailTextField) + Pos.At(1),
+
+            HotKeySpecifier = (Rune)0xffff,
 
             ColorScheme = CustomColorScheme.Button,
         };

@@ -7,14 +7,16 @@ namespace CpE261FinalProject
     {
         private readonly FirestoreDb db = FirestoreManager.Instance.Database;
         private FirestoreChangeListener? _listener;
+        private FirestoreChangeListener? chatroomListener;
         private static readonly Lazy<Window2> lazyInstance = new(valueFactory: () => new Window2());
 
         public static Window2 Instance => lazyInstance.Value;
         private readonly Dictionary<string, string> currentChatroomParticipants = [];
-        readonly List<string> message_ids = [];
-        readonly List<string> messages = [];
+        private readonly List<string> message_ids = [];
+        private readonly List<string> messages = [];
+        private int numFill = 0;
 
-        readonly List<View> chatInputViews;
+        private readonly List<View> chatInputViews;
 
         private Window2()
         {
@@ -23,8 +25,9 @@ namespace CpE261FinalProject
                 chatroomName,
                 viewPinnedMessagesButton,
                 searchChatLabel,
-                clearSearchChatButton,
                 searchChatTextField,
+                clearSearchChatButton,
+                searchIndicatorLabel,
                 chatHistory,
                 buttonSend,
                 chatBox,
@@ -37,6 +40,30 @@ namespace CpE261FinalProject
 
             buttonSend.Clicked += OnButtonSendClicked;
             searchChatTextField.TextChanged += (_) => OnSearchChatTextChanged();
+            clearSearchChatButton.Clicked += () => searchChatTextField.Text = string.Empty;
+            viewPinnedMessagesButton.Clicked += ViewPinnedMessagesWindow.Instance.Show;
+
+            chatHistory.OpenSelectedItem += async (_) =>
+            {
+                int selectedIndex = chatHistory.SelectedItem - numFill;
+
+                if (selectedIndex < 0)
+                    return;
+
+                string chat_id = message_ids[selectedIndex];
+
+                await FirebaseHelper.PinChatroomMessage(
+                    chatroom_id: SessionHandler.CurrentChatroomId!,
+                    message_id: chat_id
+                ); //! USING `!` here!
+            };
+
+            window.Enter += (_) =>
+            {
+                buttonSend.IsDefault = true;
+                Application.MainLoop.Invoke(() => chatBox.SetFocus());
+            };
+            window.Leave += (_) => buttonSend.IsDefault = false;
 
             OnLogInChanged(IsLoggedIn: SessionHandler.IsLoggedIn);
         }
@@ -53,19 +80,23 @@ namespace CpE261FinalProject
 
                 filtered = [.. messages.Where(entry => entry.Contains(value: textToSearch))];
 
-                while (filtered.Count < chatHistory.Frame.Height)
-                    filtered.Insert(0, ".");
-
-                Application.MainLoop.Invoke(() => chatHistory.SetSource(source: filtered));
+                bool needsFill = filtered.Count < chatHistory.Frame.Height;
+                numFill = Math.Max(0, chatHistory.Frame.Height - filtered.Count);
+                IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                Application.MainLoop.Invoke(action: () =>
+                    chatHistory.SetSource(source: needsFill ? [.. filler, .. filtered] : filtered)
+                );
             }
             else
             {
                 searchIndicatorLabel.Text = string.Empty;
 
-                while (messages.Count < chatHistory.Frame.Height)
-                    messages.Insert(index: 0, item: ".");
-
-                Application.MainLoop.Invoke(action: () => chatHistory.SetSource(source: messages));
+                bool needsFill = messages.Count < chatHistory.Frame.Height;
+                numFill = Math.Max(0, chatHistory.Frame.Height - messages.Count);
+                IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                Application.MainLoop.Invoke(action: () =>
+                    chatHistory.SetSource(source: needsFill ? [.. filler, .. messages] : messages)
+                );
             }
 
             Application.MainLoop.Invoke(action: ScrollToLatestChat);
@@ -110,14 +141,16 @@ namespace CpE261FinalProject
 
         private async void OnChatroomChanged(string? chatroom_id)
         {
+            ViewPinnedMessagesWindow.Instance.Hide();
+
             _listener?.StopAsync();
             _listener = null;
+            chatroomListener?.StopAsync();
+            chatroomListener = null;
 
             chatHistory.SetSource(source: new List<string>());
             messages.Clear();
-            chatHistory.SetSource(source: messages);
-            while (messages.Count < chatHistory.Frame.Height)
-                messages.Insert(index: 0, item: ".");
+            message_ids.Clear();
 
             window.RemoveAll();
 
@@ -148,6 +181,7 @@ namespace CpE261FinalProject
             });
 
             StartListener(chatroom_id: chatroom_id);
+            StartChatroomListener(chatroom_id);
 
             Application.MainLoop.Invoke(action: () =>
             {
@@ -200,7 +234,7 @@ namespace CpE261FinalProject
             Application.Top.Remove(view: window);
         }
 
-        readonly Window window = new()
+        private readonly Window window = new()
         {
             Title = "Main Chat",
 
@@ -213,7 +247,7 @@ namespace CpE261FinalProject
             ColorScheme = CustomColorScheme.Window,
         };
 
-        readonly Label labelEmptyChatroom = new()
+        private readonly Label labelEmptyChatroom = new()
         {
             Text = "You have not yet chosen a chatroom...",
 
@@ -221,7 +255,7 @@ namespace CpE261FinalProject
             Y = Pos.Center(),
         };
 
-        readonly Label labelEmptyChat = new()
+        private readonly Label labelEmptyChat = new()
         {
             Text = "No chats yet, better strike a conversation first!",
 
@@ -229,15 +263,15 @@ namespace CpE261FinalProject
             Y = Pos.Center(),
         };
 
-        readonly Label chatroomName = new()
+        private readonly Label chatroomName = new()
         {
             Text = "",
 
             X = Pos.Center(),
-            Y = 1, // At the top
+            Y = Pos.At(n: 1), // At the top
         };
 
-        readonly Label labelEmpty = new()
+        private readonly Label labelEmpty = new()
         {
             Text = "Nothing to see here...",
 
@@ -247,15 +281,17 @@ namespace CpE261FinalProject
             ColorScheme = CustomColorScheme.LabelEmpty,
         };
 
-        readonly Button viewPinnedMessagesButton = new()
+        private readonly Button viewPinnedMessagesButton = new()
         {
             Text = "View pinned messages",
 
             X = Pos.Center(),
             Y = Pos.At(n: 3),
+
+            HotKeySpecifier = (Rune)0xffff,
         };
 
-        static readonly Label searchChatLabel = new()
+        private static readonly Label searchChatLabel = new()
         {
             Text = "Search chat:",
 
@@ -263,7 +299,7 @@ namespace CpE261FinalProject
             Y = Pos.At(n: 5),
         };
 
-        readonly TextField searchChatTextField = new()
+        private readonly TextField searchChatTextField = new()
         {
             X = Pos.Right(view: searchChatLabel) + Pos.At(n: 1),
             Y = Pos.Y(view: searchChatLabel),
@@ -271,17 +307,19 @@ namespace CpE261FinalProject
             Width = Dim.Fill() - Dim.Width(view: clearSearchChatButton),
         };
 
-        static readonly Button clearSearchChatButton = new()
+        private static readonly Button clearSearchChatButton = new()
         {
             Text = "Clear",
 
             X = Pos.AnchorEnd() - Pos.At(n: "Clear".Length + 4),
             Y = Pos.Y(view: searchChatLabel),
 
+            HotKeySpecifier = (Rune)0xffff,
+
             ColorScheme = CustomColorScheme.Button,
         };
 
-        readonly Label searchIndicatorLabel = new()
+        private readonly Label searchIndicatorLabel = new()
         {
             Text = "",
 
@@ -289,7 +327,7 @@ namespace CpE261FinalProject
             Y = Pos.At(n: 6),
         };
 
-        readonly ListView chatHistory = new()
+        private readonly ListView chatHistory = new()
         {
             X = 0,
             Y = Pos.At(n: 7),
@@ -298,22 +336,25 @@ namespace CpE261FinalProject
             Width = Dim.Fill(),
         };
 
-        static readonly Button buttonSend = new()
-        {
-            Text = "Send",
-
-            X = Pos.AnchorEnd(margin: 8),
-            Y = Pos.AnchorEnd() - Pos.At(n: 1), // At the bottom
-
-            ColorScheme = CustomColorScheme.Button,
-        };
-
-        readonly TextField chatBox = new()
+        private readonly TextField chatBox = new()
         {
             Width = Dim.Fill() - Dim.Width(view: buttonSend),
 
             X = 0,
-            Y = Pos.AnchorEnd(margin: 1), // At the bottom
+            Y = Pos.AnchorEnd() - Pos.At(n: 1), // At the bottom
+        };
+
+        private static readonly Button buttonSend = new()
+        {
+            Text = "Send",
+
+            X = Pos.AnchorEnd() - Pos.At(n: "Send".Length + 6),
+            Y = Pos.AnchorEnd() - Pos.At(n: 1), // At the bottom
+
+            IsDefault = true,
+            HotKeySpecifier = (Rune)0xffff,
+
+            ColorScheme = CustomColorScheme.Button,
         };
 
         // TODO: Make this listen to cached
@@ -331,37 +372,83 @@ namespace CpE261FinalProject
         // TODO: Make this listen to cached
         private void OnSnapshotReceived(QuerySnapshot snapshot)
         {
-            foreach (DocumentSnapshot document in snapshot.Documents)
+            foreach (DocumentChange? change in snapshot.Changes)
             {
-                bool exists = message_ids.Contains(item: document.Id);
-                if (exists)
+                string docId = change.Document.Id;
+
+                // Handle removals
+                if (change.ChangeType == DocumentChange.Type.Removed)
+                {
+                    int index = message_ids.IndexOf(docId);
+                    if (index >= 0)
+                    {
+                        message_ids.RemoveAt(index);
+                        messages.RemoveAt(index);
+                    }
+
                     continue;
+                }
+
+                // Handle added or modified
+                DocumentSnapshot doc = change.Document;
 
                 if (
-                    !document.Exists
-                    || !document.TryGetValue(path: "sender_id", value: out string senderId)
-                    || !document.TryGetValue(path: "text", value: out string message)
+                    !doc.Exists
+                    || !doc.TryGetValue("sender_id", out string senderId)
+                    || !doc.TryGetValue("text", out string message)
                 )
                     continue;
 
-                if (
-                    !currentChatroomParticipants.TryGetValue(
-                        key: senderId,
-                        value: out string? senderName
-                    )
-                )
-                    senderName = "Unknown User"; // Fallback if user not in cache
+                if (!currentChatroomParticipants.TryGetValue(senderId, out string? senderName))
+                    senderName = "Unknown User";
 
                 string displayName =
-                    (senderId == SessionHandler.UserId) ? $"{senderName} (me)" : senderName;
-                string chatEntry =
-                    $"{displayName}: {ProfanityChecker.CensorTextRobust(text: message)}";
+                    senderId == SessionHandler.UserId ? $"{senderName} (me)" : senderName;
 
-                message_ids.Add(item: document.Id);
-                messages.Add(item: chatEntry);
+                string chatEntry = $"{displayName}: {ProfanityChecker.CensorTextRobust(message)}";
+
+                int existingIndex = message_ids.IndexOf(docId);
+
+                if (existingIndex >= 0)
+                {
+                    // Modified document → update
+                    messages[existingIndex] = chatEntry;
+                }
+                else
+                {
+                    // New message
+                    message_ids.Add(docId);
+                    messages.Add(chatEntry);
+                }
             }
 
-            Application.MainLoop.Invoke(action: ScrollToLatestChat);
+            // Rebuild UI with fillers
+            bool needsFill = messages.Count < chatHistory.Frame.Height;
+            numFill = Math.Max(0, chatHistory.Frame.Height - messages.Count);
+            IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+            List<string> finalSource = needsFill ? [.. filler, .. messages] : messages;
+
+            chatHistory.SetSource(finalSource);
+
+            Application.MainLoop.Invoke(ScrollToLatestChat);
+        }
+
+        private void StartChatroomListener(string chatroom_id)
+        {
+            DocumentReference chatroomRef = db.Collection("Chatrooms").Document(chatroom_id);
+
+            chatroomListener = chatroomRef.Listen(
+                callback: async (_) =>
+                {
+                    string newChatroomName = await FirebaseHelper.GetChatroomNameById(chatroom_id);
+
+                    Application.MainLoop.Invoke(() =>
+                    {
+                        chatroomName.Text = newChatroomName;
+                        chatroomName.X = Pos.Center();
+                    });
+                }
+            );
         }
 
         private void ScrollToLatestChat()

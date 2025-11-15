@@ -7,6 +7,53 @@ namespace CpE261FinalProject
     {
         public static readonly FirestoreDb db = FirestoreManager.Instance.Database;
 
+        public static async Task<string?> GetChatroomMessageById(
+            string chatroom_id,
+            string message_id
+        )
+        {
+            if (string.IsNullOrEmpty(message_id))
+                return null;
+
+            // Reference to the messages subcollection
+            DocumentReference messageRef = db.Collection("Chatrooms")
+                .Document(chatroom_id)
+                .Collection("messages")
+                .Document(message_id);
+
+            // Get the document snapshot
+            DocumentSnapshot snapshot = await messageRef.GetSnapshotAsync();
+
+            if (!snapshot.Exists)
+                return null; // message not found
+
+            // Assuming the message content is stored in a field called "content"
+            if (snapshot.TryGetValue("text", out string messageContent))
+                return messageContent;
+
+            return null; // field not found
+        }
+
+        public static async Task PinChatroomMessage(string chatroom_id, string message_id)
+        {
+            if (string.IsNullOrEmpty(chatroom_id) || string.IsNullOrEmpty(message_id))
+                return;
+
+            DocumentReference chatroomRef = db.Collection("Chatrooms").Document(chatroom_id);
+            await chatroomRef.UpdateAsync("pinned_messages", FieldValue.ArrayUnion(message_id));
+        }
+
+        public static async Task RemovePinChatroomMessage(string chatroom_id, string message_id)
+        {
+            bool isValid = string.IsNullOrEmpty(message_id) || string.IsNullOrEmpty(chatroom_id);
+            if (isValid)
+                return;
+
+            CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
+            DocumentReference chatroomRef = chatroomsRef.Document(path: chatroom_id);
+            await chatroomRef.UpdateAsync("pinned_messages", FieldValue.ArrayRemove(message_id));
+        }
+
         public static async Task ChangeChatroomName(string chatroom_id, string new_name)
         {
             if (string.IsNullOrWhiteSpace(value: chatroom_id))

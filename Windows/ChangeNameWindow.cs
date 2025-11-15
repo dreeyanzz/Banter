@@ -13,14 +13,13 @@ namespace CpE261FinalProject
 
         private ChangeChatroomNameWindow()
         {
-            closeButton.Clicked += () =>
-            {
-                Hide();
-            };
-
+            closeButton.Clicked += Hide;
             setButton.Clicked += async () => await OnSetButtonClicked();
 
-            window.Add(views: [newNameTextField, setButton]);
+            window.Leave += (_) => Hide();
+            window.Enter += (_) => Application.MainLoop.Invoke(action: () => dummyView.SetFocus());
+
+            window.Add(views: [newNameTextField, setButton, closeButton]);
         }
 
         private async Task OnSetButtonClicked()
@@ -34,6 +33,8 @@ namespace CpE261FinalProject
                 chatroom_id: SessionHandler.CurrentChatroomId!, //! Using `!` here
                 new_name: inputName
             );
+
+            Hide();
         }
 
         public void Show()
@@ -47,7 +48,7 @@ namespace CpE261FinalProject
             Application.Top.Remove(view: window);
         }
 
-        readonly Window window = new()
+        private readonly Window window = new()
         {
             Title = "Change chatroom name",
 
@@ -67,10 +68,12 @@ namespace CpE261FinalProject
             X = Pos.AnchorEnd() - Pos.At("Close".Length + 4),
             Y = Pos.At(0),
 
+            HotKeySpecifier = (Rune)0xffff,
+
             ColorScheme = CustomColorScheme.Button,
         };
 
-        TextField newNameTextField = new()
+        private readonly TextField newNameTextField = new()
         {
             X = 0,
             Y = Pos.Center(),
@@ -78,12 +81,14 @@ namespace CpE261FinalProject
             Width = Dim.Fill() - Dim.Width(view: setButton),
         };
 
-        static Button setButton = new()
+        private static readonly Button setButton = new()
         {
             Text = "Set",
 
             X = Pos.AnchorEnd() - Pos.At(n: "Set".Length + 4),
             Y = Pos.Center(),
+
+            HotKeySpecifier = (Rune)0xffff,
         };
     }
 }

@@ -1,3 +1,4 @@
+using Google.Cloud.Firestore;
 using Terminal.Gui;
 
 namespace CpE261FinalProject
@@ -9,16 +10,137 @@ namespace CpE261FinalProject
 
         public static Window1 Instance => lazyInstance.Value;
 
+        private List<string> chatroomNames = [];
+        private List<string> chatroomIds = [];
+
+        List<int> filteredIndices = [];
+        bool isFiltered = false;
+        List<string> filteredNames = [];
+        List<string> filteredIds = [];
+        private int numFill = 0;
+
         private Window1()
         {
-            // Listeners to the session
-            SessionHandler.IsLoggedInChanged += Toggle;
             SessionHandler.UserChatroomsChanged += (_) => OnUserChatroomsChanged();
             createChatroomButton.Clicked += async () => await OnCreateChatroomButtonClicked();
             logOutButton.Clicked += async () => await OnLogOutButtonClicked();
 
-            // Initialize
-            Toggle(IsLoggedIn: SessionHandler.IsLoggedIn);
+            OnUserChatroomsChanged();
+
+            filteredNames = [];
+            filteredIds = [];
+            isFiltered = false;
+
+            List<string> information =
+            [
+                $"Username: {SessionHandler.Username}",
+                $"Name: {SessionHandler.Name}",
+                $"SenderId: {SessionHandler.UserId}",
+            ];
+            informationListView.SetSource(source: information);
+            informationListView.Height = Dim.Sized(n: information.Count);
+            informationListView.Y = Pos.AnchorEnd() - Pos.At(information.Count + 1);
+
+            labelNumberChatrooms.Y = Pos.Y(view: informationListView) - Pos.At(1);
+            labelNumberChatrooms.Text = $"Chatrooms: {SessionHandler.Chatrooms.Count}";
+
+            chatroomsListView.SelectedItemChanged += (_) =>
+            {
+                int selectedIndex = chatroomsListView.SelectedItem;
+
+                if (selectedIndex >= (isFiltered ? filteredNames.Count : chatroomNames.Count))
+                    return;
+
+                string selectedChatroom;
+
+                if (isFiltered)
+                    selectedChatroom = filteredIds[selectedIndex];
+                else
+                    selectedChatroom = chatroomIds[selectedIndex];
+                SessionHandler.CurrentChatroomId = selectedChatroom;
+            };
+            Application.MainLoop.Invoke(() =>
+            {
+                chatroomsListView.Height =
+                    Dim.Fill()
+                    - Dim.Height(view: informationListView)
+                    - Dim.Height(view: logOutButton)
+                    - Dim.Sized(n: 2);
+
+                bool needsFill = chatroomNames.Count < chatroomsListView.Frame.Height;
+                numFill = Math.Max(0, chatroomsListView.Frame.Height - chatroomNames.Count);
+                IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                Application.MainLoop.Invoke(action: () =>
+                    chatroomsListView.SetSource(
+                        source: needsFill ? [.. chatroomNames, .. filler] : chatroomNames
+                    )
+                );
+            });
+
+            searchChatroomTextField.TextChanged += async (_) =>
+            {
+                string textToSearch = searchChatroomTextField.Text.ToString() ?? "";
+
+                if (!string.IsNullOrWhiteSpace(value: textToSearch))
+                {
+                    searchIndicator.Text = $"Searching for: {textToSearch}";
+
+                    filteredIndices =
+                    [
+                        .. chatroomNames
+                            .Select((value, index) => new { value, index })
+                            .Where(x =>
+                                x.value.Contains(textToSearch, StringComparison.OrdinalIgnoreCase)
+                            )
+                            .Select(x => x.index),
+                    ];
+
+                    filteredNames = [.. filteredIndices.Select(index => chatroomNames[index])];
+                    filteredIds = [.. filteredIndices.Select(index => chatroomIds[index])];
+                    isFiltered = true;
+
+                    bool needsFill = filteredNames.Count < chatroomsListView.Frame.Height;
+                    numFill = Math.Max(0, chatroomsListView.Frame.Height - filteredNames.Count);
+                    IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                    Application.MainLoop.Invoke(action: () =>
+                        chatroomsListView.SetSource(
+                            source: needsFill ? [.. filteredNames, .. filler] : filteredNames
+                        )
+                    );
+                }
+                else
+                {
+                    searchIndicator.Text = string.Empty;
+                    filteredNames = [];
+                    filteredIds = [];
+                    isFiltered = false;
+
+                    bool needsFill = chatroomNames.Count < chatroomsListView.Frame.Height;
+                    numFill = Math.Max(0, chatroomsListView.Frame.Height - chatroomNames.Count);
+                    IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                    Application.MainLoop.Invoke(action: () =>
+                        chatroomsListView.SetSource(
+                            source: needsFill ? [.. chatroomNames, .. filler] : chatroomNames
+                        )
+                    );
+                }
+            };
+
+            window.Enter += (_) => Application.MainLoop.Invoke(action: () => dummyView.SetFocus());
+
+            window.Add(
+                views:
+                [
+                    createChatroomButton,
+                    searchChatroomLabel,
+                    searchChatroomTextField,
+                    searchIndicator,
+                    chatroomsListView,
+                    labelNumberChatrooms,
+                    informationListView,
+                    logOutButton,
+                ]
+            );
         }
 
         private static async Task OnCreateChatroomButtonClicked()
@@ -49,78 +171,26 @@ namespace CpE261FinalProject
         private async void OnUserChatroomsChanged() =>
             Application.MainLoop.Invoke(action: () =>
             {
-                labelNumberChatrooms.Text = $"Chatrooms: {SessionHandler.Chatrooms.Count}";
-                chatroomsListView.SetSource(
-                    source: SessionHandler
-                        .Chatrooms.Select(selector: chatroom => chatroom.chatroom_name)
-                        .ToList()
-                );
-            });
-
-        private void Toggle(bool IsLoggedIn)
-        {
-            //? Isn't this a bit too long?
-            Application.MainLoop.Invoke(action: () =>
-            {
-                window.RemoveAll();
-
-                if (!IsLoggedIn)
-                {
-                    window.Add(view: labelNotLoggedIn);
-                    return;
-                }
-
-                if (!IsLoggedIn)
-                    return;
-
-                // Initialize user's information
-                // Dynamically set the size
-                List<string> information =
+                chatroomNames =
                 [
-                    $"Username: {SessionHandler.Username}",
-                    $"Name: {SessionHandler.Name}",
-                    $"SenderId: {SessionHandler.UserId}",
+                    .. SessionHandler.Chatrooms.Select(chatroom => chatroom.chatroom_name),
                 ];
-                informationListView.SetSource(source: information);
-                informationListView.Height = Dim.Sized(n: information.Count);
-                informationListView.Y = Pos.AnchorEnd(margin: information.Count + 1);
+                chatroomIds =
+                [
+                    .. SessionHandler.Chatrooms.Select(chatroom => chatroom.chatroom_id),
+                ];
 
-                // Dynamically set the Y-position
-                // Initialize chatroom count
-                labelNumberChatrooms.Y = Pos.Top(view: informationListView) - 1;
-                labelNumberChatrooms.Text = $"Chatrooms: {SessionHandler.Chatrooms.Count}";
-
-                // Add an event listener to the chatrooms buttons
-                // Initialize the height
-                chatroomsListView.SetSource(
-                    SessionHandler
-                        .Chatrooms.Select(selector: chatroom => chatroom.chatroom_id)
-                        .ToList()
+                bool needsFill = chatroomNames.Count < chatroomsListView.Frame.Height;
+                numFill = Math.Max(0, chatroomsListView.Frame.Height - chatroomNames.Count);
+                IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                Application.MainLoop.Invoke(action: () =>
+                    chatroomsListView.SetSource(
+                        source: needsFill ? [.. chatroomNames, .. filler] : chatroomNames
+                    )
                 );
-                chatroomsListView.SelectedItemChanged += (_) =>
-                {
-                    int selectedIndex = chatroomsListView.SelectedItem;
-                    string selectedChatroom = SessionHandler.Chatrooms[selectedIndex].chatroom_id;
-                    SessionHandler.CurrentChatroomId = selectedChatroom;
-                };
-                chatroomsListView.Height =
-                    Dim.Fill()
-                    - Dim.Height(view: informationListView)
-                    - Dim.Sized(n: 1)
-                    - Dim.Height(view: logOutButton);
 
-                window.Add(
-                    views:
-                    [
-                        createChatroomButton,
-                        chatroomsListView,
-                        labelNumberChatrooms,
-                        informationListView,
-                        logOutButton,
-                    ]
-                );
+                labelNumberChatrooms.Text = $"Chatrooms: {chatroomIds.Count}";
             });
-        }
 
         public void Show()
         {
@@ -145,16 +215,6 @@ namespace CpE261FinalProject
             ColorScheme = CustomColorScheme.Window,
         };
 
-        private readonly Label labelNotLoggedIn = new()
-        {
-            Text = "Nothing to see here...",
-
-            X = Pos.Center(),
-            Y = Pos.Center(),
-
-            ColorScheme = CustomColorScheme.LabelEmpty,
-        };
-
         private static readonly Button createChatroomButton = new()
         {
             Text = "+ Add Chatroom",
@@ -163,7 +223,33 @@ namespace CpE261FinalProject
 
             Width = Dim.Fill(),
 
+            HotKeySpecifier = (Rune)0xffff,
+
             ColorScheme = CustomColorScheme.Button,
+        };
+
+        private static readonly Label searchChatroomLabel = new()
+        {
+            Text = "Search here:",
+
+            X = Pos.At(n: 0),
+            Y = Pos.At(2),
+        };
+
+        private static readonly TextField searchChatroomTextField = new()
+        {
+            X = Pos.At(n: 0),
+            Y = Pos.Y(view: searchChatroomLabel) + Pos.At(1),
+
+            Width = Dim.Fill(),
+        };
+
+        private static readonly Label searchIndicator = new()
+        {
+            Text = "",
+
+            X = Pos.At(n: 0),
+            Y = Pos.Y(view: searchChatroomTextField) + Pos.At(2),
         };
 
         private static readonly ListView chatroomsListView = new()
@@ -172,7 +258,7 @@ namespace CpE261FinalProject
             // Height = Dim.Fill() - Dim.Height(informationListView) - Dim.Sized(1), dynamically set
 
             X = Pos.At(n: 0),
-            Y = Pos.Bottom(view: createChatroomButton) + Pos.At(n: 1),
+            Y = Pos.Y(view: searchIndicator) + Pos.At(1),
         };
 
         private readonly Label labelNumberChatrooms = new() { X = 0 };
@@ -190,7 +276,9 @@ namespace CpE261FinalProject
             Text = "Log out",
 
             X = Pos.Center(),
-            Y = Pos.Bottom(view: informationListView),
+            Y = Pos.AnchorEnd() + Pos.At(1),
+
+            HotKeySpecifier = (Rune)0xffff,
 
             ColorScheme = CustomColorScheme.Button,
         };
