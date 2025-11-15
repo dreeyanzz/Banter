@@ -15,7 +15,6 @@ namespace CpE261FinalProject
             SessionHandler.IsLoggedInChanged += Toggle;
             SessionHandler.UserChatroomsChanged += (_) => OnUserChatroomsChanged();
             createChatroomButton.Clicked += async () => await OnCreateChatroomButtonClicked();
-
             logOutButton.Clicked += async () => await OnLogOutButtonClicked();
 
             // Initialize
@@ -24,22 +23,6 @@ namespace CpE261FinalProject
 
         private static async Task OnCreateChatroomButtonClicked()
         {
-            // List<string> usernames = ["kakaw3", "arc_hive"];
-
-            // List<string> user_ids = [];
-
-            // foreach (string username in usernames)
-            // {
-            //     string? id = await FirebaseHelper.GetUserIdFromUsername(username: username);
-
-            //     if (string.IsNullOrEmpty(id))
-            //         continue;
-
-            //     user_ids.Add(item: id);
-            // }
-
-            // await FirebaseHelper.CreateChatroom(participants_ids: user_ids);
-
             CreateChatroomWindow.Instance.Show();
         }
 
@@ -63,28 +46,32 @@ namespace CpE261FinalProject
             }
         }
 
-        private async void OnUserChatroomsChanged()
-        {
-            labelNumberChatrooms.Text = $"Chatrooms: {SessionHandler.Chatrooms.Count}";
-            chatroomsListView.SetSource(
-                SessionHandler.Chatrooms.Select(chatroom => chatroom.chatroom_name).ToList()
-            );
-        }
+        private async void OnUserChatroomsChanged() =>
+            Application.MainLoop.Invoke(action: () =>
+            {
+                labelNumberChatrooms.Text = $"Chatrooms: {SessionHandler.Chatrooms.Count}";
+                chatroomsListView.SetSource(
+                    source: SessionHandler
+                        .Chatrooms.Select(selector: chatroom => chatroom.chatroom_name)
+                        .ToList()
+                );
+            });
 
         private void Toggle(bool IsLoggedIn)
         {
             //? Isn't this a bit too long?
-
-            if (!IsLoggedIn)
+            Application.MainLoop.Invoke(action: () =>
             {
                 window.RemoveAll();
-                window.Add(labelNotLoggedIn);
-                return;
-            }
 
-            if (IsLoggedIn)
-            {
-                window.RemoveAll(); // Remove all to reload everything
+                if (!IsLoggedIn)
+                {
+                    window.Add(view: labelNotLoggedIn);
+                    return;
+                }
+
+                if (!IsLoggedIn)
+                    return;
 
                 // Initialize user's information
                 // Dynamically set the size
@@ -94,21 +81,23 @@ namespace CpE261FinalProject
                     $"Name: {SessionHandler.Name}",
                     $"SenderId: {SessionHandler.UserId}",
                 ];
-                informationListView.SetSource(information);
-                informationListView.Height = Dim.Sized(information.Count);
-                informationListView.Y = Pos.AnchorEnd(information.Count + 1);
+                informationListView.SetSource(source: information);
+                informationListView.Height = Dim.Sized(n: information.Count);
+                informationListView.Y = Pos.AnchorEnd(margin: information.Count + 1);
 
                 // Dynamically set the Y-position
                 // Initialize chatroom count
-                labelNumberChatrooms.Y = Pos.Top(informationListView) - 1;
+                labelNumberChatrooms.Y = Pos.Top(view: informationListView) - 1;
                 labelNumberChatrooms.Text = $"Chatrooms: {SessionHandler.Chatrooms.Count}";
 
                 // Add an event listener to the chatrooms buttons
                 // Initialize the height
                 chatroomsListView.SetSource(
-                    SessionHandler.Chatrooms.Select(chatroom => chatroom.chatroom_id).ToList()
+                    SessionHandler
+                        .Chatrooms.Select(selector: chatroom => chatroom.chatroom_id)
+                        .ToList()
                 );
-                chatroomsListView.OpenSelectedItem += (_) =>
+                chatroomsListView.SelectedItemChanged += (_) =>
                 {
                     int selectedIndex = chatroomsListView.SelectedItem;
                     string selectedChatroom = SessionHandler.Chatrooms[selectedIndex].chatroom_id;
@@ -116,9 +105,9 @@ namespace CpE261FinalProject
                 };
                 chatroomsListView.Height =
                     Dim.Fill()
-                    - Dim.Height(informationListView)
-                    - Dim.Sized(1)
-                    - Dim.Height(logOutButton);
+                    - Dim.Height(view: informationListView)
+                    - Dim.Sized(n: 1)
+                    - Dim.Height(view: logOutButton);
 
                 window.Add(
                     views:
@@ -130,7 +119,7 @@ namespace CpE261FinalProject
                         logOutButton,
                     ]
                 );
-            }
+            });
         }
 
         public void Show()
@@ -148,7 +137,7 @@ namespace CpE261FinalProject
             Title = "People",
 
             Height = Dim.Fill(),
-            Width = Dim.Percent(23),
+            Width = Dim.Percent(n: 23),
 
             X = 0,
             Y = 0,
@@ -169,8 +158,8 @@ namespace CpE261FinalProject
         private static readonly Button createChatroomButton = new()
         {
             Text = "+ Add Chatroom",
-            X = 0,
-            Y = 0,
+            X = Pos.At(n: 0),
+            Y = Pos.At(n: 0),
 
             Width = Dim.Fill(),
 
@@ -182,14 +171,14 @@ namespace CpE261FinalProject
             Width = Dim.Fill(),
             // Height = Dim.Fill() - Dim.Height(informationListView) - Dim.Sized(1), dynamically set
 
-            X = Pos.At(0),
-            Y = Pos.Bottom(createChatroomButton) + Pos.At(1),
+            X = Pos.At(n: 0),
+            Y = Pos.Bottom(view: createChatroomButton) + Pos.At(n: 1),
         };
 
         private readonly Label labelNumberChatrooms = new() { X = 0 };
         private static readonly ListView informationListView = new()
         {
-            X = Pos.At(0),
+            X = Pos.At(n: 0),
             // Y = Pos.Percent(75), this can vary so it is not set here
 
             Width = Dim.Fill(),
@@ -201,7 +190,7 @@ namespace CpE261FinalProject
             Text = "Log out",
 
             X = Pos.Center(),
-            Y = Pos.Bottom(informationListView),
+            Y = Pos.Bottom(view: informationListView),
 
             ColorScheme = CustomColorScheme.Button,
         };
