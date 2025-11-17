@@ -34,6 +34,38 @@ namespace CpE261FinalProject
             return null; // field not found
         }
 
+        public static async Task<List<string>> GetChatroomPinnedMessagesIdById(string chatroom_id)
+        {
+            if (string.IsNullOrEmpty(chatroom_id))
+                return [];
+
+            DocumentReference chatroomRef = db.Collection("Chatrooms").Document(chatroom_id);
+            DocumentSnapshot snapshot = await chatroomRef.GetSnapshotAsync();
+
+            if (!snapshot.Exists)
+                return [];
+
+            if (!snapshot.TryGetValue("pinned_messages", out List<string> pinnedMessagesId))
+                return [];
+
+            return pinnedMessagesId;
+        }
+
+        public static async Task<bool> IsChatPinnedById(string chatroom_id, string message_id)
+        {
+            if (string.IsNullOrEmpty(chatroom_id) || string.IsNullOrEmpty(message_id))
+                return false;
+
+            List<string> pinnedMessageIds = await FirebaseHelper.GetChatroomPinnedMessagesIdById(
+                chatroom_id
+            );
+
+            if (!pinnedMessageIds.Contains(message_id))
+                return false;
+
+            return true;
+        }
+
         public static async Task PinChatroomMessage(string chatroom_id, string message_id)
         {
             if (string.IsNullOrEmpty(chatroom_id) || string.IsNullOrEmpty(message_id))

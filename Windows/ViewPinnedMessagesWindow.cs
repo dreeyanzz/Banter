@@ -93,8 +93,6 @@ namespace CpE261FinalProject
             Y = 0,
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private void StartPinnedMessagesListener(string chatroom_id)

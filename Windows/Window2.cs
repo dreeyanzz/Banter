@@ -14,6 +14,7 @@ namespace CpE261FinalProject
         private readonly Dictionary<string, string> currentChatroomParticipants = [];
         private readonly List<string> message_ids = [];
         private readonly List<string> messages = [];
+        private List<string> currentPinnedIds = [];
         private int numFill = 0;
 
         private readonly List<View> chatInputViews;
@@ -61,7 +62,7 @@ namespace CpE261FinalProject
             window.Enter += (_) =>
             {
                 buttonSend.IsDefault = true;
-                Application.MainLoop.Invoke(() => chatBox.SetFocus());
+                Application.MainLoop.Invoke(action: () => chatBox.SetFocus());
             };
             window.Leave += (_) => buttonSend.IsDefault = false;
 
@@ -81,8 +82,8 @@ namespace CpE261FinalProject
                 filtered = [.. messages.Where(entry => entry.Contains(value: textToSearch))];
 
                 bool needsFill = filtered.Count < chatHistory.Frame.Height;
-                numFill = Math.Max(0, chatHistory.Frame.Height - filtered.Count);
-                IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                numFill = Math.Max(val1: 0, val2: chatHistory.Frame.Height - filtered.Count);
+                IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
                 Application.MainLoop.Invoke(action: () =>
                     chatHistory.SetSource(source: needsFill ? [.. filler, .. filtered] : filtered)
                 );
@@ -181,7 +182,7 @@ namespace CpE261FinalProject
             });
 
             StartListener(chatroom_id: chatroom_id);
-            StartChatroomListener(chatroom_id);
+            await StartChatroomListener(chatroom_id: chatroom_id);
 
             Application.MainLoop.Invoke(action: () =>
             {
@@ -315,8 +316,6 @@ namespace CpE261FinalProject
             Y = Pos.Y(view: searchChatLabel),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private readonly Label searchIndicatorLabel = new()
@@ -353,8 +352,6 @@ namespace CpE261FinalProject
 
             IsDefault = true,
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         // TODO: Make this listen to cached
@@ -366,11 +363,11 @@ namespace CpE261FinalProject
 
             Query query = messegesRef.OrderBy(fieldPath: "timestamp");
 
-            _listener = query.Listen(callback: OnSnapshotReceived);
+            _listener = query.Listen(callback: (snapshot) => _ = OnSnapshotReceived(snapshot));
         }
 
         // TODO: Make this listen to cached
-        private void OnSnapshotReceived(QuerySnapshot snapshot)
+        private async Task OnSnapshotReceived(QuerySnapshot snapshot)
         {
             foreach (DocumentChange? change in snapshot.Changes)
             {
@@ -379,13 +376,12 @@ namespace CpE261FinalProject
                 // Handle removals
                 if (change.ChangeType == DocumentChange.Type.Removed)
                 {
-                    int index = message_ids.IndexOf(docId);
+                    int index = message_ids.IndexOf(item: docId);
                     if (index >= 0)
                     {
-                        message_ids.RemoveAt(index);
-                        messages.RemoveAt(index);
+                        message_ids.RemoveAt(index: index);
+                        messages.RemoveAt(index: index);
                     }
-
                     continue;
                 }
 
@@ -394,20 +390,31 @@ namespace CpE261FinalProject
 
                 if (
                     !doc.Exists
-                    || !doc.TryGetValue("sender_id", out string senderId)
-                    || !doc.TryGetValue("text", out string message)
+                    || !doc.TryGetValue(path: "sender_id", value: out string senderId)
+                    || !doc.TryGetValue(path: "text", value: out string message)
                 )
                     continue;
 
-                if (!currentChatroomParticipants.TryGetValue(senderId, out string? senderName))
+                if (
+                    !currentChatroomParticipants.TryGetValue(
+                        key: senderId,
+                        value: out string? senderName
+                    )
+                )
                     senderName = "Unknown User";
 
                 string displayName =
                     senderId == SessionHandler.UserId ? $"{senderName} (me)" : senderName;
 
-                string chatEntry = $"{displayName}: {ProfanityChecker.CensorTextRobust(message)}";
+                bool isPinned = await FirebaseHelper.IsChatPinnedById(
+                    SessionHandler.CurrentChatroomId!,
+                    message_id: change.Document.Id
+                );
 
-                int existingIndex = message_ids.IndexOf(docId);
+                string chatEntry =
+                    $"{displayName}: {ProfanityChecker.CensorTextRobust(text: message)}";
+
+                int existingIndex = message_ids.IndexOf(item: docId);
 
                 if (existingIndex >= 0)
                 {
@@ -417,35 +424,71 @@ namespace CpE261FinalProject
                 else
                 {
                     // New message
-                    message_ids.Add(docId);
-                    messages.Add(chatEntry);
+                    message_ids.Add(item: docId);
+                    messages.Add(item: chatEntry);
                 }
             }
 
             // Rebuild UI with fillers
             bool needsFill = messages.Count < chatHistory.Frame.Height;
-            numFill = Math.Max(0, chatHistory.Frame.Height - messages.Count);
-            IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
-            List<string> finalSource = needsFill ? [.. filler, .. messages] : messages;
+            numFill = Math.Max(val1: 0, val2: chatHistory.Frame.Height - messages.Count);
+            IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
+            chatHistory.SetSource(source: needsFill ? [.. filler, .. messages] : messages);
 
-            chatHistory.SetSource(finalSource);
-
-            Application.MainLoop.Invoke(ScrollToLatestChat);
+            Application.MainLoop.Invoke(action: ScrollToLatestChat);
         }
 
-        private void StartChatroomListener(string chatroom_id)
+        private async Task StartChatroomListener(string chatroom_id)
         {
-            DocumentReference chatroomRef = db.Collection("Chatrooms").Document(chatroom_id);
+            DocumentReference chatroomRef = db.Collection(path: "Chatrooms")
+                .Document(path: chatroom_id);
 
             chatroomListener = chatroomRef.Listen(
                 callback: async (_) =>
                 {
-                    string newChatroomName = await FirebaseHelper.GetChatroomNameById(chatroom_id);
+                    string newChatroomName = await FirebaseHelper.GetChatroomNameById(
+                        chatroom_id: chatroom_id
+                    );
 
-                    Application.MainLoop.Invoke(() =>
+                    currentPinnedIds = await FirebaseHelper.GetChatroomPinnedMessagesIdById(
+                        chatroom_id
+                    );
+
+                    Application.MainLoop.Invoke(async () =>
                     {
                         chatroomName.Text = newChatroomName;
                         chatroomName.X = Pos.Center();
+
+                        List<string> pinnedMessagesId =
+                            await FirebaseHelper.GetChatroomPinnedMessagesIdById(chatroom_id);
+
+                        for (int i = 0; i < messages.Count; i++)
+                        {
+                            bool isPinned = currentPinnedIds.Contains(message_ids[i]);
+                            string messageEntry = messages[i];
+
+                            if (string.IsNullOrEmpty(messageEntry))
+                                continue;
+
+                            char lastCharacter = messageEntry[^1];
+
+                            if (isPinned)
+                            {
+                                if (lastCharacter == '•')
+                                    continue;
+
+                                messages[i] += "•";
+                            }
+                            else if (lastCharacter == '•')
+                                messages[i] = messageEntry[..^1];
+                        }
+
+                        bool needsFill = messages.Count < chatHistory.Frame.Height;
+                        numFill = Math.Max(0, chatHistory.Frame.Height - messages.Count);
+                        IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                        chatHistory.SetSource(
+                            source: needsFill ? [.. filler, .. messages] : messages
+                        );
                     });
                 }
             );

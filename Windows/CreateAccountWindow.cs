@@ -287,8 +287,6 @@ namespace CpE261FinalProject
             Y = Pos.Bottom(repeatPasswordTextField) + Pos.At(1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private readonly Label nameLabel = new()
@@ -335,8 +333,6 @@ namespace CpE261FinalProject
             Y = Pos.Bottom(emailTextField) + Pos.At(1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private readonly Button backButton = new()
@@ -347,8 +343,6 @@ namespace CpE261FinalProject
             Y = Pos.Bottom(emailTextField) + Pos.At(1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
     }
 }

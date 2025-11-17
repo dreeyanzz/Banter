@@ -223,8 +223,6 @@ namespace CpE261FinalProject
             Width = Dim.Fill(),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private static readonly Label searchChatroomLabel = new()
@@ -275,11 +273,9 @@ namespace CpE261FinalProject
             Text = "Log out",
 
             X = Pos.Center(),
-            Y = Pos.AnchorEnd() + Pos.At(1),
+            Y = Pos.AnchorEnd() - Pos.At(1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
     }
 }

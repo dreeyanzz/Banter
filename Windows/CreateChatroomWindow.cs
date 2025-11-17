@@ -148,8 +148,6 @@ namespace CpE261FinalProject
             Y = Pos.At(0),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private readonly ListView participantsListView = new()
@@ -185,8 +183,6 @@ namespace CpE261FinalProject
 
             HotKeySpecifier = (Rune)0xffff,
             IsDefault = true,
-
-            ColorScheme = CustomColorScheme.Button,
         };
         private static readonly Button removeLastButton = new()
         {
@@ -196,8 +192,6 @@ namespace CpE261FinalProject
             Y = Pos.AnchorEnd() - Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
         private readonly Button clearButton = new()
         {
@@ -207,8 +201,6 @@ namespace CpE261FinalProject
             Y = Pos.AnchorEnd() - Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
         private readonly Button createButton = new()
         {
@@ -218,8 +210,6 @@ namespace CpE261FinalProject
             Y = Pos.AnchorEnd() - Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
     }
 }

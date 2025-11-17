@@ -133,8 +133,6 @@ namespace CpE261FinalProject
             Y = Pos.Center() - Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private static readonly Button changeChatroomNameButton = new()
@@ -145,8 +143,6 @@ namespace CpE261FinalProject
             Y = Pos.Y(view: clearMessagesButton) + Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private static readonly Button deleteChatroomButton = new()
@@ -157,8 +153,6 @@ namespace CpE261FinalProject
             Y = Pos.AnchorEnd() - Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private static readonly Button leaveChatroomButton = new()
@@ -169,8 +163,6 @@ namespace CpE261FinalProject
             Y = Pos.Y(view: deleteChatroomButton) - Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
     }
 }

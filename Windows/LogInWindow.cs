@@ -239,8 +239,6 @@ namespace CpE261FinalProject
             Y = Pos.Center() + Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private readonly Button createAccountButton = new()
@@ -250,7 +248,7 @@ namespace CpE261FinalProject
             X = Pos.Center(),
             Y = Pos.Center() + Pos.At(n: 3),
 
-            ColorScheme = CustomColorScheme.Button,
+            HotKeySpecifier = (Rune)0xffff,
         };
     }
 }

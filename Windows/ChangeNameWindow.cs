@@ -16,7 +16,13 @@ namespace CpE261FinalProject
             closeButton.Clicked += Hide;
             setButton.Clicked += async () => await OnSetButtonClicked();
 
-            window.Leave += (_) => Hide();
+            window.Enter += (_) => setButton.IsDefault = true;
+
+            window.Leave += (_) =>
+            {
+                setButton.IsDefault = false;
+                Hide();
+            };
             window.Enter += (_) => Application.MainLoop.Invoke(action: () => dummyView.SetFocus());
 
             window.Add(views: [newNameTextField, setButton, closeButton]);
@@ -69,8 +75,6 @@ namespace CpE261FinalProject
             Y = Pos.At(0),
 
             HotKeySpecifier = (Rune)0xffff,
-
-            ColorScheme = CustomColorScheme.Button,
         };
 
         private readonly TextField newNameTextField = new()
