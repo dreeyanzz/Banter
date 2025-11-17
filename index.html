@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Banter Presentation</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Fira+Code&display=swap");
+
+      :root {
+        --bg: #1a1a1a;
+        --card-bg: #2a2a2a;
+        --code-bg: #111;
+        --text: #dcdcdc;
+        --text-muted: #888;
+        --accent: #00bfff;
+        --green: #2ecc71;
+        --red: #e74c3c;
+        --yellow: #f1c40f;
+        --orange: #e67e22;
+        --purple: #9b59b6;
+      }
+
+      .side-by-side-layout {
+        display: flex;
+        flex-wrap: wrap; /* Allows stacking on small screens */
+        gap: 30px;
+        width: 100%;
+        max-width: 900px;
+        align-items: flex-start; /* Align tops */
+      }
+      .side-by-side-layout .left-col {
+        flex: 1;
+        min-width: 300px; /* For stacking */
+      }
+      .side-by-side-layout .right-col {
+        flex: 2; /* Make code block wider */
+        width: 100%;
+      }
+      .side-by-side-layout .right-col pre {
+        height: 100%;
+        margin: 0;
+      }
+      .side-by-side-layout .left-col h2,
+      .side-by-side-layout .left-col p {
+          margin: 0; /* Remove default margins */
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 0;
+        line-height: 1.7;
+      }
+
+      section {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+        box-sizing: border-box;
+        border-bottom: 2px solid var(--card-bg);
+      }
+
+      section.title {
+        background-color: var(--bg);
+        text-align: center;
+      }
+      section.inverted {
+        background-color: var(--accent);
+        color: var(--bg);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-weight: 700;
+      }
+      h1 {
+        font-size: 5rem;
+        color: white;
+      }
+      h1.subtitle {
+        font-size: 2rem;
+        color: var(--accent);
+        margin-top: 10px;
+      }
+      h2 {
+        font-size: 3rem;
+        color: var(--accent);
+        margin-bottom: 30px;
+      }
+      section.inverted h2,
+      section.inverted h3 {
+        color: var(--bg);
+      }
+
+      p,
+      ul {
+        font-size: 1.25rem;
+        max-width: 900px;
+        width: 100%;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      li {
+        background-color: var(--card-bg);
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        border-left: 4px solid var(--accent);
+      }
+      li.no-style {
+        background: none;
+        border: none;
+        padding: 0;
+      }
+
+      code {
+        font-family: "Fira Code", monospace;
+        background-color: var(--code-bg);
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-size: 1.05rem;
+      }
+
+      .cite {
+        font-family: "Fira Code", monospace;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-left: 10px;
+      }
+
+      /* Test Case Cards */
+      .test-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+        max-width: 900px;
+      }
+      .test-card {
+        background: var(--card-bg);
+        border-radius: 10px;
+        padding: 20px;
+        border-left: 5px solid var(--red);
+      }
+      .test-card.pass {
+        border-left-color: var(--green);
+      }
+      .test-card p {
+        margin: 5px 0;
+      }
+
+      /* Code blocks */
+      pre {
+        background-color: var(--code-bg);
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+        max-width: 900px;
+        width: 100%;
+        overflow-x: auto;
+      }
+      pre code {
+        color: var(--text);
+        background: transparent;
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+      .code-title {
+        font-size: 1rem;
+        color: var(--text-muted);
+        font-family: "Fira Code", monospace;
+        margin-bottom: 8px;
+        max-width: 900px;
+        width: 100%;
+      }
+
+      .code-keyword {
+        color: var(--accent);
+      }
+      .code-type {
+        color: var(--green);
+      }
+      .code-literal {
+        color: var(--orange);
+      }
+      .code-comment {
+        color: var(--text-muted);
+      }
+      .code-method {
+        color: var(--yellow);
+      }
+      .code-var {
+        color: var(--text);
+      }
+      .code-punc {
+        color: var(--purple);
+      }
+
+      /* Side-by-side schema layout */
+      .schema-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        width: 100%;
+        max-width: 900px;
+      }
+      .schema-container > div {
+        flex: 1;
+        min-width: 300px; /* Allows stacking on small screens */
+      }
+      .schema-container .code-title {
+        width: 100%;
+      }
+      .schema-container pre {
+        width: 100%;
+        height: 100%; /* Makes boxes same height */
+      }
+      table.schema-table td pre {
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box; /* Ensures padding is included */
+      }
+
+      /* New Table Styles */
+      table.schema-table {
+        width: 100%;
+        max-width: 900px;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      table.schema-table th, 
+      table.schema-table td {
+        border: 1px solid var(--card-bg);
+        padding: 12px 15px;
+        text-align: left;
+        vertical-align: top;
+      }
+      table.schema-table th {
+        background-color: var(--card-bg);
+        color: var(--accent);
+        font-family: 'Fira Code', monospace;
+      }
+      table.schema-table td .code-type { 
+        color: var(--green);
+        font-family: 'Fira Code', monospace;
+      }
+      table.schema-table td .code-comment {
+          color: var(--text-muted);
+          font-size: 0.9rem;
+      }
+      
+      /* Spark Section Styling */
+      #spark-section h3 {
+          font-size: 1.75rem;
+          color: var(--text-muted);
+          margin-bottom: 30px;
+      }
+      #spark-section blockquote {
+          font-size: 2.2rem;
+          line-height: 1.6;
+          max-width: 900px;
+          border-left: 5px solid var(--accent);
+          padding-left: 30px;
+          margin: 0;
+      }
+      #spark-section blockquote p {
+          margin: 0 0 1.5rem 0;
+      }
+      #spark-section blockquote strong {
+          color: var(--yellow); 
+          font-size: 2.4rem; 
+          font-weight: 700;
+      }
+
+
+      /* small responsive tweak so huge h1 doesn't overflow tiny windows */
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 3rem;
+        }
+        h2 {
+          font-size: 2rem;
+        }
+        p,
+        ul {
+          font-size: 1rem;
+          padding: 0 10px;
+        }
+        .schema-container {
+            flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="title">
+      <h1>Banter</h1>
+      <h1 class="subtitle">A Real-Time TUI Chat Application</h1>
+      <p style="font-size: 1.5rem; margin-top: 50px">Adrian Seth Tabotabo</p>
+      <p style="color: var(--text-muted); margin-top: 100px">
+        (Use full screen for best experience, use arrow-keys for navigation)
+      </p>
+    </section>
+
+    <section>
+      <h2>What is Banter?</h2>
+      <ul>
+        <li>A fully functional, real-time, multi-user chat application.</li>
+        <li>
+          Runs 100% in the console as a
+          <strong>TUI (Text-based User Interface)</strong>.
+        </li>
+        <li>
+          Backend powered by <strong>Google Cloud Firestore</strong> for live
+          data sync.
+        </li>
+        <li>
+          <strong>Target Audience:</strong> An "open for all" app for simple,
+          fast, and accessible communication.
+        </li>
+      </ul>
+      <p>
+        <strong>Core Tech:</strong> <code>C# (.NET)</code> |
+        <code>Google Firestore</code> | <code>Terminal.Gui</code> |
+        <code>LiteDB</code>
+      </p>
+    </section>
+
+    <section>
+      <h2>Installation & Setup</h2>
+      <ul>
+        <li><strong>Platform:</strong> Windows 10 / 11</li>
+        <li>
+          <strong>Installation:</strong> Distributed as a
+          <strong>pre-compiled executable</strong>.
+        </li>
+        <li>
+          <strong>Requirements:</strong><br />&bull; .NET 10 Runtime<br />&bull;
+          A stable internet connection<br />&bull;
+          <strong>Mouse is highly recommended!</strong>
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Key Features (1/2)</h2>
+      <ul>
+        <li>
+          <strong>Real-time Chat:</strong> Instant messaging via live Firestore
+          listeners.
+        </li>
+        <li>
+          <strong>Account System:</strong> Full user registration (with
+          validation) and login.
+        </li>
+        <li>
+          <strong>Group & 1:1 Chatrooms:</strong> Automatically handles
+          multi-participant and individual chats.
+        </li>
+        <li class="no-style">
+          <p class="code-title" style="margin-top: 20px">
+            Code Example: Real-time Message Listener
+          </p>
+          <pre><code><span class="code-keyword">private void</span> <span class="code-method">StartListener</span><span class="code-punc">(</span><span class="code-type">string</span> <span class="code-var">chatroom_id</span><span class="code-punc">)</span>
+<span class="code-punc">{</span>
+    <span class="code-type">CollectionReference</span> <span class="code-var">messegesRef</span> <span class="code-punc">=</span> <span class="code-var">db</span><span class="code-punc">.</span><span class="code-method">Collection</span><span class="code-punc">(</span><span class="code-literal">"Chatrooms"</span><span class="code-punc">)</span>
+        <span class="code-punc">.</span><span class="code-method">Document</span><span class="code-punc">(</span><span class="code-var">chatroom_id</span><span class="code-punc">)</span>
+        <span class="code-punc">.</span><span class="code-method">Collection</span><span class="code-punc">(</span><span class="code-literal">"messages"</span><span class="code-punc">);</span>
+
+    <span class="code-type">Query</span> <span class="code-var">query</span> <span class="code-punc">=</span> <span class="code-var">messegesRef</span><span class="code-punc">.</span><span class="code-method">OrderBy</span><span class="code-punc">(</span><span class="code-literal">"timestamp"</span><span class="code-punc">);</span>
+
+    <span class="code-var">_listener</span> <span class="code-punc">=</span> <span class="code-var">query</span><span class="code-punc">.</span><span class="code-method">Listen</span><span class="code-punc">(</span><span class="code-var">callback:</span> <span class="code-method">OnSnapshotReceived</span><span class="code-punc">);</span>
+<span class="code-punc">}</span></code></pre>
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Key Features (2/2)</h2>
+      <ul>
+        <li>
+          <strong>Robust Profanity Filtering:</strong> Custom
+          <code>ProfanityChecker</code> censors messages, including leetspeak.
+        </li>
+        <li>
+          <strong>Admin & Chat Tools:</strong><br />&bull; Message Pinning<br />&bull;
+          Admin Controls (Delete Chat, Clear Messages)<br />&bull; Group
+          Management (Leave Chat, Rename Chat)
+        </li>
+        <li>
+          <strong>Modern TUI:</strong> Full keyboard
+          <strong>and mouse</strong> navigation.
+        </li>
+      </ul>
+    </section>
+
+    <section>
+    <h2>Key Features — Code Example</h2>
+    <p class="code-title" style="margin-top:20px;">Applying Profanity Filter <span class="cite"></span></p>
+    <pre><code><span class="code-comment">// ... inside OnSnapshotReceived ...</span>
+<span class="code-keyword">if</span> <span class="code-punc">(...)</span>
+    <span class="code-var">senderName</span> <span class="code-punc">=</span> <span class="code-literal">"Unknown User"</span><span class="code-punc">;</span>
+
+<span class="code-type">string</span> <span class="code-var">displayName</span> <span class="code-punc">=</span>
+    <span class="code-var">senderId</span> <span class="code-punc">==</span> <span class="code-var">SessionHandler</span><span class="code-punc">.</span><span class="code-var">UserId</span> <span class="code-punc">?</span> <span class="code-literal">$"</span><span class="code-punc">{</span><span class="code-var">senderName</span><span class="code-punc">}</span><span class="code-literal"> (me)"</span> <span class="code-punc">:</span> <span class="code-var">senderName</span><span class="code-punc">;</span>
+
+<span class="code-type">string</span> <span class="code-var">chatEntry</span> <span class="code-punc">=</span> <span class="code-literal">$"</span><span class="code-punc">{</span><span class="code-var">displayName</span><span class="code-punc">}</span><span class="code-literal">: </span><span class="code-punc">{</span><span class="code-var">ProfanityChecker</span><span class="code-punc">.</span><span class="code-method">CensorTextRobust</span><span class="code-punc">(</span><span class="code-var">message</span><span class="code-punc">)}</span><span class="code-literal">"</span><span class="code-punc">;</span></span>
+<span class="code-comment">// ...</span></code></pre>
+</section>
+
+
+    <section>
+      <h2>Data & Storage</h2>
+      <h3>A hybrid approach for cloud, local, and static data.</h3>
+      <ul>
+        <li>
+          <strong>1. Google Firestore (Cloud)</strong><br />NoSQL database for
+          all live data.<br /><strong>Stores:</strong> <code>Users</code>,
+          <code>Chatrooms</code>, <code>Messages</code>, Admins, Pinned IDs.
+        </li>
+        <li>
+          <strong>2. LiteDB (Local Cache)</strong><br />Lightweight local
+          <code>Cache.db</code>.<br /><strong>Stores:</strong> Currently caches
+          <code>User</code> objects for faster lookups.
+        </li>
+        <li>
+          <strong>3. .txt File Handling (Static)</strong><br />Used to load
+          static assets.<br /><strong>Stores:</strong>
+          <code>BanterLogo.txt</code> is read from disk for the login screen.
+        </li>
+      </ul>
+    </section>
+    
+    <section>
+      <div class="side-by-side-layout">
+
+        <div class="left-col">
+          <h2>Project Source Structure</h2>
+          <p class="code-title">Filtered Source Tree</p>
+        </div>
+
+        <div class="right-col">
+          <pre><code>
+C:.
+|   .gitignore
+|   BanterLogo.txt
+|   CpE261FinalProject.csproj
+|   Program.cs
+|   Schema.txt
+|
++---Utilities
+|       CachingOperations.cs
+|       ClassWrappers.cs
+|       CustomColorScheme.cs
+|       FirebaseHelper.cs
+|       FirestoreManager.cs
+|       Interfaces.cs
+|       Models.cs
+|       ProfanityChecker.cs
+|       SessionHandler.cs
+|       Validator.cs
+|       WindowHelper.cs
+|
+\---Windows
+        AbstractWindow.cs
+        ChangeNameWindow.cs
+        CreateAccountWindow.cs
+        CreateChatroomWindow.cs
+        LogInWindow.cs
+        ViewPinnedMessagesWindow.cs
+        Window1.cs
+        Window2.cs
+        Window3.cs
+          </code></pre>
+        </div>
+
+      </div>
+    </section>
+
+    <section>
+      <h2>Firebase Database Schema</h2>
+      <div class="schema-container">
+          
+          <div>
+            <p class="code-title">/Users/{userId}</p>
+            <pre><code>
+{
+  "name": "Adrian Seth...",
+  "username": "dreeyanzz",
+  "email": "adriangwapoz125@...",
+  "password": "scarara",
+  "chatrooms": [
+    "AyELCpLJgYy3TG0JedBH"
+  ]
+}
+            </code></pre>
+          </div>
+          
+          <div>
+            <p class="code-title">/Chatrooms/{chatroomId}</p>
+            <pre><code>
+{
+  "chatroom_name": "American Rejects",
+  "type": "group",
+  "participants": [...],
+  "admins": [...],
+  "pinned_messages": [...],
+
+  "messages": { (subcollection)
+    "{messageId}": {
+      "sender_id": "ZzWLD...",
+      "text": "asd123123",
+      "timestamp": ...
+    }
+  }
+}
+            </code></pre>
+          </div>
+
+      </div>
+    </section>
+
+    <section>
+      <h2>Database Schema: /Users</h2>
+      
+      <p class="code-title" style="width:100%; max-width:900px;">Collection: /Users</p>
+      <table class="schema-table">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>Data Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>name</td>
+            <td><span class="code-type">string</span></td>
+            <td>User's full name</td>
+          </tr>
+          <tr>
+            <td>username</td>
+            <td><span class="code-type">string</span></td>
+            <td>User's unique public username</td>
+          </tr>
+          <tr>
+            <td>email</td>
+            <td><span class="code-type">string</span></td>
+            <td>User's private email address</td>
+          </tr>
+          <tr>
+            <td>password</td>
+            <td><span class="code-type">string</span></td>
+            <td class="code-comment">User's login password (plaintext)</td>
+          </tr>
+          <tr>
+            <td>chatrooms</td>
+            <td><span class="code-type">Array&lt;string&gt;</span></td>
+            <td>List of Chatroom IDs the user is part of</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Database Schema: /Chatrooms</h2>
+
+      <p class="code-title" style="width:100%; max-width:900px;">Collection: /Chatrooms</p>
+      <table class="schema-table">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>Data Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>chatroom_name</td>
+            <td><span class="code-type">string</span></td>
+            <td>Display name of the chat (e.g., "American Rejects")</td>
+          </tr>
+          <tr>
+            <td>type</td>
+            <td><span class="code-type">string</span></td>
+            <td class="code-comment">"group" or "individual"</td>
+          </tr>
+          <tr>
+            <td>participants</td>
+            <td><span class="code-type">Array&lt;string&gt;</span></td>
+            <td>List of User IDs in the chat</td>
+          </tr>
+          <tr>
+            <td>admins</td>
+            <td><span class="code-type">Array&lt;string&gt;</span></td>
+            <td>List of User IDs with admin privileges</td>
+          </tr>
+          <tr>
+            <td>pinned_messages</td>
+            <td><span class="code-type">Array&lt;string&gt;</span></td>
+            <td class="code-comment">List of Message IDs that are pinned</td>
+          </tr>
+          <tr>
+            <td>messages</td>
+            <td><span class="code-type">Subcollection</span></td>
+            <td class="code-comment">Contains the actual chat messages (See below)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Database Schema: Messages</h2>
+
+      <p class="code-title" style="width:100%; max-width:900px;">Subcollection: /Chatrooms/{id}/messages</p>
+      <table class="schema-table">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>Data Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>sender_id</td>
+            <td><span class="code-type">string</span></td>
+            <td>The User ID of the participant who sent the message</td>
+          </tr>
+          <tr>
+            <td>text</td>
+            <td><span class="code-type">string</span></td>
+            <td>The text content of the message</td>
+          </tr>
+          <tr>
+            <td>timestamp</td>
+            <td><span class="code-type">Timestamp</span></td>
+            <td>The server-side timestamp of when the message was sent</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Challenges & Solutions</h2>
+      <ul>
+        <li>
+          <strong>Challenge 1: Testing Real-time Features</strong><br /><strong
+            >Problem:</strong
+          >
+          Slow internet made testing multi-user features difficult.<br /><strong
+            >Solution:</strong
+          >
+          Recruited classmates (Zedric Camilotes, Gabriel Castaneda) for
+          collaborative E2E testing.
+        </li>
+        <li>
+          <strong>Challenge 2: Firebase Read/Write Limits</strong><br /><strong
+            >Problem:</strong
+          >
+          Firestore quotas can be an issue for a busy chat app.<br /><strong
+            >Solution:</strong
+          >
+          Designed efficient listeners and planned for robust local caching.
+        </li>
+      </ul>
+    </section>
+
+    <section class="inverted">
+      <h2>Testing & Validation</h2>
+      <h3>A multi-layered strategy to ensure stability.</h3>
+      <ul>
+        <li
+          style="
+            background-color: #f0f0f0;
+            color: #1a1a1a;
+            border-color: #1a1a1a;
+          "
+        >
+          <strong>Method 1: Manual Feature Testing</strong> (Solo)
+        </li>
+        <li
+          style="
+            background-color: #f0f0f0;
+            color: #1a1a1a;
+            border-color: #1a1a1a;
+          "
+        >
+          <strong>Method 2: Collaborative E2E Testing</strong> (with Zedric &
+          Gabriel)
+        </li>
+        <li
+          style="
+            background-color: #f0f0f0;
+            color: #1a1a1a;
+            border-color: #1a1a1a;
+          "
+        >
+          <strong>Method 3: Real-time Database Validation</strong>
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Testing (Test Cases)</h2>
+      <div class="test-wrapper">
+        <div class="test-card">
+          <p><strong>Authentication:</strong></p>
+          <p>
+            <code>FAIL</code> » Tried login with incorrect username/password.
+          </p>
+          <p style="color: var(--green)">
+            <code>PASS</code> » Error message shown, access denied.
+          </p>
+        </div>
+
+        <div class="test-card">
+          <p><strong>Registration:</strong></p>
+          <p>
+            <code>FAIL</code> » Tried creating account with taken username,
+            mismatched passwords, invalid email.
+          </p>
+          <p style="color: var(--green)">
+            <code>PASS</code> » All validation checks handled the errors
+            gracefully.
+          </p>
+        </div>
+
+        <div class="test-card pass">
+          <p><strong>Admin Functionality:</strong></p>
+          <p><code>TEST</code> » As admin, deleted a group chat.</p>
+          <p>
+            <code>PASS</code> » Confirmed with collaborators that the chat was
+            instantly removed.
+          </p>
+        </div>
+      </div>
+    </section>
+    
+    <section>
+      <h2>Limitations & Known Issues</h2>
+      <ul>
+        <li>
+          <strong>Heavy Network Reliance:</strong> The app requires a constant,
+          stable internet connection. Robust offline caching (for messages) is
+          not yet implemented.
+        </li>
+        <li>
+          <strong>No Message Editing/Deleting:</strong> Users cannot edit or
+          delete individual messages they have sent.
+        </li>
+        <li>
+          <strong>Basic Admin Controls:</strong> Admin powers are limited to
+          deleting the chat or changing the name, not managing participants (e.g.,
+          kicking users).
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Future Enhancements</h2>
+      <h3 style="font-size: 1.5rem; color: var(--text-muted); margin-bottom: 20px;">
+        (Planned features to mitigate known limitations)
+      </h3>
+      <ul>
+        <li>
+          <strong>Enhanced Session Caching</strong><br />&bull; Cache
+          participant info & recent messages on login.<br />&bull; Reduce
+          Firestore reads.<br />&bull; Clear cache on logout.
+        </li>
+        <li>
+          <strong>New Chat Features</strong><br />&bull; Participant
+          Nicknames<br />&bull; Read/Seen Indicators<br />&bull; <strong>Message Editing & Deleting</strong>
+        </li>
+        <li>
+            <strong>New Admin Controls</strong><br />&bull; <strong>Manage participants (kick, promote)</strong>
+        </li>
+        <li>
+          <strong>New Media Features</strong><br />&bull; Video Call Integration
+        </li>
+      </ul>
+    </section>
+
+    <section class="inverted">
+      <h2>Conclusion & Key Learnings</h2>
+      <h3>(1/2) - Asynchronous C#</h3>
+      <p>
+        Essential for managing network requests to Firebase without freezing the
+        UI.
+      </p>
+
+      <p class="code-title" style="margin-top: 20px">
+        Code Example: Async Login Button Click
+      </p>
+      <pre><code><span class="code-keyword">private async void</span> <span class="code-method">OnLogInButtonClicked</span><span class="code-punc">()</span>
+<span class="code-punc">{</span>
+    <span class="code-comment">// ... get username/password ...</span>
+
+    <span class="code-var">logInButton</span><span class="code-punc">.</span><span class="code-var">Text</span> <span class="code-punc">=</span> <span class="code-literal">"Logging in..."</span><span class="code-punc">;</span>
+    <span class="code-method">SetInteractables</span><span class="code-punc">(</span><span class="code-keyword">false</span><span class="code-punc">);</span>
+
+    <span class="code-type">string</span><span class="code-punc">?</span> <span class="code-var">user_id</span> <span class="code-punc">=</span> <span class="code-keyword">await</span> <span class="code-var">FirebaseHelper</span><span class="code-punc">.</span><span class="code-method">GetUserIdFromUsername</span><span class="code-punc">(</span><span class="code-var">inputUsername</span><span class="code-punc">);</span>
+    <span class="code-keyword">if</span> <span class="code-punc">(</span><span class="code-var">user_id</span> <span class="code-punc">==</span> <span class="code-keyword">null</span><span class="code-punc">)</span>
+    <span class="code-punc">{</span>
+        <span class="code-comment">// ... show error ...</span>
+        <span class="code-keyword">return</span><span class="code-punc">;</span>
+    <span class="code-punc">}</span>
+
+    <span class="code-comment">// ... get user info, set session, etc. ...</span>
+    <span class="code-keyword">await</span> <span class="code-var">SessionHandler</span><span class="code-punc">.</span><span class="code-method">StartChatroomsListener</span><span class="code-punc">();</span>
+<span class="code-punc">}</span></code></pre>
+    </section>
+
+    <section class="inverted">
+  <h2>Conclusion & Key Learnings</h2>
+  <h3>(2/2) - Event-Driven Architecture</h3>
+  <p>
+    Used C# events in
+    <code
+      style="
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.15);
+        padding: 3px 6px;
+        border-radius: 4px;
+      "
+    >
+      SessionHandler</code
+    >
+    to decouple code, allowing windows to react to state changes.
+  </p>
+
+  <p class="code-title" style="margin-top: 20px">
+    Code Example: Defining the Event
+  </p>
+  <pre><code><span class="code-keyword">public static class</span> <span class="code-type">SessionHandler</span>
+<span class="code-punc">{</span>
+    <span class="code-comment">// ... other properties ...</span>
+    <span class="code-keyword">public static event</span> <span class="code-type">Action</span><span class="code-punc">&lt;</span><span class="code-type">string</span><span class="code-punc">?&gt;?</span> <span class="code-var">CurrentChatroomChanged</span><span class="code-punc">;</span>
+    <span class="code-comment">// ...</span>
+<span class="code-punc">}</span></code></pre>
+
+  <p class="code-title" style="margin-top: 20px">
+    Code Example: Subscribing to the Event
+  </p>
+  <pre><code><span class="code-keyword">private</span> <span class="code-method">Window2</span><span class="code-punc">()</span>
+<span class="code-punc">{</span>
+    <span class="code-comment">// ...</span>
+    <span class="code-var">SessionHandler</span><span class="code-punc">.</span><span class="code-var">CurrentChatroomChanged</span> <span class="code-punc">+=</span> <span class="code-method">OnChatroomChanged</span><span class="code-punc">;</span>
+    <span class="code-var">SessionHandler</span><span class="code-punc">.</span><span class="code-var">IsLoggedInChanged</span> <span class="code-punc">+=</span> <span class="code-method">OnLogInChanged</span><span class="code-punc">;</span>
+    <span class="code-comment">// ...</span>
+<span class="code-punc">}</span></code></pre>
+</section>
+
+    <section id="spark-section">
+      <h2>The "Spark"</h2>
+      <h3 style="font-size: 1.75rem; color: var(--text-muted); margin-bottom: 30px;">
+        My Most Impactful Discovery
+      </h3>
+      
+      <blockquote 
+        style="
+          font-size: 2.2rem; 
+          line-height: 1.6; 
+          font-weight: 400; 
+          max-width: 900px; 
+          border-left: 5px solid var(--accent); 
+          padding-left: 30px; 
+          margin: 0;
+        "
+      >
+        <p style="margin: 0 0 1.5rem 0;">
+          The most surprising discovery was that
+          <strong style="color: var(--yellow); font-size: 2.4rem; font-weight: 700;">
+            a terminal app could be interacted with using a mouse.
+          </strong>
+        </p>
+        <p style="margin: 0;">
+          That single <code>Terminal.Gui</code> feature was the inspiration for
+          the project. A chat app is hard to navigate with just a keyboard, and
+          this "sparked" the interest to build Banter.
+        </p>
+      </blockquote>
+    </section>
+
+    <section class="title">
+      <h2>References</h2>
+      <p>Google Firestore Documentation</p>
+      <p>Terminal.Gui (gui.cs) Project Page</p>
+      <p>LiteDB Documentation</p>
+
+      <h2 style="margin-top: 80px">Thank You</h2>
+    </section>
+
+    <script>
+      (function () {
+        const sections = Array.from(document.querySelectorAll("section"));
+        let locked = false;
+        const lockDuration = 900; // ms, cinematic smooth
+
+        function getCurrentIndex() {
+          // choose the section whose top is closest to the viewport top (abs distance)
+          const distances = sections.map((sec, i) => {
+            const rect = sec.getBoundingClientRect();
+            return { i, dist: Math.abs(rect.top) };
+          });
+          distances.sort((a, b) => a.dist - b.dist);
+          return distances[0].i;
+        }
+
+        function goTo(index) {
+          if (index < 0) index = 0;
+          if (index >= sections.length) index = sections.length - 1;
+          locked = true;
+          sections[index].scrollIntoView({ behavior: "smooth" });
+          setTimeout(() => (locked = false), lockDuration);
+        }
+
+        function handleKey(e) {
+          // keys we want to handle
+          const keys = [
+            "ArrowDown",
+            "ArrowUp",
+            "PageDown",
+            "PageUp",
+            "Home",
+            "End",
+            "ArrowLeft",
+            "ArrowRight",
+            " ",
+          ];
+          if (!keys.includes(e.key)) return;
+
+          // prevent default scrolling when we handle it
+          e.preventDefault();
+
+          if (locked) return;
+
+          const current = getCurrentIndex();
+
+          if (
+            e.key === "ArrowDown" ||
+            e.key === "PageDown" ||
+            e.key === "ArrowRight" ||
+            e.key === " "
+          ) {
+            goTo(current + 1);
+          } else if (
+            e.key === "ArrowUp" ||
+            e.key === "PageUp" ||
+            e.key === "ArrowLeft"
+          ) {
+            goTo(current - 1);
+          } else if (e.key === "Home") {
+            goTo(0);
+          } else if (e.key === "End") {
+            goTo(sections.length - 1);
+          }
+        }
+
+        // attach listener
+        document.addEventListener("keydown", handleKey, { passive: false });
+
+        // a helpful UX nicety: ensure the page always snaps to a section after manual scroll stops
+        let scrollTimeout = null;
+        window.addEventListener("scroll", () => {
+          if (locked) return;
+          clearTimeout(scrollTimeout);
+          scrollTimeout = setTimeout(() => {
+            const idx = getCurrentIndex();
+            sections[idx].scrollIntoView({ behavior: "smooth" });
+          }, 250);
+        });
+      })();
+    </script>
+  </body>
+</html>
