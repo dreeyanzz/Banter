@@ -183,6 +183,7 @@ namespace CpE261FinalProject
             "pisting yawa", // Stronger phrase meaning "damned devil" or "fucking devil"
             "pota", // Derived from Spanish/Tagalog "puta" (whore)
             "peste", // Meaning "pest," used as a curse
+            "otin",
             // Insults and Derogatory Terms
             "libog", // Meaning "horny" or "lustful"
             "buang", // Meaning "crazy" or "insane," often used as a light insult
@@ -231,6 +232,10 @@ namespace CpE261FinalProject
             { '!', 'i' },
             { '$', 's' },
             { '@', 'a' },
+            { 'o', 'u' },
+            { 'u', 'o' },
+            { 'i', 'e' },
+            { 'e', 'i' },
         };
 
         // 4. Simple Censor (Whole Word Match)

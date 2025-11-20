@@ -1,6 +1,25 @@
 ---
 config:
   layout: elk
+  theme: 'base'
+  themeVariables:
+    darkMode: true
+    background: '#000000ff'
+    
+    # MAIN NODES (Classes)
+    primaryColor: '#1f1f1f'       # Dark Grey
+    primaryTextColor: '#e0e0e0'   # White Text
+    primaryBorderColor: '#00bfff' # Cyan Border
+    
+    # LINES
+    lineColor: '#00bfff'          # Cyan Connecting Lines
+    
+    # NAMESPACES / CLUSTERS
+    # These control the "box" around your packages
+    tertiaryColor: '#252525'      # Slightly lighter grey than background
+    tertiaryBorderColor: '#00bfff' # Cyan border to make the box visible
+    clusterBkg: '#252525'         # (Redundant backup for some renderers)
+    clusterBorder: '#00bfff'      # (Redundant backup for some renderers)
 ---
 classDiagram
     direction RL
@@ -388,7 +407,6 @@ classDiagram
     Window3 ..> Button : Composes
     
     %% Styling for External Nodes
-    classDef external fill:#f4f4f4,stroke:#666,stroke-dasharray: 5 5;
     class Application{<<external>>}
     class Toplevel{<<external>>}
     class Window{<<external>>}

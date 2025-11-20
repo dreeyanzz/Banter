@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banter | Project Portal</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code&display=swap");
+
+      :root {
+        --bg: #0f0f0f;
+        --surface: #161616;
+        --surface-highlight: #1f1f1f;
+        --border: #333;
+        --primary: #00bfff;
+        --primary-glow: rgba(0, 191, 255, 0.2);
+        --text: #e0e0e0;
+        --text-muted: #888;
+        --code-bg: #0d0d0d;
+        --accent-green: #2ecc71;
+        --accent-yellow: #f1c40f;
+        --accent-red: #e74c3c;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+        transition: 0.3s ease;
+      }
+      ul {
+        list-style: none;
+      }
+
+      /* --- ANIMATIONS --- */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes gradientPulse {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+      }
+      .animate-on-scroll.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* --- SCROLLBAR --- */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary);
+      }
+
+      /* --- HEADER --- */
+      header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        padding: 20px 5%;
+        background: rgba(15, 15, 15, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .logo {
+        font-weight: 800;
+        font-size: 1.5rem;
+        letter-spacing: -1px;
+      }
+      .logo span {
+        color: var(--primary);
+      }
+      nav ul {
+        display: flex;
+        gap: 25px;
+      }
+      nav a {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        position: relative;
+      }
+      nav a:hover {
+        color: var(--primary);
+      }
+      nav a::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background: var(--primary);
+        transition: width 0.3s;
+      }
+      nav a:hover::after {
+        width: 100%;
+      }
+
+      /* --- HERO --- */
+      .hero {
+        min-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 120px 20px 80px;
+        background: radial-gradient(circle at 50% 30%, #1a222c 0%, #0f0f0f 70%);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 191, 255, 0.05) 0%,
+          transparent 40%
+        );
+        animation: gradientPulse 15s infinite linear;
+        pointer-events: none;
+      }
+
+      .hero h1 {
+        font-size: clamp(3.5rem, 9vw, 6.5rem);
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 25px;
+        letter-spacing: -3px;
+        z-index: 1;
+        background: linear-gradient(to bottom right, #fff 30%, #888);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        opacity: 0;
+        animation: fadeInUp 1s ease-out forwards;
+      }
+      .hero p {
+        font-size: clamp(1.1rem, 2vw, 1.4rem);
+        color: var(--text-muted);
+        max-width: 650px;
+        margin-bottom: 40px;
+        z-index: 1;
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 0.3s forwards;
+      }
+      .version-badge {
+        margin-bottom: 25px;
+        font-family: "Fira Code";
+        color: var(--primary);
+        background: rgba(0, 191, 255, 0.1);
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid rgba(0, 191, 255, 0.2);
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 0.1s forwards;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+        z-index: 1;
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 0.6s forwards;
+      }
+      .btn {
+        padding: 14px 32px;
+        border-radius: 50px;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+      .btn-primary {
+        background: var(--text);
+        color: var(--bg);
+        border-color: var(--text);
+      }
+      .btn-primary:hover {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--bg);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px var(--primary-glow);
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--text);
+      }
+      .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      /* --- SECTIONS --- */
+      section {
+        padding: 100px 10%;
+        border-bottom: 1px solid var(--border);
+        position: relative;
+      }
+      .section-header {
+        margin-bottom: 60px;
+        max-width: 800px;
+      }
+      .section-title {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        display: inline-block;
+      }
+      .section-title span {
+        color: var(--primary);
+      }
+      .section-desc {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+      }
+
+      /* --- TECH STACK --- */
+      .tech-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 30px;
+      }
+      .tech-badge {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-family: "Fira Code";
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        transition: 0.3s;
+      }
+      .tech-badge:hover {
+        border-color: var(--primary);
+        color: var(--text);
+        transform: scale(1.05);
+      }
+
+      /* --- FEATURES GRID --- */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+      }
+      .card {
+        background: var(--surface);
+        padding: 30px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        transition: all 0.4s ease;
+      }
+      .card:hover {
+        transform: translateY(-10px);
+        border-color: var(--primary);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+      .card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+      }
+      .card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+      .icon {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        display: inline-block;
+        color: var(--primary);
+      }
+
+      /* --- MERMAID DIAGRAM --- */
+      .diagram-wrapper {
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        overflow-x: auto;
+        text-align: center;
+        box-shadow: 0 10px 130px rgba(32, 13, 119, 0.3);
+      }
+      /* This ensures the mermaid diagram doesn't overflow weirdly */
+      .mermaid {
+        font-family: "Inter", sans-serif;
+      }
+
+      /* --- CODE SPOTLIGHT --- */
+      .code-container {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      }
+      .tabs {
+        display: flex;
+        background: var(--surface-highlight);
+        border-bottom: 1px solid var(--border);
+        overflow-x: auto;
+      }
+      .tab {
+        padding: 15px 25px;
+        cursor: pointer;
+        color: var(--text-muted);
+        font-family: "Fira Code", monospace;
+        font-size: 0.9rem;
+        border-right: 1px solid var(--border);
+        transition: 0.2s;
+      }
+      .tab:hover {
+        background: var(--surface);
+        color: var(--text);
+      }
+      .tab.active {
+        background: var(--surface);
+        color: var(--primary);
+        border-bottom: 2px solid var(--primary);
+      }
+      .code-content {
+        display: none;
+        padding: 0;
+        background: var(--code-bg);
+      }
+      .code-content.active {
+        display: block;
+        animation: fadeInUp 0.4s ease-out;
+      }
+      .code-content pre {
+        margin: 0;
+        padding: 25px;
+        overflow-x: auto;
+        font-family: "Fira Code", monospace;
+        font-size: 0.95rem;
+      }
+
+      .kwd {
+        color: #569cd6;
+      }
+      .typ {
+        color: #4ec9b0;
+      }
+      .str {
+        color: #ce9178;
+      }
+      .com {
+        color: #6a9955;
+      }
+      .mth {
+        color: #dcdcaa;
+      }
+      .num {
+        color: #b5cea8;
+      }
+
+      /* --- DOCUMENTATION --- */
+      details {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 15px;
+        overflow: hidden;
+        transition: all 0.3s;
+      }
+      details[open] {
+        border-color: var(--primary);
+      }
+      summary {
+        padding: 20px;
+        cursor: pointer;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        list-style: none;
+        transition: 0.2s;
+        user-select: none;
+      }
+      summary:hover {
+        background: var(--surface-highlight);
+      }
+      summary::after {
+        content: "+";
+        font-size: 1.5rem;
+        color: var(--primary);
+        transition: transform 0.3s;
+      }
+      details[open] summary::after {
+        content: "-";
+        transform: rotate(180deg);
+      }
+      .doc-content {
+        padding: 25px;
+        border-top: 1px solid var(--border);
+        color: #ccc;
+        background: var(--code-bg);
+        line-height: 1.8;
+        animation: fadeInUp 0.3s ease-out;
+      }
+      .doc-content h4 {
+        color: var(--text);
+        margin-bottom: 10px;
+        margin-top: 20px;
+        font-size: 1.1rem;
+      }
+      .doc-content h4:first-child {
+        margin-top: 0;
+      }
+      .doc-content ul {
+        padding-left: 20px;
+        list-style: disc;
+      }
+      .doc-content li {
+        margin-bottom: 10px;
+        color: var(--text-muted);
+      }
+      .test-pass {
+        color: var(--accent-green);
+        font-family: "Fira Code";
+        font-size: 0.9rem;
+        margin-right: 10px;
+      }
+
+      /* --- ARCHITECTURE SPLIT --- */
+      .split-layout {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        align-items: flex-start;
+      }
+      .split-layout > div {
+        flex: 1;
+        min-width: 300px;
+      }
+      .code-block-title {
+        font-family: "Fira Code", monospace;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        display: block;
+      }
+      .static-code {
+        background: var(--code-bg);
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 20px;
+        overflow-x: auto;
+        font-family: "Fira Code", monospace;
+        font-size: 0.9rem;
+        transition: transform 0.3s;
+      }
+      .static-code:hover {
+        transform: scale(1.01);
+        border-color: var(--text-muted);
+      }
+
+      footer {
+        padding: 60px 10%;
+        text-align: center;
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 3rem;
+        }
+        nav {
+          display: none;
+        }
+        .split-layout {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">Banter<span>.</span></div>
+      <nav>
+        <ul>
+          <li><a href="#overview">About</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#diagram">Design</a></li>
+          <li><a href="#code">Code</a></li>
+          <li><a href="#docs">Docs</a></li>
+        </ul>
+      </nav>
+      <a
+        href="https://github.com/dreeyanzz/Banter"
+        class="btn btn-outline"
+        style="padding: 8px 20px; font-size: 0.9rem"
+        >GitHub</a
+      >
+    </header>
+
+    <div class="hero">
+      <div class="version-badge">v2.0.0 &bull; .NET 10 &bull; TUI</div>
+      <h1>Modern Chat.<br />Console Vibe.</h1>
+      <p>
+        A fully functional, real-time chat application built entirely in C# for
+        the terminal. Featuring robust profanity filtering, mouse support, and
+        secure admin tools.
+      </p>
+      <div class="btn-group">
+        <a href="#" class="btn btn-primary">Download .exe</a>
+        <a href="#diagram" class="btn btn-outline">View Architecture</a>
+      </div>
+    </div>
+
+    <section id="overview" class="animate-on-scroll">
+      <div class="section-header">
+        <h2 class="section-title">Project <span>Overview</span></h2>
+        <p class="section-desc">
+          Banter is an "open for all" platform designed to demonstrate that
+          console applications can be modern, responsive, and feature-rich. It
+          avoids the overhead of a heavy GUI while maintaining full
+          interactivity.
+        </p>
+
+        <h3 style="margin-top: 40px; font-size: 1.2rem">Technology Stack</h3>
+        <div class="tech-grid">
+          <div class="tech-badge">C# 13</div>
+          <div class="tech-badge">.NET 10</div>
+          <div class="tech-badge">Terminal.Gui</div>
+          <div class="tech-badge">Google Cloud Firestore</div>
+          <div class="tech-badge">LiteDB</div>
+          <div class="tech-badge">Async/Await</div>
+          <div class="tech-badge">Event-Driven Architecture</div>
+          <div class="tech-badge">Visual Studio Code</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="animate-on-scroll">
+      <div class="section-header">
+        <h2 class="section-title">Key <span>Features</span></h2>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <span class="icon">⚡</span>
+          <h3>Real-Time Sync</h3>
+          <p>
+            Instant messaging using Firestore listeners. No refresh
+            needed—messages appear instantly.
+          </p>
+        </div>
+        <div class="card">
+          <span class="icon">🖱️</span>
+          <h3>Mouse Support</h3>
+          <p>
+            Full interaction via mouse clicks (buttons, chat selection) using
+            Terminal.Gui drivers.
+          </p>
+        </div>
+        <div class="card">
+          <span class="icon">🛡️</span>
+          <h3>Profanity Filter</h3>
+          <p>
+            Custom algorithm (<code>CensorTextRobust</code>) that masks
+            offensive language and leetspeak.
+          </p>
+        </div>
+        <div class="card">
+          <span class="icon">👥</span>
+          <h3>Group & 1:1 Chats</h3>
+          <p>Logic handles private messages and multi-user rooms seamlessly.</p>
+        </div>
+        <div class="card">
+          <span class="icon">👑</span>
+          <h3>Admin Controls</h3>
+          <p>
+            Admins can delete chatrooms, clear message history, and rename
+            groups.
+          </p>
+        </div>
+        <div class="card">
+          <span class="icon">📌</span>
+          <h3>Message Pinning</h3>
+          <p>
+            Pin important messages to the top of the chat window for all
+            participants.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="diagram"
+      class="animate-on-scroll"
+      style="background: var(--surface)"
+    >
+      <div class="section-header">
+        <h2 class="section-title">System <span>Architecture</span></h2>
+        <p class="section-desc">
+          Live, interactive diagram showing class relationships and library
+          integration. (Scroll to zoom)
+        </p>
+      </div>
+
+      <div class="diagram-wrapper">
+        <div class="mermaid" id="diagram-content">Loading Diagram...</div>
+      </div>
+      <p
+        style="
+          margin-top: 15px;
+          font-size: 0.9rem;
+          color: var(--text-muted);
+          text-align: center;
+        "
+      >
+        <em
+          >Note: Requires local server or GitHub Pages to load the .mmd
+          file.</em
+        >
+      </p>
+    </section>
+
+    <section id="code" class="animate-on-scroll">
+      <div class="section-header">
+        <h2 class="section-title">Code <span>Spotlight</span></h2>
+        <p class="section-desc">
+          Explore the logic powering Banter. Click tabs to switch contexts.
+        </p>
+      </div>
+
+      <div class="code-container">
+        <div class="tabs">
+          <div class="tab active" onclick="openTab(event, 'logic')">
+            Window2.cs (Listener)
+          </div>
+          <div class="tab" onclick="openTab(event, 'state')">
+            SessionHandler.cs (Events)
+          </div>
+          <div class="tab" onclick="openTab(event, 'mouse')">
+            ClassWrappers.cs (Mouse)
+          </div>
+          <div class="tab" onclick="openTab(event, 'filter')">
+            ProfanityChecker.cs
+          </div>
+        </div>
+
+        <div id="logic" class="code-content active">
+          <pre><span class="com">// Located in: Windows/Window2.cs</span>
+<span class="kwd">private void</span> <span class="mth">StartListener</span>(<span class="typ">string</span> chatroom_id)
+{
+    <span class="com">// Reference the specific chatroom's messages collection</span>
+    <span class="typ">CollectionReference</span> messagesRef = db.<span class="mth">Collection</span>(<span class="str">"Chatrooms"</span>)
+        .<span class="mth">Document</span>(chatroom_id)
+        .<span class="mth">Collection</span>(<span class="str">"messages"</span>);
+
+    <span class="com">// Order by timestamp to ensure correct chat flow</span>
+    <span class="typ">Query</span> query = messagesRef.<span class="mth">OrderBy</span>(<span class="str">"timestamp"</span>);
+
+    <span class="com">// Attach the real-time listener</span>
+    _listener = query.<span class="mth">Listen</span>(callback: <span class="mth">OnSnapshotReceived</span>);
+}</pre>
+        </div>
+
+        <div id="state" class="code-content">
+          <pre><span class="com">// Located in: Utilities/SessionHandler.cs</span>
+<span class="kwd">public static class</span> <span class="typ">SessionHandler</span>
+{
+    <span class="com">// Events allow windows to update without tight coupling</span>
+    <span class="kwd">public static event</span> <span class="typ">Action</span>&lt;<span class="typ">string</span>?&gt;? CurrentChatroomChanged;
+    <span class="kwd">public static event</span> <span class="typ">Action</span>&lt;<span class="typ">bool</span>&gt;? IsLoggedInChanged;
+
+    <span class="kwd">public static string</span>? CurrentChatroomId
+    {
+        <span class="kwd">get</span> => _current_chatroom_id;
+        <span class="kwd">set</span>
+        {
+            <span class="kwd">if</span> (_current_chatroom_id != value)
+            {
+                _current_chatroom_id = value;
+                <span class="com">// Notify subscribers (Window2, Window3)</span>
+                CurrentChatroomChanged?.<span class="mth">Invoke</span>(_current_chatroom_id);
+            }
+        }
+    }
+}</pre>
+        </div>
+
+        <div id="mouse" class="code-content">
+          <pre><span class="com">// Located in: Utilities/ClassWrappers.cs</span>
+<span class="com">// This class enables proper mouse interaction by preventing drag mode</span>
+<span class="kwd">internal class</span> <span class="typ">FixedWindow</span> : <span class="typ">Window</span>
+{
+    <span class="kwd">public override bool</span> <span class="mth">MouseEvent</span>(<span class="typ">MouseEvent</span> me)
+    {
+        <span class="com">// Swallow click events on the title bar</span>
+        <span class="kwd">if</span> (me.Flags.<span class="mth">HasFlag</span>(<span class="typ">MouseFlags</span>.Button1Pressed))
+        {
+            <span class="kwd">return true</span>; <span class="com">// "I handled it", prevents Terminal.Gui dragging</span>
+        }
+        <span class="kwd">return base</span>.<span class="mth">MouseEvent</span>(me);
+    }
+}</pre>
+        </div>
+
+        <div id="filter" class="code-content">
+          <pre><span class="com">// Located in: Utilities/ProfanityChecker.cs</span>
+<span class="kwd">public static string</span> <span class="mth">CensorTextRobust</span>(<span class="typ">string</span> text)
+{
+    <span class="com">// 1. Normalize text (handle leetspeak mapping)</span>
+    <span class="typ">string</span> normalized = <span class="mth">Normalize</span>(text); 
+
+    <span class="com">// 2. Find bad words in normalized string</span>
+    <span class="kwd">foreach</span> (<span class="typ">string</span> word <span class="kwd">in</span> ProfaneWordsArray)
+    {
+        <span class="kwd">while</span> ((index = normalized.<span class="mth">IndexOf</span>(word)) != -1)
+        {
+            <span class="com">// 3. Map back to original indices and replace with '*'</span>
+            <span class="mth">MaskOriginalText</span>(ref text, index, word.Length);
+        }
+    }
+    <span class="kwd">return</span> text;
+}</pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="docs" class="animate-on-scroll">
+      <div class="section-header">
+        <h2 class="section-title">Project <span>Documentation</span></h2>
+        <p class="section-desc">
+          Comprehensive details covering testing, requirements, and data
+          handling.
+        </p>
+      </div>
+
+      <details>
+        <summary>1. Requirements & Installation</summary>
+        <div class="doc-content">
+          <h4>Software Requirements</h4>
+          <p>
+            The application requires the <strong>.NET 10 Runtime</strong> to
+            execute. It is compatible with Windows 10 and 11.
+          </p>
+          <h4>System Requirements</h4>
+          <p>
+            A stable internet connection is mandatory for Firestore
+            connectivity. While keyboard navigation is supported, a
+            <strong>mouse</strong> is highly recommended.
+          </p>
+          <h4>Installation Steps</h4>
+          <ol style="padding-left: 20px">
+            <li>Download the `CpE261FinalProject.exe` file.</li>
+            <li>Run the executable directly (No installer required).</li>
+          </ol>
+        </div>
+      </details>
+
+      <details>
+        <summary>2. File Handling & Data Storage</summary>
+        <div class="doc-content">
+          <h4>File Types</h4>
+          <ul>
+            <li>
+              <strong>.txt (BanterLogo.txt):</strong> Read at startup to display
+              ASCII art logo.
+            </li>
+            <li>
+              <strong>.db (Cache.db):</strong> Local LiteDB file used for
+              caching user data to reduce network load.
+            </li>
+            <li>
+              <strong>Cloud Firestore:</strong> Primary NoSQL storage for Users,
+              Chatrooms, and Messages.
+            </li>
+          </ul>
+          <h4>Operations</h4>
+          <p>
+            The app performs <strong>Real-time Reads (Listeners)</strong> for
+            messages and <strong>Writes</strong> for sending chats. Error
+            handling (Try-Catch) is implemented for all I/O operations to
+            prevent crashes on network failure.
+          </p>
+        </div>
+      </details>
+
+      <details>
+        <summary>3. Testing Results & Limitations</summary>
+        <div class="doc-content">
+          <div style="display: grid; gap: 10px">
+            <div>
+              <span class="test-pass">PASS</span>
+              <strong>Authentication:</strong> Access denied with correct error
+              messages.
+            </div>
+            <div>
+              <span class="test-pass">PASS</span>
+              <strong>Registration:</strong> Validation logic prevents
+              duplicates.
+            </div>
+            <div>
+              <span class="test-pass">PASS</span>
+              <strong>Admin Tools:</strong> Deleting a chatroom instantly syncs
+              removal.
+            </div>
+            <div>
+              <span class="test-pass">PASS</span>
+              <strong>Profanity:</strong> Filter catches obscure leetspeak.
+            </div>
+          </div>
+          <h4 style="color: var(--accent-yellow)">Limitations</h4>
+          <ul>
+            <li>
+              Heavy reliance on internet connection (Offline mode limited).
+            </li>
+            <li>Users cannot currently edit sent messages.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>4. Conclusion & Reflection</summary>
+        <div class="doc-content">
+          <p>
+            Building Banter demonstrated the viability of modern TUIs. The most
+            impactful discovery was the <strong>mouse support</strong> in
+            `Terminal.Gui`, which transformed the user experience.
+          </p>
+          <p>
+            <strong>Key Takeaways:</strong> Mastered Asynchronous C#,
+            Event-Driven Architecture, and NoSQL database integration.
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section
+      id="structure"
+      class="animate-on-scroll"
+      style="background: var(--surface)"
+    >
+      <div class="section-header">
+        <h2 class="section-title">Data & <span>Architecture</span></h2>
+      </div>
+
+      <div class="split-layout">
+        <div>
+          <span class="code-block-title">Project File Structure</span>
+          <div class="static-code">
+            C:.<br />
+            |<br />
+            +---Utilities<br />
+            | FirebaseHelper.cs<br />
+            | SessionHandler.cs<br />
+            | ProfanityChecker.cs<br />
+            | Models.cs<br />
+            | WindowHelper.cs<br />
+            |<br />
+            \---Windows<br />
+            LogInWindow.cs<br />
+            Window1.cs (Chat List)<br />
+            Window2.cs (Main Chat)<br />
+            Window3.cs (Info)<br />
+            CreateChatroomWindow.cs
+          </div>
+        </div>
+
+        <div>
+          <span class="code-block-title">Firestore Database Schema</span>
+          <div class="split-layout" style="gap: 20px">
+            <div class="static-code" style="flex: 1">
+              <span class="com">// Collection: Users</span><br />
+              {<br />
+              <span class="str">"username"</span>: "dreeyanzz",<br />
+              <span class="str">"email"</span>: "adrian@...",<br />
+              <span class="str">"password"</span>: "*****",<br />
+              <span class="str">"chatrooms"</span>: [<br />
+              "chat_id_1"<br />
+              ]<br />
+              }
+            </div>
+            <div class="static-code" style="flex: 1">
+              <span class="com">// Collection: Chatrooms</span><br />
+              {<br />
+              <span class="str">"name"</span>: "The Rejects",<br />
+              <span class="str">"type"</span>: "group",<br />
+              <span class="str">"admins"</span>: ["user_id"],<br />
+              <span class="str">"messages"</span>: { ... }<br />
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p style="font-weight: 600; color: #fff; margin-bottom: 10px">
+        Adrian Seth Tabotabo
+      </p>
+      <p>&copy; 2025 Banter Project. Built with .NET 10.</p>
+    </footer>
+
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+      // 1. Initialize but don't run automatically yet
+      mermaid.initialize({
+        startOnLoad: false,
+        // theme: "Forest",
+        securityLevel: "loose",
+      });
+
+      // 2. Fetch the external .mmd file
+      fetch("diagram.mmd")
+        .then((response) => {
+          if (!response.ok) throw new Error("HTTP error " + response.status);
+          return response.text();
+        })
+        .then((mmdContent) => {
+          const element = document.getElementById("diagram-content");
+          // Insert the text from the file into the div
+          element.textContent = mmdContent;
+
+          // 3. Manually tell Mermaid to render this specific element
+          mermaid.run({
+            nodes: [element],
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to load diagram.mmd: ", err);
+          document.getElementById(
+            "diagram-content"
+          ).innerHTML = `<p style="color:#e74c3c;">Error: Could not load 'diagram.mmd'.<br>
+                    <small>Ensure you are running this via a local server (e.g., VS Code Live Server).</small></p>`;
+        });
+    </script>
+
+    <script>
+      // TABS LOGIC
+      function openTab(evt, tabName) {
+        var i, content, tablinks;
+        content = document.getElementsByClassName("code-content");
+        for (i = 0; i < content.length; i++) {
+          content[i].className = content[i].className.replace(" active", "");
+        }
+        tablinks = document.getElementsByClassName("tab");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).className += " active";
+        evt.currentTarget.className += " active";
+      }
+
+      // SCROLL ANIMATION OBSERVER
+      const observerOptions = { threshold: 0.1 };
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target); // Only animate once
+          }
+        });
+      }, observerOptions);
+      document.querySelectorAll(".animate-on-scroll").forEach((el) => {
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>

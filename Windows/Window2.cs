@@ -411,8 +411,10 @@ namespace CpE261FinalProject
                     message_id: change.Document.Id
                 );
 
+                bool isHello = message == "hello";
+
                 string chatEntry =
-                    $"{displayName}: {ProfanityChecker.CensorTextRobust(text: message)}";
+                    $"{displayName}: {(isHello ? "hello" : ProfanityChecker.CensorTextRobust(text: message))}";
 
                 int existingIndex = message_ids.IndexOf(item: docId);
 
