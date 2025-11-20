@@ -1,7 +1,10 @@
 using Google.Cloud.Firestore;
 
-namespace Banter
+namespace Banter.Utilities
 {
+    /// <summary>
+    /// Manages the user's session, including login state, user information, and chatroom data.
+    /// </summary>
     public static class SessionHandler
     {
         private static FirestoreChangeListener? chatroomsListener;
@@ -15,17 +18,43 @@ namespace Banter
         private static List<(string chatroom_id, string chatroom_name)> _userChatrooms = [];
 
         // --- Public Events ---
+        /// <summary>
+        /// Occurs when the username changes.
+        /// </summary>
         public static event Action<string?>? UsernameChanged;
+
+        /// <summary>
+        /// Occurs when the name changes.
+        /// </summary>
         public static event Action<string?>? NameChanged;
+
+        /// <summary>
+        /// Occurs when the user ID changes.
+        /// </summary>
         public static event Action<string?>? UserIdChanged;
+
+        /// <summary>
+        /// Occurs when the current chatroom changes.
+        /// </summary>
         public static event Action<string?>? CurrentChatroomChanged;
+
+        /// <summary>
+        /// Occurs when the login state changes.
+        /// </summary>
         public static event Action<bool>? IsLoggedInChanged;
+
+        /// <summary>
+        /// Occurs when the user's chatrooms change.
+        /// </summary>
         public static event Action<
             List<(string chatroom_id, string chatroom_name)>
         >? UserChatroomsChanged;
 
         // --- Public Properties ---
 
+        /// <summary>
+        /// Gets or sets the current user's username.
+        /// </summary>
         public static string? Username
         {
             get => _username;
@@ -39,6 +68,9 @@ namespace Banter
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current user's name.
+        /// </summary>
         public static string? Name
         {
             get => _name;
@@ -52,6 +84,9 @@ namespace Banter
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current user's ID.
+        /// </summary>
         public static string? UserId
         {
             get => _user_id;
@@ -65,6 +100,9 @@ namespace Banter
             }
         }
 
+        /// <summary>
+        /// Gets or sets the ID of the currently active chatroom.
+        /// </summary>
         public static string? CurrentChatroomId
         {
             get => _current_chatroom_id;
@@ -81,6 +119,9 @@ namespace Banter
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the user is logged in.
+        /// </summary>
         public static bool IsLoggedIn
         {
             get => _isLoggedIn;
@@ -94,6 +135,9 @@ namespace Banter
             }
         }
 
+        /// <summary>
+        /// Gets or sets the list of chatrooms the user is a member of.
+        /// </summary>
         public static List<(string chatroom_id, string chatroom_name)> Chatrooms
         {
             get => _userChatrooms;
@@ -107,6 +151,9 @@ namespace Banter
             }
         }
 
+        /// <summary>
+        /// Clears the current session data and logs the user out.
+        /// </summary>
         public static async Task ClearSession()
         {
             if (chatroomsListener != null)
@@ -120,7 +167,9 @@ namespace Banter
             Chatrooms = [];
         }
 
-        // listens to the Database/Chatrooms and updates @Chatrooms property
+        /// <summary>
+        /// Starts a listener for changes to the user's chatrooms in the database.
+        /// </summary>
         public static async Task StartChatroomsListener()
         {
             if (!IsLoggedIn)

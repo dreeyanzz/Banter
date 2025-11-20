@@ -1,7 +1,10 @@
 using System.Text.RegularExpressions;
 
-namespace Banter
+namespace Banter.Utilities
 {
+    /// <summary>
+    /// Provides validation methods for common data formats.
+    /// </summary>
     public static class Validator
     {
         // A commonly used, comprehensive regex pattern for basic email validation

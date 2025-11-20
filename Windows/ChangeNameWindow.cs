@@ -1,7 +1,11 @@
+using Banter.Utilities;
 using Terminal.Gui;
 
-namespace Banter
+namespace Banter.Windows
 {
+    /// <summary>
+    /// Represents the window for changing a chatroom's name. This class is a singleton.
+    /// </summary>
     public sealed class ChangeChatroomNameWindow : AbstractWindow
     {
         private static readonly Lazy<ChangeChatroomNameWindow> lazyInstance = new(
@@ -9,6 +13,9 @@ namespace Banter
                 new ChangeChatroomNameWindow()
         );
 
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="ChangeChatroomNameWindow"/>.
+        /// </summary>
         public static ChangeChatroomNameWindow Instance => lazyInstance.Value;
 
         private ChangeChatroomNameWindow()
@@ -28,6 +35,9 @@ namespace Banter
             window.Add(views: [newNameTextField, setButton, closeButton]);
         }
 
+        /// <summary>
+        /// Handles the click event of the "Set" button.
+        /// </summary>
         private async Task OnSetButtonClicked()
         {
             string? inputName = newNameTextField.Text.ToString();
@@ -43,17 +53,26 @@ namespace Banter
             Hide();
         }
 
+        /// <summary>
+        /// Shows the window.
+        /// </summary>
         public void Show()
         {
             WindowHelper.FocusWindow(window: window);
         }
 
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
         public void Hide()
         {
             newNameTextField.Text = string.Empty;
             Application.Top.Remove(view: window);
         }
 
+        /// <summary>
+        /// The main window for this view.
+        /// </summary>
         private readonly Window window = new()
         {
             Title = "Change chatroom name",
@@ -67,6 +86,9 @@ namespace Banter
             ColorScheme = CustomColorScheme.Window,
         };
 
+        /// <summary>
+        /// The button to close the window.
+        /// </summary>
         private readonly Button closeButton = new()
         {
             Text = "Close",
@@ -77,6 +99,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The text field for entering the new chatroom name.
+        /// </summary>
         private readonly TextField newNameTextField = new()
         {
             X = 0,
@@ -85,6 +110,9 @@ namespace Banter
             Width = Dim.Fill() - Dim.Width(view: setButton),
         };
 
+        /// <summary>
+        /// The button to set the new chatroom name.
+        /// </summary>
         private static readonly Button setButton = new()
         {
             Text = "Set",

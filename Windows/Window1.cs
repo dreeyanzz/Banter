@@ -1,12 +1,19 @@
+using Banter.Utilities;
 using Terminal.Gui;
 
-namespace Banter
+namespace Banter.Windows
 {
+    /// <summary>
+    /// Represents the leftmost window in the main application UI, displaying chatrooms and user information. This class is a singleton.
+    /// </summary>
     public sealed class Window1 : AbstractWindow
     {
         // Singleton pattern
         private static readonly Lazy<Window1> lazyInstance = new(() => new Window1());
 
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="Window1"/>.
+        /// </summary>
         public static Window1 Instance => lazyInstance.Value;
 
         private List<string> chatroomNames = [];
@@ -142,11 +149,17 @@ namespace Banter
             );
         }
 
+        /// <summary>
+        /// Handles the click event of the "Create Chatroom" button.
+        /// </summary>
         private static async Task OnCreateChatroomButtonClicked()
         {
             CreateChatroomWindow.Instance.Show();
         }
 
+        /// <summary>
+        /// Handles the click event of the "Log Out" button.
+        /// </summary>
         private static async Task OnLogOutButtonClicked()
         {
             int selectedButton = MessageBox.Query(
@@ -167,6 +180,9 @@ namespace Banter
             }
         }
 
+        /// <summary>
+        /// Handles the event when the user's chatrooms change.
+        /// </summary>
         private async void OnUserChatroomsChanged() =>
             Application.MainLoop.Invoke(action: () =>
             {
@@ -191,16 +207,25 @@ namespace Banter
                 labelNumberChatrooms.Text = $"Chatrooms: {chatroomIds.Count}";
             });
 
+        /// <summary>
+        /// Shows the window.
+        /// </summary>
         public void Show()
         {
             Application.Top.Add(views: [window]);
         }
 
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
         public void Hide()
         {
             Application.Top.Remove(view: window);
         }
 
+        /// <summary>
+        /// The main window for this view.
+        /// </summary>
         private readonly Window window = new()
         {
             Title = "People",
@@ -214,6 +239,9 @@ namespace Banter
             ColorScheme = CustomColorScheme.Window,
         };
 
+        /// <summary>
+        /// The button to create a new chatroom.
+        /// </summary>
         private static readonly Button createChatroomButton = new()
         {
             Text = "+ Add Chatroom",
@@ -225,6 +253,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The label for the search text field.
+        /// </summary>
         private static readonly Label searchChatroomLabel = new()
         {
             Text = "Search here:",
@@ -233,6 +264,9 @@ namespace Banter
             Y = Pos.At(2),
         };
 
+        /// <summary>
+        /// The text field for searching chatrooms.
+        /// </summary>
         private static readonly TextField searchChatroomTextField = new()
         {
             X = Pos.At(n: 0),
@@ -241,6 +275,9 @@ namespace Banter
             Width = Dim.Fill(),
         };
 
+        /// <summary>
+        /// The label to indicate the current search query.
+        /// </summary>
         private static readonly Label searchIndicator = new()
         {
             Text = "",
@@ -249,6 +286,9 @@ namespace Banter
             Y = Pos.Y(view: searchChatroomTextField) + Pos.At(2),
         };
 
+        /// <summary>
+        /// The list view for displaying chatrooms.
+        /// </summary>
         private static readonly ListView chatroomsListView = new()
         {
             Width = Dim.Fill(),
@@ -258,7 +298,14 @@ namespace Banter
             Y = Pos.Y(view: searchIndicator) + Pos.At(1),
         };
 
+        /// <summary>
+        /// The label displaying the number of chatrooms.
+        /// </summary>
         private readonly Label labelNumberChatrooms = new() { X = 0 };
+
+        /// <summary>
+        /// The list view for displaying user information.
+        /// </summary>
         private static readonly ListView informationListView = new()
         {
             X = Pos.At(n: 0),
@@ -268,6 +315,9 @@ namespace Banter
             // Height = Dim.Sized(3), hight is dynamic to it is not set here
         };
 
+        /// <summary>
+        /// The button to log out.
+        /// </summary>
         private readonly Button logOutButton = new()
         {
             Text = "Log out",

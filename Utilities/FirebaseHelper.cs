@@ -1,12 +1,24 @@
 using Google.Cloud.Firestore;
 using Terminal.Gui;
 
-namespace Banter
+namespace Banter.Utilities
 {
+    /// <summary>
+    /// Provides helper methods for interacting with the Firestore database.
+    /// </summary>
     public static class FirebaseHelper
     {
+        /// <summary>
+        /// The Firestore database instance.
+        /// </summary>
         public static readonly FirestoreDb db = FirestoreManager.Instance.Database;
 
+        /// <summary>
+        /// Gets the content of a specific message in a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        /// <param name="message_id">The ID of the message.</param>
+        /// <returns>The message content, or null if not found.</returns>
         public static async Task<string?> GetChatroomMessageById(
             string chatroom_id,
             string message_id
@@ -34,6 +46,11 @@ namespace Banter
             return null; // field not found
         }
 
+        /// <summary>
+        /// Gets a list of pinned message IDs for a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        /// <returns>A list of pinned message IDs.</returns>
         public static async Task<List<string>> GetChatroomPinnedMessagesIdById(string chatroom_id)
         {
             if (string.IsNullOrEmpty(chatroom_id))
@@ -51,6 +68,12 @@ namespace Banter
             return pinnedMessagesId;
         }
 
+        /// <summary>
+        /// Checks if a message is pinned in a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        /// <param name="message_id">The ID of the message.</param>
+        /// <returns><c>true</c> if the message is pinned; otherwise, <c>false</c>.</returns>
         public static async Task<bool> IsChatPinnedById(string chatroom_id, string message_id)
         {
             if (string.IsNullOrEmpty(chatroom_id) || string.IsNullOrEmpty(message_id))
@@ -66,6 +89,11 @@ namespace Banter
             return true;
         }
 
+        /// <summary>
+        /// Pins a message in a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        /// <param name="message_id">The ID of the message to pin.</param>
         public static async Task PinChatroomMessage(string chatroom_id, string message_id)
         {
             if (string.IsNullOrEmpty(chatroom_id) || string.IsNullOrEmpty(message_id))
@@ -75,6 +103,11 @@ namespace Banter
             await chatroomRef.UpdateAsync("pinned_messages", FieldValue.ArrayUnion(message_id));
         }
 
+        /// <summary>
+        /// Removes a pinned message from a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        /// <param name="message_id">The ID of the message to unpin.</param>
         public static async Task RemovePinChatroomMessage(string chatroom_id, string message_id)
         {
             bool isValid = string.IsNullOrEmpty(message_id) || string.IsNullOrEmpty(chatroom_id);
@@ -86,6 +119,11 @@ namespace Banter
             await chatroomRef.UpdateAsync("pinned_messages", FieldValue.ArrayRemove(message_id));
         }
 
+        /// <summary>
+        /// Changes the name of a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        /// <param name="new_name">The new name for the chatroom.</param>
         public static async Task ChangeChatroomName(string chatroom_id, string new_name)
         {
             if (string.IsNullOrWhiteSpace(value: chatroom_id))
@@ -120,6 +158,11 @@ namespace Banter
             Console.WriteLine(value: $"Chatroom '{chatroom_id}' name updated to '{new_name}'.");
         }
 
+        /// <summary>
+        /// Removes a participant from a chatroom.
+        /// </summary>
+        /// <param name="participant_id">The ID of the participant to remove.</param>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
         public static async Task RemoveChatroomParticipant(
             string participant_id,
             string chatroom_id
@@ -137,6 +180,11 @@ namespace Banter
             );
         }
 
+        /// <summary>
+        /// Validates if a user is an admin of the current chatroom.
+        /// </summary>
+        /// <param name="user_id">The ID of the user.</param>
+        /// <returns><c>true</c> if the user is an admin; otherwise, <c>false</c>.</returns>
         public static async Task<bool> ValidateChatroomAdmin(string user_id)
         {
             if (string.IsNullOrEmpty(value: user_id))
@@ -151,6 +199,11 @@ namespace Banter
             return admins.Contains(item: user_id);
         }
 
+        /// <summary>
+        /// Gets a list of admin user IDs for a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        /// <returns>A list of admin user IDs, or null if the chatroom is not found.</returns>
         public static async Task<List<string>?> GetChatroomAdmins(string chatroom_id)
         {
             if (string.IsNullOrEmpty(chatroom_id))
@@ -165,6 +218,10 @@ namespace Banter
             return admins;
         }
 
+        /// <summary>
+        /// Creates a new chatroom.
+        /// </summary>
+        /// <param name="participants_ids">A list of participant user IDs to include in the chatroom.</param>
         public static async Task CreateChatroom(List<string> participants_ids)
         {
             if (participants_ids == null || participants_ids.Count == 0)
@@ -196,6 +253,10 @@ namespace Banter
             await db.Collection(path: "Chatrooms").AddAsync(documentData: chatroom_info);
         }
 
+        /// <summary>
+        /// Deletes a chatroom by its ID.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom to delete.</param>
         public static async Task DeleteChatroomById(string chatroom_id)
         {
             CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
@@ -204,6 +265,11 @@ namespace Banter
             await chatroom.DeleteAsync();
         }
 
+        /// <summary>
+        /// Gets the type of a chatroom by its ID.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        /// <returns>The chatroom type (e.g., "group" or "individual").</returns>
         public static async Task<string> GetChatroomTypeById(string chatroom_id)
         {
             CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
@@ -215,6 +281,10 @@ namespace Banter
             return chatroom_type;
         }
 
+        /// <summary>
+        /// Clears all messages from a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom to clear.</param>
         public static async Task ClearChatroomMessagesById(string chatroom_id)
         {
             CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
@@ -234,6 +304,11 @@ namespace Banter
             await batch.CommitAsync();
         }
 
+        /// <summary>
+        /// Gets the name of a chatroom by its ID.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        /// <returns>The name of the chatroom.</returns>
         public static async Task<string> GetChatroomNameById(string chatroom_id)
         {
             DocumentSnapshot snapshot = await db.Collection(path: "Chatrooms")
@@ -268,6 +343,11 @@ namespace Banter
             return "Unknown Chatroom";
         }
 
+        /// <summary>
+        /// Gets a dictionary of participants in a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        /// <returns>A dictionary mapping participant IDs to their usernames, or null if the chatroom is not found.</returns>
         public static async Task<Dictionary<string, string>?> GetChatroomParticipants(
             string chatroom_id
         )
@@ -291,6 +371,11 @@ namespace Banter
             return idUserMap;
         }
 
+        /// <summary>
+        /// Gets the username of a user by their ID.
+        /// </summary>
+        /// <param name="user_id">The ID of the user.</param>
+        /// <returns>The username of the user.</returns>
         public static async Task<string> GetUserName(string user_id)
         {
             //? Clear these things
@@ -327,6 +412,11 @@ namespace Banter
                 return null;
         }
 
+        /// <summary>
+        /// Gets the user ID associated with a given username.
+        /// </summary>
+        /// <param name="username">The username to look up.</param>
+        /// <returns>The user ID, or null if the username is not found.</returns>
         public static async Task<string?> GetUserIdFromUsername(string username)
         {
             CollectionReference usersRef = db.Collection("Users");
@@ -346,6 +436,11 @@ namespace Banter
             return null;
         }
 
+        /// <summary>
+        /// Validates if a username exists in the database.
+        /// </summary>
+        /// <param name="username">The username to validate.</param>
+        /// <returns><c>true</c> if the username exists; otherwise, <c>false</c>.</returns>
         public static async Task<bool> ValidateUsername(string username)
         {
             CollectionReference usersRef = db.Collection("Users");
@@ -359,6 +454,11 @@ namespace Banter
             return false;
         }
 
+        /// <summary>
+        /// Checks if a username is already taken.
+        /// </summary>
+        /// <param name="username">The username to check.</param>
+        /// <returns><c>true</c> if the username is not taken; otherwise, <c>false</c>.</returns>
         public static async Task<bool> IsUsernameTaken(string username)
         {
             CollectionReference usersRef = db.Collection("Users");
@@ -369,6 +469,11 @@ namespace Banter
             return !(snapshot.Count > 0);
         }
 
+        /// <summary>
+        /// Adds a new user account to the database.
+        /// </summary>
+        /// <param name="user">The user object to add.</param>
+        /// <returns><c>true</c> if the account was added successfully; otherwise, <c>false</c>.</returns>
         public static async Task<bool> AddAccount(User user)
         {
             try

@@ -1,8 +1,12 @@
+using Banter.Utilities;
 using Google.Cloud.Firestore;
 using Terminal.Gui;
 
-namespace Banter
+namespace Banter.Windows
 {
+    /// <summary>
+    /// Represents the main chat window, displaying the chat history and providing input for sending messages. This class is a singleton.
+    /// </summary>
     public sealed class Window2 : AbstractWindow
     {
         private readonly FirestoreDb db = FirestoreManager.Instance.Database;
@@ -10,6 +14,9 @@ namespace Banter
         private FirestoreChangeListener? chatroomListener;
         private static readonly Lazy<Window2> lazyInstance = new(valueFactory: () => new Window2());
 
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="Window2"/>.
+        /// </summary>
         public static Window2 Instance => lazyInstance.Value;
         private readonly Dictionary<string, string> currentChatroomParticipants = [];
         private readonly List<string> message_ids = [];
@@ -69,6 +76,9 @@ namespace Banter
             OnLogInChanged(IsLoggedIn: SessionHandler.IsLoggedIn);
         }
 
+        /// <summary>
+        /// Handles the text changed event of the search chat text field.
+        /// </summary>
         private void OnSearchChatTextChanged()
         {
             string textToSearch = searchChatTextField.Text.ToString() ?? "";
@@ -103,6 +113,9 @@ namespace Banter
             Application.MainLoop.Invoke(action: ScrollToLatestChat);
         }
 
+        /// <summary>
+        /// Handles the click event of the "Send" button.
+        /// </summary>
         private async void OnButtonSendClicked()
         {
             string? messageText = chatBox.Text.ToString();
@@ -128,6 +141,10 @@ namespace Banter
                 .AddAsync(documentData: message);
         }
 
+        /// <summary>
+        /// Handles the login state changed event.
+        /// </summary>
+        /// <param name="IsLoggedIn">Whether the user is logged in.</param>
         private void OnLogInChanged(bool IsLoggedIn)
         {
             if (!IsLoggedIn)
@@ -140,6 +157,10 @@ namespace Banter
             OnChatroomChanged(chatroom_id: SessionHandler.CurrentChatroomId);
         }
 
+        /// <summary>
+        /// Handles the current chatroom changed event.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the new chatroom.</param>
         private async void OnChatroomChanged(string? chatroom_id)
         {
             ViewPinnedMessagesWindow.Instance.Hide();
@@ -191,7 +212,10 @@ namespace Banter
             });
         }
 
-        // TODO: Make this listen to cached
+        /// <summary>
+        /// Fetches and caches the participants of a chatroom.
+        /// </summary>
+        /// <param name="chatroomId">The ID of the chatroom.</param>
         private async Task FetchAndCacheParticipants(string chatroomId)
         {
             // Clear stale data
@@ -225,16 +249,25 @@ namespace Banter
             }
         }
 
+        /// <summary>
+        /// Shows the window.
+        /// </summary>
         public void Show()
         {
             Application.Top.Add(views: [window]);
         }
 
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
         public void Hide()
         {
             Application.Top.Remove(view: window);
         }
 
+        /// <summary>
+        /// The main window for this view.
+        /// </summary>
         private readonly Window window = new()
         {
             Title = "Main Chat",
@@ -248,6 +281,9 @@ namespace Banter
             ColorScheme = CustomColorScheme.Window,
         };
 
+        /// <summary>
+        /// The label to display when no chatroom is selected.
+        /// </summary>
         private readonly Label labelEmptyChatroom = new()
         {
             Text = "You have not yet chosen a chatroom...",
@@ -256,6 +292,9 @@ namespace Banter
             Y = Pos.Center(),
         };
 
+        /// <summary>
+        /// The label to display when there are no chats in the chatroom.
+        /// </summary>
         private readonly Label labelEmptyChat = new()
         {
             Text = "No chats yet, better strike a conversation first!",
@@ -264,6 +303,9 @@ namespace Banter
             Y = Pos.Center(),
         };
 
+        /// <summary>
+        /// The label displaying the name of the current chatroom.
+        /// </summary>
         private readonly Label chatroomName = new()
         {
             Text = "",
@@ -272,6 +314,9 @@ namespace Banter
             Y = Pos.At(n: 1), // At the top
         };
 
+        /// <summary>
+        /// The label to display when the user is not logged in.
+        /// </summary>
         private readonly Label labelEmpty = new()
         {
             Text = "Nothing to see here...",
@@ -282,6 +327,9 @@ namespace Banter
             ColorScheme = CustomColorScheme.LabelEmpty,
         };
 
+        /// <summary>
+        /// The button to view pinned messages.
+        /// </summary>
         private readonly Button viewPinnedMessagesButton = new()
         {
             Text = "View pinned messages",
@@ -292,6 +340,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The label for the search chat text field.
+        /// </summary>
         private static readonly Label searchChatLabel = new()
         {
             Text = "Search chat:",
@@ -300,6 +351,9 @@ namespace Banter
             Y = Pos.At(n: 5),
         };
 
+        /// <summary>
+        /// The text field for searching the chat history.
+        /// </summary>
         private readonly TextField searchChatTextField = new()
         {
             X = Pos.Right(view: searchChatLabel) + Pos.At(n: 1),
@@ -308,6 +362,9 @@ namespace Banter
             Width = Dim.Fill() - Dim.Width(view: clearSearchChatButton),
         };
 
+        /// <summary>
+        /// The button to clear the search chat text field.
+        /// </summary>
         private static readonly Button clearSearchChatButton = new()
         {
             Text = "Clear",
@@ -318,6 +375,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The label to indicate the current search query.
+        /// </summary>
         private readonly Label searchIndicatorLabel = new()
         {
             Text = "",
@@ -326,6 +386,9 @@ namespace Banter
             Y = Pos.At(n: 6),
         };
 
+        /// <summary>
+        /// The list view for displaying the chat history.
+        /// </summary>
         private readonly ListView chatHistory = new()
         {
             X = 0,
@@ -335,6 +398,9 @@ namespace Banter
             Width = Dim.Fill(),
         };
 
+        /// <summary>
+        /// The text field for composing messages.
+        /// </summary>
         private readonly TextField chatBox = new()
         {
             Width = Dim.Fill() - Dim.Width(view: buttonSend),
@@ -343,6 +409,9 @@ namespace Banter
             Y = Pos.AnchorEnd() - Pos.At(n: 1), // At the bottom
         };
 
+        /// <summary>
+        /// The button to send a message.
+        /// </summary>
         private static readonly Button buttonSend = new()
         {
             Text = "Send",
@@ -354,7 +423,10 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
-        // TODO: Make this listen to cached
+        /// <summary>
+        /// Starts a listener for new messages in a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
         private void StartListener(string chatroom_id)
         {
             CollectionReference messegesRef = db.Collection(path: "Chatrooms")
@@ -366,7 +438,10 @@ namespace Banter
             _listener = query.Listen(callback: (snapshot) => _ = OnSnapshotReceived(snapshot));
         }
 
-        // TODO: Make this listen to cached
+        /// <summary>
+        /// Handles the snapshot received from the Firestore listener for messages.
+        /// </summary>
+        /// <param name="snapshot">The query snapshot.</param>
         private async Task OnSnapshotReceived(QuerySnapshot snapshot)
         {
             foreach (DocumentChange? change in snapshot.Changes)
@@ -440,6 +515,10 @@ namespace Banter
             Application.MainLoop.Invoke(action: ScrollToLatestChat);
         }
 
+        /// <summary>
+        /// Starts a listener for changes to the chatroom document.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
         private async Task StartChatroomListener(string chatroom_id)
         {
             DocumentReference chatroomRef = db.Collection(path: "Chatrooms")
@@ -496,6 +575,9 @@ namespace Banter
             );
         }
 
+        /// <summary>
+        /// Scrolls the chat history to the latest chat.
+        /// </summary>
         private void ScrollToLatestChat()
         {
             chatHistory.ScrollDown(items: messages.Count - 1);

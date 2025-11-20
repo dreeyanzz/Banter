@@ -1,12 +1,19 @@
+using Banter.Utilities;
 using Terminal.Gui;
 
-namespace Banter
+namespace Banter.Windows
 {
+    /// <summary>
+    /// Represents the login window of the application. This class is a singleton.
+    /// </summary>
     public sealed class LogInWindow : AbstractWindow
     {
         // Singleton pattern
         private static readonly Lazy<LogInWindow> lazyInstance = new(() => new LogInWindow());
 
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="LogInWindow"/>.
+        /// </summary>
         public static LogInWindow Instance => lazyInstance.Value;
 
         private LogInWindow()
@@ -41,6 +48,10 @@ namespace Banter
             );
         }
 
+        /// <summary>
+        /// Enables or disables all interactive UI elements.
+        /// </summary>
+        /// <param name="isEnabled">Whether the elements should be enabled.</param>
         private void SetInteractables(bool isEnabled)
         {
             usernameTextField.Enabled = isEnabled;
@@ -48,17 +59,26 @@ namespace Banter
             logInButton.Enabled = isEnabled;
         }
 
+        /// <summary>
+        /// Shows the window.
+        /// </summary>
         public void Show()
         {
             WindowHelper.OpenWindow(window);
             WindowHelper.FocusWindow(window);
         }
 
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
         public void Hide()
         {
             WindowHelper.CloseWindow(window);
         }
 
+        /// <summary>
+        /// Displays the Banter logo.
+        /// </summary>
         private void DisplayLogo()
         {
             List<string> BanterLogo = [.. File.ReadAllLines("BanterLogo.txt")];
@@ -69,6 +89,9 @@ namespace Banter
             window.Add(view: this.BanterLogo);
         }
 
+        /// <summary>
+        /// Handles the click event of the "Log In" button.
+        /// </summary>
         private async void OnLogInButtonClicked()
         {
             string? inputUsername = usernameTextField.Text.ToString();
@@ -163,6 +186,9 @@ namespace Banter
             Window3.Instance.Show();
         }
 
+        /// <summary>
+        /// Handles the click event of the "Create Account" button.
+        /// </summary>
         private void OnCreateAccountButtonClicked()
         {
             WindowHelper.CloseWindow(window: window);
@@ -170,6 +196,9 @@ namespace Banter
             CreateAccountWindow.Instance.Show();
         }
 
+        /// <summary>
+        /// The main window for this view.
+        /// </summary>
         private readonly Window window = new()
         {
             Title = "Log In",
@@ -180,6 +209,9 @@ namespace Banter
             ColorScheme = CustomColorScheme.Window,
         };
 
+        /// <summary>
+        /// The list view for displaying the Banter logo.
+        /// </summary>
         private readonly ListView BanterLogo = new()
         {
             X = Pos.Center(),
@@ -188,6 +220,9 @@ namespace Banter
             Enabled = false,
         };
 
+        /// <summary>
+        /// The label for the username text field.
+        /// </summary>
         private readonly Label usernameLabel = new()
         {
             Text = "Username:",
@@ -196,6 +231,9 @@ namespace Banter
             Y = Pos.Y(usernameTextField),
         };
 
+        /// <summary>
+        /// The text field for entering the username.
+        /// </summary>
         private static readonly TextField usernameTextField = new()
         {
             X = Pos.Center(),
@@ -204,6 +242,9 @@ namespace Banter
             Width = 50,
         };
 
+        /// <summary>
+        /// The label for the password text field.
+        /// </summary>
         private readonly Label passwordLabel = new()
         {
             Text = "Password:",
@@ -212,6 +253,9 @@ namespace Banter
             Y = Pos.Y(passwordTextField),
         };
 
+        /// <summary>
+        /// The text field for entering the password.
+        /// </summary>
         private static readonly TextField passwordTextField = new()
         {
             X = Pos.Center(),
@@ -221,6 +265,10 @@ namespace Banter
 
             Secret = true,
         };
+
+        /// <summary>
+        /// The button to show or hide the password.
+        /// </summary>
         private readonly Button showHidePassword = new()
         {
             Text = "",
@@ -231,6 +279,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The button to log in.
+        /// </summary>
         private readonly Button logInButton = new()
         {
             Text = "Log In",
@@ -241,6 +292,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The button to navigate to the create account window.
+        /// </summary>
         private readonly Button createAccountButton = new()
         {
             Text = "Create Account",

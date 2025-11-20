@@ -1,11 +1,15 @@
 using System.Text.RegularExpressions;
 
-namespace Banter
+namespace Banter.Utilities
 {
+    /// <summary>
+    /// Provides methods for detecting and censoring profane language in strings.
+    /// </summary>
     public static class ProfanityChecker
     {
-        // 1. Core List of Profane Words
-        // These are the base words used for both simple and robust checking.
+        /// <summary>
+        /// Core list of profane words used for both simple and robust checking.
+        /// </summary>
         private static readonly string[] ProfaneWordsArray =
         [
             // Core Profanities & Variants
@@ -209,15 +213,17 @@ namespace Banter
             "leche", // Spanish/Filipino for "milk," used as a mild curse
         ];
 
-        // 2. Simple Whole-Word Regex
-        // Used by the simple CensorText method (yours).
+        /// <summary>
+        /// Regex for simple whole-word profanity matching.
+        /// </summary>
         private static readonly Regex SimpleProfanityRegex = new(
             @"\b(" + string.Join("|", ProfaneWordsArray) + @")\b",
             RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
-        // 3. Leetspeak/Alphanumeric Mapping
-        // Map common leetspeak characters back to standard letters for normalization.
+        /// <summary>
+        /// Maps common leetspeak characters back to standard letters for normalization.
+        /// </summary>
         private static readonly Dictionary<char, char> LeetMap = new()
         {
             { '0', 'o' },
@@ -238,19 +244,23 @@ namespace Banter
             { 'e', 'i' },
         };
 
-        // 4. Simple Censor (Whole Word Match)
         /// <summary>
         /// Replaces whole, clearly defined profane words with asterisks of the same length.
+        /// This method is fast but can be easily bypassed.
         /// </summary>
+        /// <param name="text">The input text to censor.</param>
+        /// <returns>The censored text.</returns>
         public static string CensorTextSimple(string text)
         {
             return SimpleProfanityRegex.Replace(text, match => new string('*', match.Length));
         }
 
-        // 5. Robust Censor (Handles Leetspeak and Punctuation Splitting)
         /// <summary>
-        /// Attempts to censor messages even when characters are substituted or separated by non-alphanumeric symbols.
+        /// Attempts to censor messages even when characters are substituted (leetspeak) or separated by non-alphanumeric symbols.
+        /// This method is more thorough but slower than <see cref="CensorTextSimple"/>.
         /// </summary>
+        /// <param name="text">The input text to censor.</param>
+        /// <returns>The censored text.</returns>
         public static string CensorTextRobust(string text)
         {
             string originalText = text;

@@ -2,17 +2,25 @@ using System.Reflection;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 
-namespace Banter
+namespace Banter.Utilities
 {
+    /// <summary>
+    /// Manages the connection to the Firestore database using a singleton pattern.
+    /// </summary>
     public sealed class FirestoreManager
     {
         private static readonly Lazy<FirestoreManager> lazyInstance = new(() =>
             new FirestoreManager()
         );
 
+        /// <summary>
+        /// Gets the singleton instance of the FirestoreManager.
+        /// </summary>
         public static FirestoreManager Instance => lazyInstance.Value;
 
-        // The actual Firestore database object
+        /// <summary>
+        /// The actual Firestore database object.
+        /// </summary>
         public FirestoreDb Database { get; private set; }
 
         //  Google Cloud Project ID
@@ -26,8 +34,7 @@ namespace Banter
 
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
-                string resourceName =
-                    "Banter.banter-7717f-firebase-adminsdk-fbsvc-9cb1cd3095.json";
+                string resourceName = "Banter.banter-7717f-firebase-adminsdk-fbsvc-9cb1cd3095.json";
 
                 // 5. Load the file as a Stream
                 GoogleCredential credential;

@@ -1,7 +1,11 @@
+using Banter.Utilities;
 using Terminal.Gui;
 
-namespace Banter
+namespace Banter.Windows
 {
+    /// <summary>
+    /// Represents the window for creating a new chatroom. This class is a singleton.
+    /// </summary>
     public sealed class CreateChatroomWindow : AbstractWindow
     {
         // Singleton pattern
@@ -9,6 +13,9 @@ namespace Banter
             new CreateChatroomWindow()
         );
 
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="CreateChatroomWindow"/>.
+        /// </summary>
         public static CreateChatroomWindow Instance => lazyInstance.Value;
 
         private readonly List<string> participants = [];
@@ -65,6 +72,9 @@ namespace Banter
             );
         }
 
+        /// <summary>
+        /// Handles the click event of the "Add" button.
+        /// </summary>
         private async Task OnAddButtonClicked()
         {
             string? inputUsername = usersTextField.Text.ToString();
@@ -103,6 +113,9 @@ namespace Banter
             usersTextField.Text = string.Empty;
         }
 
+        /// <summary>
+        /// Handles the click event of the "Create" button.
+        /// </summary>
         private async Task OnCreateButtonClicked()
         {
             if (participants.Count <= 0)
@@ -115,16 +128,25 @@ namespace Banter
             participants_ids.Clear();
         }
 
+        /// <summary>
+        /// Shows the window.
+        /// </summary>
         public void Show()
         {
             WindowHelper.FocusWindow(window: window);
         }
 
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
         public void Hide()
         {
             Application.Top.Remove(view: window);
         }
 
+        /// <summary>
+        /// The main window for this view.
+        /// </summary>
         private readonly Window window = new()
         {
             Title = "Create Chatroom",
@@ -138,8 +160,14 @@ namespace Banter
             ColorScheme = CustomColorScheme.Window,
         };
 
+        /// <summary>
+        /// The label indicating the list of users to be added.
+        /// </summary>
         private readonly Label indicatorLabel = new() { Text = "Users to be added:" };
 
+        /// <summary>
+        /// The button to close the window.
+        /// </summary>
         private readonly Button closeButton = new()
         {
             Text = "Close",
@@ -150,6 +178,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The list view displaying the participants to be added.
+        /// </summary>
         private readonly ListView participantsListView = new()
         {
             Height = 5,
@@ -159,6 +190,9 @@ namespace Banter
             Y = Pos.At(2),
         };
 
+        /// <summary>
+        /// The label for the username input field.
+        /// </summary>
         private readonly Label inputUsernameLabel = new()
         {
             Text = "Type usernames here:",
@@ -167,6 +201,9 @@ namespace Banter
             Y = Pos.AnchorEnd() - Pos.At(4),
         };
 
+        /// <summary>
+        /// The text field for entering usernames.
+        /// </summary>
         private readonly TextField usersTextField = new()
         {
             Y = Pos.AnchorEnd() - Pos.At(3),
@@ -174,6 +211,9 @@ namespace Banter
             Width = Dim.Fill() - Dim.Width(addButton),
         };
 
+        /// <summary>
+        /// The button to add a user to the participants list.
+        /// </summary>
         private static readonly Button addButton = new()
         {
             Text = "Add",
@@ -184,6 +224,10 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
             IsDefault = true,
         };
+
+        /// <summary>
+        /// The button to remove the last added participant.
+        /// </summary>
         private static readonly Button removeLastButton = new()
         {
             Text = "Remove Last",
@@ -193,6 +237,10 @@ namespace Banter
 
             HotKeySpecifier = (Rune)0xffff,
         };
+
+        /// <summary>
+        /// The button to clear the participants list.
+        /// </summary>
         private readonly Button clearButton = new()
         {
             Text = "Clear",
@@ -202,6 +250,10 @@ namespace Banter
 
             HotKeySpecifier = (Rune)0xffff,
         };
+
+        /// <summary>
+        /// The button to create the chatroom.
+        /// </summary>
         private readonly Button createButton = new()
         {
             Text = "Create",

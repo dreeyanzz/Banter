@@ -1,10 +1,18 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using Banter.Windows;
 using Terminal.Gui;
 
 namespace Banter
 {
+    /// <summary>
+    /// The main class of the Banter application.
+    /// </summary>
     internal class Program
     {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
         private static void Main()
         {
             Application.Init();

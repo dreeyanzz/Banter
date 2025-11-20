@@ -1,11 +1,18 @@
+using Banter.Utilities;
 using Terminal.Gui;
 
-namespace Banter
+namespace Banter.Windows
 {
+    /// <summary>
+    /// Represents the rightmost window in the main application UI, displaying chatroom information and management options. This class is a singleton.
+    /// </summary>
     public sealed class Window3 : AbstractWindow
     {
         private static readonly Lazy<Window3> lazyInstance = new(() => new Window3());
 
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="Window3"/>.
+        /// </summary>
         public static Window3 Instance => lazyInstance.Value;
 
         private readonly List<View> views = [clearMessagesButton];
@@ -24,6 +31,9 @@ namespace Banter
             _ = OnCurrentChatroomChanged(); // Initialize
         }
 
+        /// <summary>
+        /// Handles the click event of the "Leave Chatroom" button.
+        /// </summary>
         private static async Task OnLeaveChatroomButton()
         {
             int buttonClicked = MessageBox.Query(
@@ -39,6 +49,9 @@ namespace Banter
                 );
         }
 
+        /// <summary>
+        /// Handles the current chatroom changed event.
+        /// </summary>
         private async Task OnCurrentChatroomChanged()
         {
             window.RemoveAll();
@@ -66,11 +79,17 @@ namespace Banter
             window.Add(views: [.. views]);
         }
 
+        /// <summary>
+        /// Handles the click event of the "Change Chatroom Name" button.
+        /// </summary>
         private static async Task OnChangeChatroomNameButtonClicked()
         {
             ChangeChatroomNameWindow.Instance.Show();
         }
 
+        /// <summary>
+        /// Handles the click event of the "Clear Messages" button.
+        /// </summary>
         private static async Task OnClearMessagesButtonClicked()
         {
             int buttonClicked = MessageBox.Query(
@@ -85,6 +104,9 @@ namespace Banter
                 );
         }
 
+        /// <summary>
+        /// Handles the click event of the "Delete Chatroom" button.
+        /// </summary>
         private static async Task OnDeleteChatroomButtonClicked()
         {
             int buttonClicked = MessageBox.Query(
@@ -102,16 +124,25 @@ namespace Banter
             }
         }
 
+        /// <summary>
+        /// Shows the window.
+        /// </summary>
         public void Show()
         {
             Application.Top.Add(views: [window]);
         }
 
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
         public void Hide()
         {
             Application.Top.Remove(view: window);
         }
 
+        /// <summary>
+        /// The main window for this view.
+        /// </summary>
         private readonly Window window = new()
         {
             Title = "Chat info",
@@ -125,6 +156,9 @@ namespace Banter
             ColorScheme = CustomColorScheme.Window,
         };
 
+        /// <summary>
+        /// The button to clear all messages in the chatroom.
+        /// </summary>
         private static readonly Button clearMessagesButton = new()
         {
             Text = "Clear Messages",
@@ -135,6 +169,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The button to change the chatroom name.
+        /// </summary>
         private static readonly Button changeChatroomNameButton = new()
         {
             Text = "Change chatroom name",
@@ -145,6 +182,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The button to delete the chatroom.
+        /// </summary>
         private static readonly Button deleteChatroomButton = new()
         {
             Text = "Delete Chatroom",
@@ -155,6 +195,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The button to leave the chatroom.
+        /// </summary>
         private static readonly Button leaveChatroomButton = new()
         {
             Text = "Leave Chatroom",

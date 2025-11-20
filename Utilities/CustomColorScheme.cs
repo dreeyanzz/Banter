@@ -1,9 +1,15 @@
 using Terminal.Gui;
 
-namespace Banter
+namespace Banter.Utilities
 {
+    /// <summary>
+    /// Defines custom color schemes for UI elements in the application.
+    /// </summary>
     public static class CustomColorScheme
     {
+        /// <summary>
+        /// Color scheme for windows.
+        /// </summary>
         public static readonly ColorScheme Window = new()
         {
             Normal = new Terminal.Gui.Attribute(foreground: Color.Gray, background: Color.Black),
@@ -22,6 +28,9 @@ namespace Banter
             ),
         };
 
+        /// <summary>
+        /// Color scheme for buttons.
+        /// </summary>
         public static readonly ColorScheme Button = new()
         {
             // Default, unfocused button state
@@ -43,6 +52,9 @@ namespace Banter
             HotFocus = new Terminal.Gui.Attribute(foreground: Color.Black, background: Color.Green),
         };
 
+        /// <summary>
+        /// Color scheme for empty labels.
+        /// </summary>
         public static readonly ColorScheme LabelEmpty = new()
         {
             // A Label doesn't really have different states,

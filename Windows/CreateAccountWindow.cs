@@ -1,7 +1,11 @@
+using Banter.Utilities;
 using Terminal.Gui;
 
-namespace Banter
+namespace Banter.Windows
 {
+    /// <summary>
+    /// Represents the window for creating a new user account. This class is a singleton.
+    /// </summary>
     public sealed class CreateAccountWindow : AbstractWindow
     {
         // Singleton pattern
@@ -9,6 +13,9 @@ namespace Banter
             new CreateAccountWindow()
         );
 
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="CreateAccountWindow"/>.
+        /// </summary>
         public static CreateAccountWindow Instance => lazyInstance.Value;
 
         private CreateAccountWindow()
@@ -58,17 +65,26 @@ namespace Banter
             );
         }
 
+        /// <summary>
+        /// Shows the window.
+        /// </summary>
         public void Show()
         {
             WindowHelper.OpenWindow(window);
             WindowHelper.FocusWindow(window);
         }
 
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
         public void Hide()
         {
             WindowHelper.CloseWindow(window);
         }
 
+        /// <summary>
+        /// Clears all input fields.
+        /// </summary>
         private void ClearFields()
         {
             usernameTextField.Text = "";
@@ -78,6 +94,10 @@ namespace Banter
             emailTextField.Text = "";
         }
 
+        /// <summary>
+        /// Enables or disables all interactive UI elements.
+        /// </summary>
+        /// <param name="isEnabled">Whether the elements should be enabled.</param>
         private void SetInteractables(bool isEnabled)
         {
             usernameTextField.Enabled = isEnabled;
@@ -90,6 +110,10 @@ namespace Banter
             createAccountButton.Enabled = isEnabled;
         }
 
+        /// <summary>
+        /// Displays a validation error message.
+        /// </summary>
+        /// <param name="message">The error message to display.</param>
         private void HandleValidationError(string message)
         {
             MessageBox.ErrorQuery(title: "Invalid input", message: message, buttons: ["Ok"]);
@@ -98,6 +122,9 @@ namespace Banter
             SetInteractables(true);
         }
 
+        /// <summary>
+        /// Displays the Banter logo.
+        /// </summary>
         private void DisplayLogo()
         {
             List<string> BanterLogo = [.. File.ReadAllLines("BanterLogo.txt")];
@@ -108,6 +135,9 @@ namespace Banter
             window.Add(view: this.BanterLogo);
         }
 
+        /// <summary>
+        /// The list view for displaying the Banter logo.
+        /// </summary>
         private readonly ListView BanterLogo = new()
         {
             X = Pos.Center(),
@@ -116,6 +146,9 @@ namespace Banter
             Enabled = false,
         };
 
+        /// <summary>
+        /// Handles the click event of the "Back" button.
+        /// </summary>
         private void OnBackButtonClicked()
         {
             ClearFields();
@@ -124,6 +157,9 @@ namespace Banter
             LogInWindow.Instance.Show();
         }
 
+        /// <summary>
+        /// Handles the click event of the "Create Account" button.
+        /// </summary>
         private async void OnCreateAccountButtonClicked()
         {
             string? inputUsername = usernameTextField.Text.ToString();
@@ -217,6 +253,9 @@ namespace Banter
             ClearFields();
         }
 
+        /// <summary>
+        /// The main window for this view.
+        /// </summary>
         private readonly Window window = new()
         {
             Title = "Create Account",
@@ -227,6 +266,9 @@ namespace Banter
             ColorScheme = CustomColorScheme.Window,
         };
 
+        /// <summary>
+        /// The label for the username text field.
+        /// </summary>
         private readonly Label usernameLabel = new()
         {
             Text = "Username:",
@@ -235,6 +277,9 @@ namespace Banter
             Y = Pos.Y(usernameTextField),
         };
 
+        /// <summary>
+        /// The text field for entering the username.
+        /// </summary>
         private static readonly TextField usernameTextField = new()
         {
             X = Pos.Center(),
@@ -243,6 +288,9 @@ namespace Banter
             Width = 50,
         };
 
+        /// <summary>
+        /// The label for the password text field.
+        /// </summary>
         private readonly Label passwordLabel = new()
         {
             Text = "Password:",
@@ -251,6 +299,9 @@ namespace Banter
             Y = Pos.Y(passwordTextField),
         };
 
+        /// <summary>
+        /// The text field for entering the password.
+        /// </summary>
         private static readonly TextField passwordTextField = new()
         {
             X = Pos.Center(),
@@ -261,6 +312,9 @@ namespace Banter
             Secret = true,
         };
 
+        /// <summary>
+        /// The label for the repeat password text field.
+        /// </summary>
         private readonly Label repeatPasswordLabel = new()
         {
             Text = "Repeat password:",
@@ -269,6 +323,9 @@ namespace Banter
             Y = Pos.Y(repeatPasswordTextField),
         };
 
+        /// <summary>
+        /// The text field for repeating the password.
+        /// </summary>
         private static readonly TextField repeatPasswordTextField = new()
         {
             X = Pos.Center(),
@@ -279,6 +336,9 @@ namespace Banter
             Secret = true,
         };
 
+        /// <summary>
+        /// The button to show or hide the passwords.
+        /// </summary>
         private static readonly Button showHidePasswords = new()
         {
             Text = "",
@@ -289,6 +349,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The label for the name text field.
+        /// </summary>
         private readonly Label nameLabel = new()
         {
             Text = "Name:",
@@ -297,6 +360,9 @@ namespace Banter
             Y = Pos.Y(nameTextField),
         };
 
+        /// <summary>
+        /// The text field for entering the name.
+        /// </summary>
         private static readonly TextField nameTextField = new()
         {
             X = Pos.Center(),
@@ -307,6 +373,9 @@ namespace Banter
             Secret = false,
         };
 
+        /// <summary>
+        /// The label for the email text field.
+        /// </summary>
         private readonly Label emailLabel = new()
         {
             Text = "Email:",
@@ -315,6 +384,9 @@ namespace Banter
             Y = Pos.Y(emailTextField),
         };
 
+        /// <summary>
+        /// The text field for entering the email.
+        /// </summary>
         private static readonly TextField emailTextField = new()
         {
             X = Pos.Center(),
@@ -325,6 +397,9 @@ namespace Banter
             Secret = false,
         };
 
+        /// <summary>
+        /// The button to create the account.
+        /// </summary>
         private readonly Button createAccountButton = new()
         {
             Text = "Create Account",
@@ -335,6 +410,9 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// The button to go back to the login window.
+        /// </summary>
         private readonly Button backButton = new()
         {
             Text = "Back",

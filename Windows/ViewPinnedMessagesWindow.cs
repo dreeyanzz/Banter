@@ -1,8 +1,12 @@
+using Banter.Utilities;
 using Google.Cloud.Firestore;
 using Terminal.Gui;
 
-namespace Banter
+namespace Banter.Windows
 {
+    /// <summary>
+    /// Represents the window for viewing pinned messages in a chatroom. This class is a singleton.
+    /// </summary>
     public sealed class ViewPinnedMessagesWindow : AbstractWindow
     {
         private static readonly Lazy<ViewPinnedMessagesWindow> lazyInstance = new(
@@ -12,6 +16,9 @@ namespace Banter
         private readonly FirestoreDb db = FirestoreManager.Instance.Database;
         private FirestoreChangeListener? chatroomListener;
 
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="ViewPinnedMessagesWindow"/>.
+        /// </summary>
         public static ViewPinnedMessagesWindow Instance => lazyInstance.Value;
 
         private readonly List<string> message_ids = [];
@@ -45,12 +52,18 @@ namespace Banter
             };
         }
 
+        /// <summary>
+        /// Shows the window and starts listening for pinned messages.
+        /// </summary>
         public void Show()
         {
             WindowHelper.FocusWindow(window: window);
             StartPinnedMessagesListener(SessionHandler.CurrentChatroomId!);
         }
 
+        /// <summary>
+        /// Hides the window and stops listening for pinned messages.
+        /// </summary>
         public void Hide()
         {
             chatroomListener?.StopAsync();
@@ -63,6 +76,9 @@ namespace Banter
             Application.Top.Remove(view: window);
         }
 
+        /// <summary>
+        /// The main window for this view.
+        /// </summary>
         private readonly Window window = new()
         {
             Title = "Pinned messages",
@@ -76,6 +92,9 @@ namespace Banter
             ColorScheme = CustomColorScheme.Window,
         };
 
+        /// <summary>
+        /// The list view for displaying pinned messages.
+        /// </summary>
         private readonly ListView pinnedMessagesListView = new()
         {
             X = Pos.At(0),
@@ -85,6 +104,9 @@ namespace Banter
             Height = Dim.Fill(),
         };
 
+        /// <summary>
+        /// The button to close the window.
+        /// </summary>
         Button closeButton = new()
         {
             Text = "Close",
@@ -95,6 +117,10 @@ namespace Banter
             HotKeySpecifier = (Rune)0xffff,
         };
 
+        /// <summary>
+        /// Starts listening for changes to pinned messages in a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
         private void StartPinnedMessagesListener(string chatroom_id)
         {
             DocumentReference chatroomRef = db.Collection("Chatrooms").Document(chatroom_id);
@@ -102,11 +128,19 @@ namespace Banter
             chatroomListener = chatroomRef.Listen(callback: OnSnapshotReceived);
         }
 
+        /// <summary>
+        /// Handles the snapshot received from the Firestore listener.
+        /// </summary>
+        /// <param name="snapshot">The document snapshot.</param>
         private void OnSnapshotReceived(DocumentSnapshot snapshot)
         {
             _ = HandleSnapshotAsync(snapshot); // fire-and-forget
         }
 
+        /// <summary>
+        /// Asynchronously handles the snapshot to update the pinned messages list.
+        /// </summary>
+        /// <param name="snapshot">The document snapshot.</param>
         private async Task HandleSnapshotAsync(DocumentSnapshot snapshot)
         {
             if (
@@ -160,6 +194,9 @@ namespace Banter
             });
         }
 
+        /// <summary>
+        /// Scrolls the pinned messages list to the latest chat.
+        /// </summary>
         private void ScrollToLatestChat()
         {
             pinnedMessagesListView.ScrollDown(items: messages.Count - 1);
