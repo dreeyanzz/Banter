@@ -1,6 +1,6 @@
 using Google.Cloud.Firestore;
 
-namespace CpE261FinalProject
+namespace Banter
 {
     public static class SessionHandler
     {

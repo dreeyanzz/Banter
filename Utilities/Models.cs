@@ -1,7 +1,7 @@
 using Google.Cloud.Firestore;
 using LiteDB;
 
-namespace CpE261FinalProject
+namespace Banter
 {
     [FirestoreData]
     public class User

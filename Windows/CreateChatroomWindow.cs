@@ -1,6 +1,6 @@
 using Terminal.Gui;
 
-namespace CpE261FinalProject
+namespace Banter
 {
     public sealed class CreateChatroomWindow : AbstractWindow
     {

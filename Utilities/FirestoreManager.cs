@@ -2,7 +2,7 @@ using System.Reflection;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 
-namespace CpE261FinalProject
+namespace Banter
 {
     public sealed class FirestoreManager
     {
@@ -27,7 +27,7 @@ namespace CpE261FinalProject
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
                 string resourceName =
-                    "CpE261FinalProject.banter-7717f-firebase-adminsdk-fbsvc-9cb1cd3095.json";
+                    "Banter.banter-7717f-firebase-adminsdk-fbsvc-9cb1cd3095.json";
 
                 // 5. Load the file as a Stream
                 GoogleCredential credential;

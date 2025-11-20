@@ -1,6 +1,6 @@
 using LiteDB;
 
-namespace CpE261FinalProject
+namespace Banter
 {
     public static class LocalCacheHandler
     {

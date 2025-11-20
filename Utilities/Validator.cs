@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace CpE261FinalProject
+namespace Banter
 {
     public static class Validator
     {

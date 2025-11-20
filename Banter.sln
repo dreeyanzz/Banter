@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CpE261FinalProject", "CpE261FinalProject.csproj", "{6C60D9CD-37B5-42FD-7DE7-53158F2108F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Banter", "Banter.csproj", "{6C60D9CD-37B5-42FD-7DE7-53158F2108F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

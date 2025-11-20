@@ -1,4 +1,4 @@
-namespace CpE261FinalProject
+namespace Banter
 {
     public interface IViewable
     {

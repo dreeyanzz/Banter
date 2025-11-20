@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Terminal.Gui;
 
-namespace CpE261FinalProject
+namespace Banter
 {
     internal class Program
     {
