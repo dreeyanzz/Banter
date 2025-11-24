@@ -8,7 +8,7 @@ namespace Banter.Windows
     /// </summary>
     public sealed class Window3 : AbstractWindow
     {
-        private static readonly Lazy<Window3> lazyInstance = new(() => new Window3());
+        private static readonly Lazy<Window3> lazyInstance = new(valueFactory: () => new Window3());
 
         /// <summary>
         /// Gets the singleton instance of the <see cref="Window3"/>.
@@ -63,6 +63,8 @@ namespace Banter.Windows
             string chatroom_type = await FirebaseHelper.GetChatroomTypeById(
                 chatroom_id: SessionHandler.CurrentChatroomId
             );
+
+            //? What if chatroom_type is empty?
 
             if (chatroom_type == "group")
             {

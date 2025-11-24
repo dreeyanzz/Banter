@@ -9,7 +9,7 @@ namespace Banter.Windows
     public sealed class CreateChatroomWindow : AbstractWindow
     {
         // Singleton pattern
-        private static readonly Lazy<CreateChatroomWindow> lazyInstance = new(() =>
+        private static readonly Lazy<CreateChatroomWindow> lazyInstance = new(valueFactory: () =>
             new CreateChatroomWindow()
         );
 
@@ -29,6 +29,7 @@ namespace Banter.Windows
                 participants.Clear();
                 participants_ids.Clear();
             };
+
             removeLastButton.Clicked += () =>
             {
                 if (participants.Count > 0)
@@ -37,11 +38,13 @@ namespace Banter.Windows
                     participants_ids.RemoveAt(index: participants_ids.Count - 1);
                 }
             };
+
             clearButton.Clicked += () =>
             {
                 participants.Clear();
                 participants_ids.Clear();
             };
+
             participantsListView.SetSource(source: participants);
             addButton.Clicked += async () => await OnAddButtonClicked();
             createButton.Clicked += async () => await OnCreateButtonClicked();
@@ -77,9 +80,9 @@ namespace Banter.Windows
         /// </summary>
         private async Task OnAddButtonClicked()
         {
-            string? inputUsername = usersTextField.Text.ToString();
+            string inputUsername = usersTextField.Text.ToString() ?? string.Empty;
 
-            if (string.IsNullOrEmpty(inputUsername))
+            if (string.IsNullOrEmpty(value: inputUsername))
                 return;
 
             if (inputUsername == SessionHandler.Username)
@@ -104,11 +107,10 @@ namespace Banter.Windows
                 return;
             }
 
-            string? participant_id = await FirebaseHelper.GetUserIdFromUsername(
-                username: inputUsername
-            );
+            string participant_id =
+                await FirebaseHelper.GetUserIdFromUsername(username: inputUsername) ?? string.Empty;
 
-            participants_ids.Add(item: participant_id!); //! using `!` here
+            participants_ids.Add(item: participant_id); //! using `!` here
             participants.Add(item: inputUsername);
             usersTextField.Text = string.Empty;
         }
@@ -151,8 +153,8 @@ namespace Banter.Windows
         {
             Title = "Create Chatroom",
 
-            Height = Dim.Percent(50),
-            Width = Dim.Percent(50),
+            Height = Dim.Percent(n: 50),
+            Width = Dim.Percent(n: 50),
 
             X = Pos.Center(),
             Y = Pos.Center(),
@@ -172,8 +174,8 @@ namespace Banter.Windows
         {
             Text = "Close",
 
-            X = Pos.AnchorEnd() - Pos.At("Close".Length + 4),
-            Y = Pos.At(0),
+            X = Pos.AnchorEnd() - Pos.At(n: "Close".Length + 4),
+            Y = Pos.At(n: 0),
 
             HotKeySpecifier = (Rune)0xffff,
         };
@@ -183,11 +185,11 @@ namespace Banter.Windows
         /// </summary>
         private readonly ListView participantsListView = new()
         {
-            Height = 5,
+            Height = Dim.Sized(n: 5),
             Width = Dim.Fill(),
 
-            X = 0,
-            Y = Pos.At(2),
+            X = Pos.At(n: 0),
+            Y = Pos.At(n: 2),
         };
 
         /// <summary>
@@ -197,8 +199,8 @@ namespace Banter.Windows
         {
             Text = "Type usernames here:",
 
-            X = 0,
-            Y = Pos.AnchorEnd() - Pos.At(4),
+            X = Pos.At(n: 0),
+            Y = Pos.AnchorEnd() - Pos.At(n: 4),
         };
 
         /// <summary>
@@ -206,9 +208,9 @@ namespace Banter.Windows
         /// </summary>
         private readonly TextField usersTextField = new()
         {
-            Y = Pos.AnchorEnd() - Pos.At(3),
+            Y = Pos.AnchorEnd() - Pos.At(n: 3),
 
-            Width = Dim.Fill() - Dim.Width(addButton),
+            Width = Dim.Fill() - Dim.Width(view: addButton),
         };
 
         /// <summary>
@@ -218,8 +220,8 @@ namespace Banter.Windows
         {
             Text = "Add",
 
-            X = Pos.AnchorEnd() - Pos.At("Add".Length + 4),
-            Y = Pos.AnchorEnd() - Pos.At(3),
+            X = Pos.AnchorEnd() - Pos.At(n: "Add".Length + 4),
+            Y = Pos.AnchorEnd() - Pos.At(n: 3),
 
             HotKeySpecifier = (Rune)0xffff,
             IsDefault = true,
@@ -258,7 +260,7 @@ namespace Banter.Windows
         {
             Text = "Create",
 
-            X = Pos.AnchorEnd() - Pos.At("Create".Length + 4),
+            X = Pos.AnchorEnd() - Pos.At(n: "Create".Length + 4),
             Y = Pos.AnchorEnd() - Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,

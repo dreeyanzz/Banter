@@ -24,7 +24,7 @@ namespace Banter.Windows
         private List<string> currentPinnedIds = [];
         private int numFill = 0;
 
-        private readonly List<View> chatInputViews;
+        private readonly List<View> chatInputViews = [];
 
         private Window2()
         {
@@ -59,7 +59,6 @@ namespace Banter.Windows
                     return;
 
                 string chat_id = message_ids[selectedIndex];
-
                 await FirebaseHelper.PinChatroomMessage(
                     chatroom_id: SessionHandler.CurrentChatroomId!,
                     message_id: chat_id
@@ -71,6 +70,7 @@ namespace Banter.Windows
                 buttonSend.IsDefault = true;
                 Application.MainLoop.Invoke(action: () => chatBox.SetFocus());
             };
+
             window.Leave += (_) => buttonSend.IsDefault = false;
 
             OnLogInChanged(IsLoggedIn: SessionHandler.IsLoggedIn);
@@ -81,15 +81,15 @@ namespace Banter.Windows
         /// </summary>
         private void OnSearchChatTextChanged()
         {
-            string textToSearch = searchChatTextField.Text.ToString() ?? "";
-
-            List<string> filtered;
-
+            string textToSearch = searchChatTextField.Text.ToString() ?? string.Empty;
             if (!string.IsNullOrWhiteSpace(value: textToSearch))
             {
                 searchIndicatorLabel.Text = $"Searching for: {textToSearch}";
 
-                filtered = [.. messages.Where(entry => entry.Contains(value: textToSearch))];
+                List<string> filtered =
+                [
+                    .. messages.Where(entry => entry.Contains(value: textToSearch)),
+                ];
 
                 bool needsFill = filtered.Count < chatHistory.Frame.Height;
                 numFill = Math.Max(val1: 0, val2: chatHistory.Frame.Height - filtered.Count);
@@ -103,8 +103,8 @@ namespace Banter.Windows
                 searchIndicatorLabel.Text = string.Empty;
 
                 bool needsFill = messages.Count < chatHistory.Frame.Height;
-                numFill = Math.Max(0, chatHistory.Frame.Height - messages.Count);
-                IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                numFill = Math.Max(val1: 0, val2: chatHistory.Frame.Height - messages.Count);
+                IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
                 Application.MainLoop.Invoke(action: () =>
                     chatHistory.SetSource(source: needsFill ? [.. filler, .. messages] : messages)
                 );
@@ -118,11 +118,11 @@ namespace Banter.Windows
         /// </summary>
         private async void OnButtonSendClicked()
         {
-            string? messageText = chatBox.Text.ToString();
-            string? senderId = SessionHandler.UserId;
-            string? chatroomId = SessionHandler.CurrentChatroomId;
+            string messageText = chatBox.Text.ToString() ?? string.Empty;
+            string senderId = SessionHandler.UserId ?? string.Empty;
+            string chatroomId = SessionHandler.CurrentChatroomId ?? string.Empty;
 
-            if (string.IsNullOrWhiteSpace(value: messageText) || senderId == null)
+            if (!(!string.IsNullOrWhiteSpace(value: messageText) && senderId != null))
                 return;
             chatBox.Text = string.Empty;
 
@@ -196,6 +196,8 @@ namespace Banter.Windows
                 chatroom_id: SessionHandler.CurrentChatroomId! //! using `!` here
             );
 
+            // ?What if _chatroomName is empty?
+
             Application.MainLoop.Invoke(action: () =>
             {
                 chatroomName.Text = _chatroomName;
@@ -262,7 +264,7 @@ namespace Banter.Windows
         /// </summary>
         public void Hide()
         {
-            Application.Top.Remove(view: window);
+            WindowHelper.CloseWindow(window: window);
         }
 
         /// <summary>
@@ -308,7 +310,7 @@ namespace Banter.Windows
         /// </summary>
         private readonly Label chatroomName = new()
         {
-            Text = "",
+            Text = string.Empty,
 
             X = Pos.Center(),
             Y = Pos.At(n: 1), // At the top
@@ -380,9 +382,9 @@ namespace Banter.Windows
         /// </summary>
         private readonly Label searchIndicatorLabel = new()
         {
-            Text = "",
+            Text = string.Empty,
 
-            X = 0,
+            X = Pos.At(n: 0),
             Y = Pos.At(n: 6),
         };
 
@@ -391,7 +393,7 @@ namespace Banter.Windows
         /// </summary>
         private readonly ListView chatHistory = new()
         {
-            X = 0,
+            X = Pos.At(n: 0),
             Y = Pos.At(n: 7),
 
             Height = Dim.Sized(n: 20),
@@ -405,7 +407,7 @@ namespace Banter.Windows
         {
             Width = Dim.Fill() - Dim.Width(view: buttonSend),
 
-            X = 0,
+            X = Pos.At(n: 0),
             Y = Pos.AnchorEnd() - Pos.At(n: 1), // At the bottom
         };
 
@@ -435,7 +437,9 @@ namespace Banter.Windows
 
             Query query = messegesRef.OrderBy(fieldPath: "timestamp");
 
-            _listener = query.Listen(callback: (snapshot) => _ = OnSnapshotReceived(snapshot));
+            _listener = query.Listen(
+                callback: (snapshot) => _ = OnSnapshotReceived(snapshot: snapshot)
+            );
         }
 
         /// <summary>
@@ -486,23 +490,23 @@ namespace Banter.Windows
                     message_id: change.Document.Id
                 );
 
-                bool isHello = message == "hello";
-
                 string chatEntry =
-                    $"{displayName}: {(isHello ? "hello" : ProfanityChecker.CensorTextRobust(text: message))}";
+                    $"{displayName}: {ProfanityChecker.CensorTextRobust(text: message)}";
 
                 int existingIndex = message_ids.IndexOf(item: docId);
 
-                if (existingIndex >= 0)
+                switch (existingIndex)
                 {
-                    // Modified document → update
-                    messages[existingIndex] = chatEntry;
-                }
-                else
-                {
-                    // New message
-                    message_ids.Add(item: docId);
-                    messages.Add(item: chatEntry);
+                    case >= 0:
+                        // Modified document → update
+                        messages[existingIndex] = chatEntry;
+                        break;
+
+                    default:
+                        // New message
+                        message_ids.Add(item: docId);
+                        messages.Add(item: chatEntry);
+                        break;
                 }
             }
 
@@ -531,9 +535,13 @@ namespace Banter.Windows
                         chatroom_id: chatroom_id
                     );
 
+                    // ?What if newChatroomName is empty?
+
                     currentPinnedIds = await FirebaseHelper.GetChatroomPinnedMessagesIdById(
                         chatroom_id
                     );
+
+                    // ?What if currentPinnedIds is empty?
 
                     Application.MainLoop.Invoke(async () =>
                     {
@@ -541,14 +549,19 @@ namespace Banter.Windows
                         chatroomName.X = Pos.Center();
 
                         List<string> pinnedMessagesId =
-                            await FirebaseHelper.GetChatroomPinnedMessagesIdById(chatroom_id);
+                            await FirebaseHelper.GetChatroomPinnedMessagesIdById(
+                                chatroom_id: chatroom_id
+                            );
 
+                        // Sets the pinned mark, if is marked, put '•', else nothing
+                        // if already marked with '•', leave it as it is, else add '•'
+                        // TODO: make pin indicator modular
                         for (int i = 0; i < messages.Count; i++)
                         {
-                            bool isPinned = currentPinnedIds.Contains(message_ids[i]);
+                            bool isPinned = currentPinnedIds.Contains(item: message_ids[i]);
                             string messageEntry = messages[i];
 
-                            if (string.IsNullOrEmpty(messageEntry))
+                            if (string.IsNullOrEmpty(value: messageEntry))
                                 continue;
 
                             char lastCharacter = messageEntry[^1];
@@ -565,8 +578,14 @@ namespace Banter.Windows
                         }
 
                         bool needsFill = messages.Count < chatHistory.Frame.Height;
-                        numFill = Math.Max(0, chatHistory.Frame.Height - messages.Count);
-                        IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                        numFill = Math.Max(
+                            val1: 0,
+                            val2: chatHistory.Frame.Height - messages.Count
+                        );
+                        IEnumerable<string> filler = Enumerable.Repeat(
+                            element: ".",
+                            count: numFill
+                        );
                         chatHistory.SetSource(
                             source: needsFill ? [.. filler, .. messages] : messages
                         );

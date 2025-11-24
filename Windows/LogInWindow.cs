@@ -9,7 +9,9 @@ namespace Banter.Windows
     public sealed class LogInWindow : AbstractWindow
     {
         // Singleton pattern
-        private static readonly Lazy<LogInWindow> lazyInstance = new(() => new LogInWindow());
+        private static readonly Lazy<LogInWindow> lazyInstance = new(valueFactory: () =>
+            new LogInWindow()
+        );
 
         /// <summary>
         /// Gets the singleton instance of the <see cref="LogInWindow"/>.
@@ -24,7 +26,6 @@ namespace Banter.Windows
             showHidePassword.Clicked += () =>
             {
                 showHidePassword.Text = passwordTextField.Secret == true ? "Hide" : "Show";
-
                 passwordTextField.Secret = !passwordTextField.Secret;
             };
 
@@ -64,8 +65,8 @@ namespace Banter.Windows
         /// </summary>
         public void Show()
         {
-            WindowHelper.OpenWindow(window);
-            WindowHelper.FocusWindow(window);
+            WindowHelper.OpenWindow(window: window);
+            WindowHelper.FocusWindow(window: window);
         }
 
         /// <summary>
@@ -73,7 +74,7 @@ namespace Banter.Windows
         /// </summary>
         public void Hide()
         {
-            WindowHelper.CloseWindow(window);
+            WindowHelper.CloseWindow(window: window);
         }
 
         /// <summary>
@@ -81,9 +82,9 @@ namespace Banter.Windows
         /// </summary>
         private void DisplayLogo()
         {
-            List<string> BanterLogo = [.. File.ReadAllLines("BanterLogo.txt")];
-            BanterLogo.Insert(0, new string(' ', BanterLogo[0].Length));
-            this.BanterLogo.SetSource(BanterLogo);
+            List<string> BanterLogo = [.. File.ReadAllLines(path: "BanterLogo.txt")];
+            BanterLogo.Insert(index: 0, item: new string(c: ' ', count: BanterLogo[0].Length));
+            this.BanterLogo.SetSource(source: BanterLogo);
             this.BanterLogo.Height = BanterLogo.Count;
             this.BanterLogo.Width = BanterLogo[1].Length;
             window.Add(view: this.BanterLogo);
@@ -94,10 +95,13 @@ namespace Banter.Windows
         /// </summary>
         private async void OnLogInButtonClicked()
         {
-            string? inputUsername = usernameTextField.Text.ToString();
-            string? inputPassword = passwordTextField.Text.ToString();
+            string inputUsername = usernameTextField.Text.ToString() ?? string.Empty;
+            string inputPassword = passwordTextField.Text.ToString() ?? string.Empty;
 
-            if (string.IsNullOrEmpty(inputUsername) || string.IsNullOrEmpty(inputPassword))
+            if (
+                string.IsNullOrEmpty(value: inputUsername)
+                || string.IsNullOrEmpty(value: inputPassword)
+            )
             {
                 MessageBox.Query(
                     title: "Message",
@@ -108,22 +112,24 @@ namespace Banter.Windows
             }
 
             logInButton.Text = "Logging in...";
-            SetInteractables(false);
+            SetInteractables(isEnabled: false);
 
-            string? user_id = await FirebaseHelper.GetUserIdFromUsername(inputUsername);
-            if (user_id == null)
+            string user_id =
+                await FirebaseHelper.GetUserIdFromUsername(username: inputUsername) ?? string.Empty;
+            if (string.IsNullOrEmpty(value: user_id))
             {
                 MessageBox.Query(title: "Message", message: "Account not found.", buttons: ["Ok"]);
 
                 logInButton.Text = "Log In";
-                SetInteractables(true);
+                SetInteractables(isEnabled: true);
 
                 return;
             }
 
-            Dictionary<string, object>? user_info = await FirebaseHelper.GetUserInfoById(user_id);
+            Dictionary<string, object> user_info =
+                await FirebaseHelper.GetUserInfoById(user_id: user_id) ?? [];
 
-            if (user_info == null)
+            if (user_info.Count == 0)
             {
                 MessageBox.Query(
                     title: "Message",
@@ -132,13 +138,12 @@ namespace Banter.Windows
                 );
 
                 logInButton.Text = "Log In";
-                SetInteractables(true);
+                SetInteractables(isEnabled: true);
 
                 return;
             }
 
-            string password;
-            if (!user_info.TryGetValue("password", out object? dbPassword))
+            if (!user_info.TryGetValue(key: "password", value: out object dbPassword)) //Using nullable here
             {
                 MessageBox.Query(
                     title: "Message",
@@ -147,28 +152,28 @@ namespace Banter.Windows
                 );
 
                 logInButton.Text = "Log In";
-                SetInteractables(true);
+                SetInteractables(isEnabled: true);
 
                 return;
             }
-            password = (string)dbPassword;
 
+            string password = (string)dbPassword;
             bool isPasswordMatch = password == inputPassword;
             if (!isPasswordMatch)
             {
                 MessageBox.Query(title: "Message", message: "Wrong password...", buttons: ["Ok"]);
 
                 logInButton.Text = "Log In";
-                SetInteractables(true);
+                SetInteractables(isEnabled: true);
 
                 return;
             }
 
             SessionHandler.UserId = user_id;
-            if (user_info.TryGetValue("name", out object? name))
+            if (user_info.TryGetValue(key: "name", value: out object name))
                 SessionHandler.Name = (string)name;
 
-            if (user_info.TryGetValue("username", out object? username))
+            if (user_info.TryGetValue(key: "username", value: out object username))
                 SessionHandler.Username = (string)username;
 
             SessionHandler.IsLoggedIn = true;
@@ -176,9 +181,9 @@ namespace Banter.Windows
             await SessionHandler.StartChatroomsListener();
 
             logInButton.Text = "Log In";
-            SetInteractables(true);
-            usernameTextField.Text = "";
-            passwordTextField.Text = "";
+            SetInteractables(isEnabled: true);
+            usernameTextField.Text = string.Empty;
+            passwordTextField.Text = string.Empty;
             WindowHelper.CloseWindow(window: window);
 
             Window1.Instance.Show();
@@ -192,7 +197,6 @@ namespace Banter.Windows
         private void OnCreateAccountButtonClicked()
         {
             WindowHelper.CloseWindow(window: window);
-
             CreateAccountWindow.Instance.Show();
         }
 
@@ -215,7 +219,7 @@ namespace Banter.Windows
         private readonly ListView BanterLogo = new()
         {
             X = Pos.Center(),
-            Y = Pos.At(2),
+            Y = Pos.At(n: 2),
 
             Enabled = false,
         };
@@ -227,8 +231,8 @@ namespace Banter.Windows
         {
             Text = "Username:",
 
-            X = Pos.Left(usernameTextField) - Pos.At("Username:".Length + 1),
-            Y = Pos.Y(usernameTextField),
+            X = Pos.Left(view: usernameTextField) - Pos.At(n: "Username:".Length + 1),
+            Y = Pos.Y(view: usernameTextField),
         };
 
         /// <summary>
@@ -237,7 +241,7 @@ namespace Banter.Windows
         private static readonly TextField usernameTextField = new()
         {
             X = Pos.Center(),
-            Y = Pos.Center() - Pos.At(3),
+            Y = Pos.Center() - Pos.At(n: 3),
 
             Width = 50,
         };
@@ -249,8 +253,8 @@ namespace Banter.Windows
         {
             Text = "Password:",
 
-            X = Pos.Left(passwordTextField) - Pos.At("Password:".Length + 1),
-            Y = Pos.Y(passwordTextField),
+            X = Pos.Left(view: passwordTextField) - Pos.At(n: "Password:".Length + 1),
+            Y = Pos.Y(view: passwordTextField),
         };
 
         /// <summary>
@@ -259,7 +263,7 @@ namespace Banter.Windows
         private static readonly TextField passwordTextField = new()
         {
             X = Pos.Center(),
-            Y = Pos.Center() - Pos.At(1),
+            Y = Pos.Center() - Pos.At(n: 1),
 
             Width = 50,
 
@@ -273,8 +277,8 @@ namespace Banter.Windows
         {
             Text = "",
 
-            X = Pos.Right(passwordTextField) + Pos.At(1),
-            Y = Pos.Y(passwordTextField),
+            X = Pos.Right(view: passwordTextField) + Pos.At(n: 1),
+            Y = Pos.Y(view: passwordTextField),
 
             HotKeySpecifier = (Rune)0xffff,
         };

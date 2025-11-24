@@ -22,17 +22,17 @@ namespace Banter.Utilities
         {
             // Swallow any mouse events in the title bar (which is where dragging happens)
             if (
-                me.Flags.HasFlag(MouseFlags.Button1Pressed)
-                || me.Flags.HasFlag(MouseFlags.Button1Clicked)
-                || me.Flags.HasFlag(MouseFlags.Button1DoubleClicked)
-                || me.Flags.HasFlag(MouseFlags.ReportMousePosition)
+                me.Flags.HasFlag(flag: MouseFlags.Button1Pressed)
+                || me.Flags.HasFlag(flag: MouseFlags.Button1Clicked)
+                || me.Flags.HasFlag(flag: MouseFlags.Button1DoubleClicked)
+                || me.Flags.HasFlag(flag: MouseFlags.ReportMousePosition)
             )
             {
                 // Return true = "I handled it", so Terminal.Gui won't start dragging
                 return true;
             }
 
-            return base.MouseEvent(me);
+            return base.MouseEvent(mouseEvent: me);
         }
     }
 }

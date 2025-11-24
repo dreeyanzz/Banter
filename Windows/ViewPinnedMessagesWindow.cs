@@ -13,14 +13,14 @@ namespace Banter.Windows
             valueFactory: () =>
                 new ViewPinnedMessagesWindow()
         );
-        private readonly FirestoreDb db = FirestoreManager.Instance.Database;
-        private FirestoreChangeListener? chatroomListener;
 
         /// <summary>
         /// Gets the singleton instance of the <see cref="ViewPinnedMessagesWindow"/>.
         /// </summary>
         public static ViewPinnedMessagesWindow Instance => lazyInstance.Value;
 
+        private readonly FirestoreDb db = FirestoreManager.Instance.Database;
+        private FirestoreChangeListener chatroomListener;
         private readonly List<string> message_ids = [];
         private readonly List<string> messages = [];
         private int numFill = 0;
@@ -33,6 +33,7 @@ namespace Banter.Windows
 
             window.Leave += (_) =>
             {
+                // Does not work
                 Hide();
             };
 
@@ -44,7 +45,6 @@ namespace Banter.Windows
                     return;
 
                 string chat_id = message_ids[selectedIndex];
-
                 await FirebaseHelper.RemovePinChatroomMessage(
                     chatroom_id: SessionHandler.CurrentChatroomId!,
                     message_id: chat_id
@@ -58,7 +58,7 @@ namespace Banter.Windows
         public void Show()
         {
             WindowHelper.FocusWindow(window: window);
-            StartPinnedMessagesListener(SessionHandler.CurrentChatroomId!);
+            StartPinnedMessagesListener(chatroom_id: SessionHandler.CurrentChatroomId!); //! Using `!` here
         }
 
         /// <summary>
@@ -69,11 +69,10 @@ namespace Banter.Windows
             chatroomListener?.StopAsync();
             chatroomListener = null;
 
-            pinnedMessagesListView.SetSource(new List<string>());
-
+            WindowHelper.CloseWindow(window: window);
+            pinnedMessagesListView.SetSource(source: new List<string>()); // Clear source
             messages.Clear();
             message_ids.Clear();
-            Application.Top.Remove(view: window);
         }
 
         /// <summary>
@@ -97,8 +96,8 @@ namespace Banter.Windows
         /// </summary>
         private readonly ListView pinnedMessagesListView = new()
         {
-            X = Pos.At(0),
-            Y = Pos.At(2),
+            X = Pos.At(n: 0),
+            Y = Pos.At(n: 2),
 
             Width = Dim.Fill(),
             Height = Dim.Fill(),
@@ -107,11 +106,11 @@ namespace Banter.Windows
         /// <summary>
         /// The button to close the window.
         /// </summary>
-        Button closeButton = new()
+        readonly Button closeButton = new()
         {
             Text = "Close",
 
-            X = Pos.AnchorEnd() - Pos.At("Close".Length + 4),
+            X = Pos.AnchorEnd() - Pos.At(n: "Close".Length + 4),
             Y = 0,
 
             HotKeySpecifier = (Rune)0xffff,
@@ -123,8 +122,8 @@ namespace Banter.Windows
         /// <param name="chatroom_id">The ID of the chatroom.</param>
         private void StartPinnedMessagesListener(string chatroom_id)
         {
-            DocumentReference chatroomRef = db.Collection("Chatrooms").Document(chatroom_id);
-
+            DocumentReference chatroomRef = db.Collection(path: "Chatrooms")
+                .Document(path: chatroom_id);
             chatroomListener = chatroomRef.Listen(callback: OnSnapshotReceived);
         }
 
@@ -134,7 +133,7 @@ namespace Banter.Windows
         /// <param name="snapshot">The document snapshot.</param>
         private void OnSnapshotReceived(DocumentSnapshot snapshot)
         {
-            _ = HandleSnapshotAsync(snapshot); // fire-and-forget
+            _ = HandleSnapshotAsync(snapshot: snapshot); // fire-and-forget
         }
 
         /// <summary>
@@ -144,8 +143,13 @@ namespace Banter.Windows
         private async Task HandleSnapshotAsync(DocumentSnapshot snapshot)
         {
             if (
-                !snapshot.Exists
-                || !snapshot.TryGetValue("pinned_messages", out List<string> firePinnedIds)
+                !(
+                    snapshot.Exists
+                    && snapshot.TryGetValue(
+                        path: "pinned_messages",
+                        value: out List<string> firePinnedIds
+                    )
+                )
             )
             {
                 firePinnedIds = [];
@@ -154,42 +158,43 @@ namespace Banter.Windows
             // 1. Remove anything that was unpinned
             for (int i = message_ids.Count - 1; i >= 0; i--)
             {
-                if (!firePinnedIds.Contains(message_ids[i]))
+                if (!firePinnedIds.Contains(item: message_ids[i]))
                 {
-                    message_ids.RemoveAt(i);
-                    messages.RemoveAt(i);
+                    message_ids.RemoveAt(index: i);
+                    messages.RemoveAt(index: i);
                 }
             }
 
             // 2. Add anything that was newly pinned
             foreach (string message_id in firePinnedIds)
             {
-                if (!message_ids.Contains(message_id))
+                if (!message_ids.Contains(item: message_id))
                 {
-                    string? text = await FirebaseHelper.GetChatroomMessageById(
-                        SessionHandler.CurrentChatroomId!,
-                        message_id
-                    );
+                    string text =
+                        await FirebaseHelper.GetChatroomMessageById(
+                            chatroom_id: SessionHandler.CurrentChatroomId!,
+                            message_id: message_id
+                        ) ?? string.Empty;
 
-                    if (!string.IsNullOrEmpty(text))
+                    if (!string.IsNullOrEmpty(value: text))
                     {
                         //TODO: What if message_id isn't found?
-
-                        message_ids.Add(message_id);
-                        messages.Add(text);
+                        message_ids.Add(item: message_id);
+                        messages.Add(item: text);
                     }
                 }
             }
 
             // 3. Re-fill / redraw
             bool needsFill = messages.Count < pinnedMessagesListView.Frame.Height;
-            numFill = Math.Max(0, pinnedMessagesListView.Frame.Height - messages.Count);
-            IEnumerable<string> fill = Enumerable.Repeat(".", numFill);
+            numFill = Math.Max(val1: 0, val2: pinnedMessagesListView.Frame.Height - messages.Count);
+            IEnumerable<string> fill = Enumerable.Repeat(element: ".", count: numFill);
 
-            Application.MainLoop.Invoke(() =>
+            Application.MainLoop.Invoke(action: () =>
             {
-                pinnedMessagesListView.SetSource(needsFill ? [.. fill, .. messages] : messages);
-
+                pinnedMessagesListView.SetSource(
+                    source: needsFill ? [.. fill, .. messages] : messages
+                );
                 ScrollToLatestChat();
             });
         }

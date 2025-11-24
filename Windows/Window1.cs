@@ -9,7 +9,7 @@ namespace Banter.Windows
     public sealed class Window1 : AbstractWindow
     {
         // Singleton pattern
-        private static readonly Lazy<Window1> lazyInstance = new(() => new Window1());
+        private static readonly Lazy<Window1> lazyInstance = new(valueFactory: () => new Window1());
 
         /// <summary>
         /// Gets the singleton instance of the <see cref="Window1"/>.
@@ -33,10 +33,6 @@ namespace Banter.Windows
 
             OnUserChatroomsChanged();
 
-            filteredNames = [];
-            filteredIds = [];
-            isFiltered = false;
-
             List<string> information =
             [
                 $"Username: {SessionHandler.Username}",
@@ -45,26 +41,26 @@ namespace Banter.Windows
             ];
             informationListView.SetSource(source: information);
             informationListView.Height = Dim.Sized(n: information.Count);
-            informationListView.Y = Pos.AnchorEnd() - Pos.At(information.Count + 1);
+            informationListView.Y = Pos.AnchorEnd() - Pos.At(n: information.Count + 1);
 
-            labelNumberChatrooms.Y = Pos.Y(view: informationListView) - Pos.At(1);
+            labelNumberChatrooms.Y = Pos.Y(view: informationListView) - Pos.At(n: 1);
             labelNumberChatrooms.Text = $"Chatrooms: {SessionHandler.Chatrooms.Count}";
 
             chatroomsListView.SelectedItemChanged += (_) =>
             {
                 int selectedIndex = chatroomsListView.SelectedItem;
-
                 if (selectedIndex >= (isFiltered ? filteredNames.Count : chatroomNames.Count))
                     return;
 
                 string selectedChatroom;
-
                 if (isFiltered)
                     selectedChatroom = filteredIds[selectedIndex];
                 else
                     selectedChatroom = chatroomIds[selectedIndex];
+
                 SessionHandler.CurrentChatroomId = selectedChatroom;
             };
+
             Application.MainLoop.Invoke(() =>
             {
                 chatroomsListView.Height =
@@ -73,9 +69,10 @@ namespace Banter.Windows
                     - Dim.Height(view: logOutButton)
                     - Dim.Sized(n: 2);
 
+                // !CAN BE OPTIMIZED
                 bool needsFill = chatroomNames.Count < chatroomsListView.Frame.Height;
                 numFill = Math.Max(0, chatroomsListView.Frame.Height - chatroomNames.Count);
-                IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
                 Application.MainLoop.Invoke(action: () =>
                     chatroomsListView.SetSource(
                         source: needsFill ? [.. chatroomNames, .. filler] : chatroomNames
@@ -85,7 +82,7 @@ namespace Banter.Windows
 
             searchChatroomTextField.TextChanged += async (_) =>
             {
-                string textToSearch = searchChatroomTextField.Text.ToString() ?? "";
+                string textToSearch = searchChatroomTextField.Text.ToString() ?? string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(value: textToSearch))
                 {
@@ -94,20 +91,33 @@ namespace Banter.Windows
                     filteredIndices =
                     [
                         .. chatroomNames
-                            .Select((value, index) => new { value, index })
-                            .Where(x =>
-                                x.value.Contains(textToSearch, StringComparison.OrdinalIgnoreCase)
+                            .Select(selector: (value, index) => new { value, index })
+                            .Where(predicate: x =>
+                                x.value.Contains(
+                                    value: textToSearch,
+                                    comparisonType: StringComparison.OrdinalIgnoreCase
+                                )
                             )
-                            .Select(x => x.index),
+                            .Select(selector: x => x.index),
                     ];
 
-                    filteredNames = [.. filteredIndices.Select(index => chatroomNames[index])];
-                    filteredIds = [.. filteredIndices.Select(index => chatroomIds[index])];
+                    filteredNames =
+                    [
+                        .. filteredIndices.Select(selector: index => chatroomNames[index]),
+                    ];
+                    filteredIds =
+                    [
+                        .. filteredIndices.Select(selector: index => chatroomIds[index]),
+                    ];
                     isFiltered = true;
 
+                    //!OPTIMIZE THIS
                     bool needsFill = filteredNames.Count < chatroomsListView.Frame.Height;
-                    numFill = Math.Max(0, chatroomsListView.Frame.Height - filteredNames.Count);
-                    IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                    numFill = Math.Max(
+                        val1: 0,
+                        val2: chatroomsListView.Frame.Height - filteredNames.Count
+                    );
+                    IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
                     Application.MainLoop.Invoke(action: () =>
                         chatroomsListView.SetSource(
                             source: needsFill ? [.. filteredNames, .. filler] : filteredNames
@@ -122,8 +132,11 @@ namespace Banter.Windows
                     isFiltered = false;
 
                     bool needsFill = chatroomNames.Count < chatroomsListView.Frame.Height;
-                    numFill = Math.Max(0, chatroomsListView.Frame.Height - chatroomNames.Count);
-                    IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                    numFill = Math.Max(
+                        val1: 0,
+                        val2: chatroomsListView.Frame.Height - chatroomNames.Count
+                    );
+                    IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
                     Application.MainLoop.Invoke(action: () =>
                         chatroomsListView.SetSource(
                             source: needsFill ? [.. chatroomNames, .. filler] : chatroomNames
@@ -195,9 +208,13 @@ namespace Banter.Windows
                     .. SessionHandler.Chatrooms.Select(chatroom => chatroom.chatroom_id),
                 ];
 
+                // !OPTIMIZE THIS
                 bool needsFill = chatroomNames.Count < chatroomsListView.Frame.Height;
-                numFill = Math.Max(0, chatroomsListView.Frame.Height - chatroomNames.Count);
-                IEnumerable<string> filler = Enumerable.Repeat(".", numFill);
+                numFill = Math.Max(
+                    val1: 0,
+                    val2: chatroomsListView.Frame.Height - chatroomNames.Count
+                );
+                IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
                 Application.MainLoop.Invoke(action: () =>
                     chatroomsListView.SetSource(
                         source: needsFill ? [.. chatroomNames, .. filler] : chatroomNames
@@ -261,7 +278,7 @@ namespace Banter.Windows
             Text = "Search here:",
 
             X = Pos.At(n: 0),
-            Y = Pos.At(2),
+            Y = Pos.At(n: 2),
         };
 
         /// <summary>
@@ -270,7 +287,7 @@ namespace Banter.Windows
         private static readonly TextField searchChatroomTextField = new()
         {
             X = Pos.At(n: 0),
-            Y = Pos.Y(view: searchChatroomLabel) + Pos.At(1),
+            Y = Pos.Y(view: searchChatroomLabel) + Pos.At(n: 1),
 
             Width = Dim.Fill(),
         };
@@ -280,10 +297,10 @@ namespace Banter.Windows
         /// </summary>
         private static readonly Label searchIndicator = new()
         {
-            Text = "",
+            Text = string.Empty,
 
             X = Pos.At(n: 0),
-            Y = Pos.Y(view: searchChatroomTextField) + Pos.At(2),
+            Y = Pos.Y(view: searchChatroomTextField) + Pos.At(n: 2),
         };
 
         /// <summary>
@@ -295,7 +312,7 @@ namespace Banter.Windows
             // Height = Dim.Fill() - Dim.Height(informationListView) - Dim.Sized(1), dynamically set
 
             X = Pos.At(n: 0),
-            Y = Pos.Y(view: searchIndicator) + Pos.At(1),
+            Y = Pos.Y(view: searchIndicator) + Pos.At(n: 1),
         };
 
         /// <summary>
@@ -323,7 +340,7 @@ namespace Banter.Windows
             Text = "Log out",
 
             X = Pos.Center(),
-            Y = Pos.AnchorEnd() - Pos.At(1),
+            Y = Pos.AnchorEnd() - Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
         };

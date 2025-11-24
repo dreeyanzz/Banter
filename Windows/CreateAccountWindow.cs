@@ -9,7 +9,7 @@ namespace Banter.Windows
     public sealed class CreateAccountWindow : AbstractWindow
     {
         // Singleton pattern
-        private static readonly Lazy<CreateAccountWindow> lazyInstance = new(() =>
+        private static readonly Lazy<CreateAccountWindow> lazyInstance = new(valueFactory: () =>
             new CreateAccountWindow()
         );
 
@@ -21,6 +21,8 @@ namespace Banter.Windows
         private CreateAccountWindow()
         {
             DisplayLogo();
+
+            SetInteractables(isEnabled: true);
 
             backButton.Clicked += OnBackButtonClicked;
             createAccountButton.Clicked += OnCreateAccountButtonClicked;
@@ -36,7 +38,8 @@ namespace Banter.Windows
                 repeatPasswordTextField.Secret = !repeatPasswordTextField.Secret;
             };
 
-            window.Enter += (_) => Application.MainLoop.Invoke(action: () => dummyView.SetFocus());
+            window.Enter += (_) => createAccountButton.IsDefault = true;
+            window.Leave += (_) => createAccountButton.IsDefault = false;
 
             window.Add(
                 views:
@@ -70,8 +73,8 @@ namespace Banter.Windows
         /// </summary>
         public void Show()
         {
-            WindowHelper.OpenWindow(window);
-            WindowHelper.FocusWindow(window);
+            WindowHelper.OpenWindow(window: window);
+            WindowHelper.FocusWindow(window: window);
         }
 
         /// <summary>
@@ -79,19 +82,20 @@ namespace Banter.Windows
         /// </summary>
         public void Hide()
         {
-            WindowHelper.CloseWindow(window);
+            WindowHelper.CloseWindow(window: window);
+            ClearFields();
         }
 
         /// <summary>
         /// Clears all input fields.
         /// </summary>
-        private void ClearFields()
+        private static void ClearFields()
         {
-            usernameTextField.Text = "";
-            passwordTextField.Text = "";
-            repeatPasswordTextField.Text = "";
-            nameTextField.Text = "";
-            emailTextField.Text = "";
+            usernameTextField.Text = string.Empty;
+            passwordTextField.Text = string.Empty;
+            repeatPasswordTextField.Text = string.Empty;
+            nameTextField.Text = string.Empty;
+            emailTextField.Text = string.Empty;
         }
 
         /// <summary>
@@ -119,7 +123,7 @@ namespace Banter.Windows
             MessageBox.ErrorQuery(title: "Invalid input", message: message, buttons: ["Ok"]);
 
             createAccountButton.Text = "Create Account";
-            SetInteractables(true);
+            SetInteractables(isEnabled: true);
         }
 
         /// <summary>
@@ -127,9 +131,9 @@ namespace Banter.Windows
         /// </summary>
         private void DisplayLogo()
         {
-            List<string> BanterLogo = [.. File.ReadAllLines("BanterLogo.txt")];
-            BanterLogo.Insert(0, new string(' ', BanterLogo[0].Length));
-            this.BanterLogo.SetSource(BanterLogo);
+            List<string> BanterLogo = [.. File.ReadAllLines(path: "BanterLogo.txt")];
+            BanterLogo.Insert(index: 0, item: new string(c: ' ', count: BanterLogo[0].Length));
+            this.BanterLogo.SetSource(source: BanterLogo);
             this.BanterLogo.Height = BanterLogo.Count;
             this.BanterLogo.Width = BanterLogo[1].Length;
             window.Add(view: this.BanterLogo);
@@ -141,7 +145,7 @@ namespace Banter.Windows
         private readonly ListView BanterLogo = new()
         {
             X = Pos.Center(),
-            Y = Pos.At(2),
+            Y = Pos.At(n: 2),
 
             Enabled = false,
         };
@@ -153,7 +157,7 @@ namespace Banter.Windows
         {
             ClearFields();
 
-            WindowHelper.CloseWindow(window: window);
+            Hide();
             LogInWindow.Instance.Show();
         }
 
@@ -162,64 +166,64 @@ namespace Banter.Windows
         /// </summary>
         private async void OnCreateAccountButtonClicked()
         {
-            string? inputUsername = usernameTextField.Text.ToString();
-            string? inputPassword = passwordTextField.Text.ToString();
-            string? inputRepeatPassword = repeatPasswordTextField.Text.ToString();
-            string? inputName = nameTextField.Text.ToString();
-            string? inputEmail = emailTextField.Text.ToString();
+            string inputUsername = usernameTextField.Text.ToString() ?? string.Empty;
+            string inputPassword = passwordTextField.Text.ToString() ?? string.Empty;
+            string inputRepeatPassword = repeatPasswordTextField.Text.ToString() ?? string.Empty;
+            string inputName = nameTextField.Text.ToString() ?? string.Empty;
+            string inputEmail = emailTextField.Text.ToString() ?? string.Empty;
 
             if (
-                string.IsNullOrEmpty(inputUsername)
-                || string.IsNullOrEmpty(inputPassword)
-                || string.IsNullOrEmpty(inputRepeatPassword)
+                string.IsNullOrEmpty(value: inputUsername)
+                || string.IsNullOrEmpty(value: inputPassword)
+                || string.IsNullOrEmpty(value: inputRepeatPassword)
             )
             {
-                HandleValidationError("Username and Passwords cannot be empty!");
+                HandleValidationError(message: "Username and Passwords cannot be empty!");
                 return;
             }
 
             createAccountButton.Text = "Creating Account...";
-            SetInteractables(false);
+            SetInteractables(isEnabled: false);
 
             if (inputUsername.Length < 8)
             {
-                HandleValidationError("Username must be atleast 8 characters long");
+                HandleValidationError(message: "Username must be atleast 8 characters long");
                 return;
             }
 
-            if (!await FirebaseHelper.IsUsernameTaken(inputUsername))
+            if (!await FirebaseHelper.IsUsernameTaken(username: inputUsername))
             {
-                HandleValidationError("Username already taken");
+                HandleValidationError(message: "Username already taken");
                 return;
             }
 
             if (inputPassword.Length < 8)
             {
-                HandleValidationError("Password must be atleast 8 characters long");
+                HandleValidationError(message: "Password must be atleast 8 characters long");
                 return;
             }
 
-            if (string.IsNullOrEmpty(inputName))
+            if (string.IsNullOrEmpty(value: inputName))
             {
-                HandleValidationError("Name cannot be empty!");
+                HandleValidationError(message: "Name cannot be empty!");
                 return;
             }
 
-            if (string.IsNullOrEmpty(inputEmail))
+            if (string.IsNullOrEmpty(value: inputEmail))
             {
-                HandleValidationError("Email cannot be empty!");
+                HandleValidationError(message: "Email cannot be empty!");
                 return;
             }
 
-            if (!Validator.IsValidEmail(inputEmail))
+            if (!Validator.IsValidEmail(email: inputEmail))
             {
-                HandleValidationError("Invalid email format!");
+                HandleValidationError(message: "Invalid email format!");
                 return;
             }
 
             if (inputPassword != inputRepeatPassword)
             {
-                HandleValidationError("Passwords must match!");
+                HandleValidationError(message: "Passwords must match!");
                 return;
             }
 
@@ -229,7 +233,7 @@ namespace Banter.Windows
                 password: inputPassword,
                 username: inputUsername
             );
-            if (!await FirebaseHelper.AddAccount(user))
+            if (!await FirebaseHelper.AddAccount(user: user))
             {
                 MessageBox.ErrorQuery(
                     title: "Service Error",
@@ -238,7 +242,7 @@ namespace Banter.Windows
                 );
 
                 createAccountButton.Text = "Create Account";
-                SetInteractables(true);
+                SetInteractables(isEnabled: true);
 
                 return;
             }
@@ -249,7 +253,7 @@ namespace Banter.Windows
             );
 
             createAccountButton.Text = "Create Account";
-            SetInteractables(true);
+            SetInteractables(isEnabled: true);
             ClearFields();
         }
 
@@ -273,8 +277,8 @@ namespace Banter.Windows
         {
             Text = "Username:",
 
-            X = Pos.Left(usernameTextField) - Pos.At("Username:".Length + 1),
-            Y = Pos.Y(usernameTextField),
+            X = Pos.Left(view: usernameTextField) - Pos.At(n: "Username:".Length + 1),
+            Y = Pos.Y(view: usernameTextField),
         };
 
         /// <summary>
@@ -283,7 +287,7 @@ namespace Banter.Windows
         private static readonly TextField usernameTextField = new()
         {
             X = Pos.Center(),
-            Y = Pos.Center() - Pos.At(3),
+            Y = Pos.Center() - Pos.At(n: 3),
 
             Width = 50,
         };
@@ -295,8 +299,8 @@ namespace Banter.Windows
         {
             Text = "Password:",
 
-            X = Pos.Left(passwordTextField) - Pos.At("Password:".Length + 1),
-            Y = Pos.Y(passwordTextField),
+            X = Pos.Left(view: passwordTextField) - Pos.At(n: "Password:".Length + 1),
+            Y = Pos.Y(view: passwordTextField),
         };
 
         /// <summary>
@@ -305,7 +309,7 @@ namespace Banter.Windows
         private static readonly TextField passwordTextField = new()
         {
             X = Pos.Center(),
-            Y = Pos.Center() - Pos.At(1),
+            Y = Pos.Center() - Pos.At(n: 1),
 
             Width = 50,
 
@@ -319,8 +323,8 @@ namespace Banter.Windows
         {
             Text = "Repeat password:",
 
-            X = Pos.Left(repeatPasswordTextField) - Pos.At("Repeat password:".Length + 1),
-            Y = Pos.Y(repeatPasswordTextField),
+            X = Pos.Left(view: repeatPasswordTextField) - Pos.At(n: "Repeat password:".Length + 1),
+            Y = Pos.Y(view: repeatPasswordTextField),
         };
 
         /// <summary>
@@ -329,7 +333,7 @@ namespace Banter.Windows
         private static readonly TextField repeatPasswordTextField = new()
         {
             X = Pos.Center(),
-            Y = Pos.Center() + Pos.At(1),
+            Y = Pos.Center() + Pos.At(n: 1),
 
             Width = 50,
 
@@ -341,10 +345,10 @@ namespace Banter.Windows
         /// </summary>
         private static readonly Button showHidePasswords = new()
         {
-            Text = "",
+            Text = string.Empty,
 
             X = Pos.Center(),
-            Y = Pos.Bottom(repeatPasswordTextField) + Pos.At(1),
+            Y = Pos.Bottom(view: repeatPasswordTextField) + Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
         };
@@ -356,8 +360,8 @@ namespace Banter.Windows
         {
             Text = "Name:",
 
-            X = Pos.Left(nameTextField) - Pos.At("Name:".Length + 1),
-            Y = Pos.Y(nameTextField),
+            X = Pos.Left(view: nameTextField) - Pos.At(n: "Name:".Length + 1),
+            Y = Pos.Y(view: nameTextField),
         };
 
         /// <summary>
@@ -366,7 +370,7 @@ namespace Banter.Windows
         private static readonly TextField nameTextField = new()
         {
             X = Pos.Center(),
-            Y = Pos.Bottom(showHidePasswords) + Pos.At(1),
+            Y = Pos.Bottom(view: showHidePasswords) + Pos.At(n: 1),
 
             Width = 50,
 
@@ -380,8 +384,8 @@ namespace Banter.Windows
         {
             Text = "Email:",
 
-            X = Pos.Left(emailTextField) - Pos.At("Email:".Length + 1),
-            Y = Pos.Y(emailTextField),
+            X = Pos.Left(view: emailTextField) - Pos.At(n: "Email:".Length + 1),
+            Y = Pos.Y(view: emailTextField),
         };
 
         /// <summary>
@@ -390,7 +394,7 @@ namespace Banter.Windows
         private static readonly TextField emailTextField = new()
         {
             X = Pos.Center(),
-            Y = Pos.Bottom(nameTextField) + Pos.At(1),
+            Y = Pos.Bottom(view: nameTextField) + Pos.At(n: 1),
 
             Width = 50,
 
@@ -404,8 +408,8 @@ namespace Banter.Windows
         {
             Text = "Create Account",
 
-            X = Pos.Percent(65) - Pos.At(20),
-            Y = Pos.Bottom(emailTextField) + Pos.At(1),
+            X = Pos.Percent(n: 65) - Pos.At(n: 20),
+            Y = Pos.Bottom(view: emailTextField) + Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
         };
@@ -417,8 +421,8 @@ namespace Banter.Windows
         {
             Text = "Back",
 
-            X = Pos.Percent(35),
-            Y = Pos.Bottom(emailTextField) + Pos.At(1),
+            X = Pos.Percent(n: 35),
+            Y = Pos.Bottom(view: emailTextField) + Pos.At(n: 1),
 
             HotKeySpecifier = (Rune)0xffff,
         };

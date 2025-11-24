@@ -1,4 +1,5 @@
 using Google.Cloud.Firestore;
+using Google.Cloud.Firestore.V1;
 using Terminal.Gui;
 
 namespace Banter.Utilities
@@ -19,31 +20,31 @@ namespace Banter.Utilities
         /// <param name="chatroom_id">The ID of the chatroom.</param>
         /// <param name="message_id">The ID of the message.</param>
         /// <returns>The message content, or null if not found.</returns>
-        public static async Task<string?> GetChatroomMessageById(
+        public static async Task<string> GetChatroomMessageById(
             string chatroom_id,
             string message_id
         )
         {
-            if (string.IsNullOrEmpty(message_id))
-                return null;
+            if (string.IsNullOrEmpty(value: message_id))
+                return string.Empty;
 
             // Reference to the messages subcollection
-            DocumentReference messageRef = db.Collection("Chatrooms")
-                .Document(chatroom_id)
-                .Collection("messages")
-                .Document(message_id);
+            DocumentReference messageRef = db.Collection(path: "Chatrooms")
+                .Document(path: chatroom_id)
+                .Collection(path: "messages")
+                .Document(path: message_id);
 
             // Get the document snapshot
             DocumentSnapshot snapshot = await messageRef.GetSnapshotAsync();
 
             if (!snapshot.Exists)
-                return null; // message not found
+                return string.Empty; // message not found
 
             // Assuming the message content is stored in a field called "content"
-            if (snapshot.TryGetValue("text", out string messageContent))
+            if (snapshot.TryGetValue(path: "text", value: out string messageContent))
                 return messageContent;
 
-            return null; // field not found
+            return string.Empty; // field not found
         }
 
         /// <summary>
@@ -53,16 +54,22 @@ namespace Banter.Utilities
         /// <returns>A list of pinned message IDs.</returns>
         public static async Task<List<string>> GetChatroomPinnedMessagesIdById(string chatroom_id)
         {
-            if (string.IsNullOrEmpty(chatroom_id))
+            if (string.IsNullOrEmpty(value: chatroom_id))
                 return [];
 
-            DocumentReference chatroomRef = db.Collection("Chatrooms").Document(chatroom_id);
+            DocumentReference chatroomRef = db.Collection(path: "Chatrooms")
+                .Document(path: chatroom_id);
             DocumentSnapshot snapshot = await chatroomRef.GetSnapshotAsync();
 
             if (!snapshot.Exists)
                 return [];
 
-            if (!snapshot.TryGetValue("pinned_messages", out List<string> pinnedMessagesId))
+            if (
+                !snapshot.TryGetValue(
+                    path: "pinned_messages",
+                    value: out List<string> pinnedMessagesId
+                )
+            )
                 return [];
 
             return pinnedMessagesId;
@@ -76,14 +83,14 @@ namespace Banter.Utilities
         /// <returns><c>true</c> if the message is pinned; otherwise, <c>false</c>.</returns>
         public static async Task<bool> IsChatPinnedById(string chatroom_id, string message_id)
         {
-            if (string.IsNullOrEmpty(chatroom_id) || string.IsNullOrEmpty(message_id))
+            if (string.IsNullOrEmpty(value: chatroom_id) || string.IsNullOrEmpty(value: message_id))
                 return false;
 
             List<string> pinnedMessageIds = await FirebaseHelper.GetChatroomPinnedMessagesIdById(
-                chatroom_id
+                chatroom_id: chatroom_id
             );
 
-            if (!pinnedMessageIds.Contains(message_id))
+            if (!pinnedMessageIds.Contains(item: message_id))
                 return false;
 
             return true;
@@ -96,11 +103,15 @@ namespace Banter.Utilities
         /// <param name="message_id">The ID of the message to pin.</param>
         public static async Task PinChatroomMessage(string chatroom_id, string message_id)
         {
-            if (string.IsNullOrEmpty(chatroom_id) || string.IsNullOrEmpty(message_id))
+            if (string.IsNullOrEmpty(value: chatroom_id) || string.IsNullOrEmpty(value: message_id))
                 return;
 
-            DocumentReference chatroomRef = db.Collection("Chatrooms").Document(chatroom_id);
-            await chatroomRef.UpdateAsync("pinned_messages", FieldValue.ArrayUnion(message_id));
+            DocumentReference chatroomRef = db.Collection(path: "Chatrooms")
+                .Document(path: chatroom_id);
+            await chatroomRef.UpdateAsync(
+                field: "pinned_messages",
+                value: FieldValue.ArrayUnion(values: message_id)
+            );
         }
 
         /// <summary>
@@ -110,13 +121,17 @@ namespace Banter.Utilities
         /// <param name="message_id">The ID of the message to unpin.</param>
         public static async Task RemovePinChatroomMessage(string chatroom_id, string message_id)
         {
-            bool isValid = string.IsNullOrEmpty(message_id) || string.IsNullOrEmpty(chatroom_id);
+            bool isValid =
+                string.IsNullOrEmpty(value: message_id) || string.IsNullOrEmpty(value: chatroom_id);
             if (isValid)
                 return;
 
             CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
             DocumentReference chatroomRef = chatroomsRef.Document(path: chatroom_id);
-            await chatroomRef.UpdateAsync("pinned_messages", FieldValue.ArrayRemove(message_id));
+            await chatroomRef.UpdateAsync(
+                field: "pinned_messages",
+                value: FieldValue.ArrayRemove(values: message_id)
+            );
         }
 
         /// <summary>
@@ -132,7 +147,7 @@ namespace Banter.Utilities
                     paramName: nameof(chatroom_id)
                 );
 
-            if (string.IsNullOrWhiteSpace(new_name))
+            if (string.IsNullOrWhiteSpace(value: new_name))
                 throw new ArgumentException(
                     message: "New chatroom name cannot be null or empty.",
                     paramName: nameof(new_name)
@@ -175,7 +190,7 @@ namespace Banter.Utilities
             await chatroomRef.UpdateAsync(
                 new Dictionary<string, object>
                 {
-                    { "participants", FieldValue.ArrayRemove(participant_id) },
+                    { "participants", FieldValue.ArrayRemove(values: participant_id) },
                 }
             );
         }
@@ -190,10 +205,11 @@ namespace Banter.Utilities
             if (string.IsNullOrEmpty(value: user_id))
                 return false;
 
-            List<string>? admins = await GetChatroomAdmins(
-                chatroom_id: SessionHandler.CurrentChatroomId! //! Using `!` here
-            );
-            if (admins == null)
+            List<string> admins =
+                await GetChatroomAdmins(
+                    chatroom_id: SessionHandler.CurrentChatroomId! //! Using `!` here
+                ) ?? [];
+            if (admins.Count == 0)
                 return false;
 
             return admins.Contains(item: user_id);
@@ -204,10 +220,10 @@ namespace Banter.Utilities
         /// </summary>
         /// <param name="chatroom_id">The ID of the chatroom.</param>
         /// <returns>A list of admin user IDs, or null if the chatroom is not found.</returns>
-        public static async Task<List<string>?> GetChatroomAdmins(string chatroom_id)
+        public static async Task<List<string>> GetChatroomAdmins(string chatroom_id)
         {
-            if (string.IsNullOrEmpty(chatroom_id))
-                return null;
+            if (string.IsNullOrEmpty(value: chatroom_id))
+                return [];
 
             CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
             DocumentReference chatroom = chatroomsRef.Document(path: chatroom_id);
@@ -224,7 +240,7 @@ namespace Banter.Utilities
         /// <param name="participants_ids">A list of participant user IDs to include in the chatroom.</param>
         public static async Task CreateChatroom(List<string> participants_ids)
         {
-            if (participants_ids == null || participants_ids.Count == 0)
+            if (participants_ids.Count == 0)
                 return;
 
             // Always include the current user
@@ -287,6 +303,9 @@ namespace Banter.Utilities
         /// <param name="chatroom_id">The ID of the chatroom to clear.</param>
         public static async Task ClearChatroomMessagesById(string chatroom_id)
         {
+            if (string.IsNullOrEmpty(chatroom_id))
+                return;
+
             CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
             DocumentReference chatroom = chatroomsRef.Document(path: chatroom_id);
             CollectionReference messagesRef = chatroom.Collection(path: "messages");
@@ -311,8 +330,11 @@ namespace Banter.Utilities
         /// <returns>The name of the chatroom.</returns>
         public static async Task<string> GetChatroomNameById(string chatroom_id)
         {
+            if (string.IsNullOrEmpty(value: chatroom_id))
+                return "No chatroom_id provided";
+
             DocumentSnapshot snapshot = await db.Collection(path: "Chatrooms")
-                .Document(chatroom_id)
+                .Document(path: chatroom_id)
                 .GetSnapshotAsync();
 
             if (!snapshot.Exists)
@@ -348,12 +370,12 @@ namespace Banter.Utilities
         /// </summary>
         /// <param name="chatroom_id">The ID of the chatroom.</param>
         /// <returns>A dictionary mapping participant IDs to their usernames, or null if the chatroom is not found.</returns>
-        public static async Task<Dictionary<string, string>?> GetChatroomParticipants(
+        public static async Task<Dictionary<string, string>> GetChatroomParticipants(
             string chatroom_id
         )
         {
-            if (string.IsNullOrEmpty(chatroom_id))
-                return null;
+            if (string.IsNullOrEmpty(value: chatroom_id))
+                return [];
 
             CollectionReference chatroomsRef = db.Collection(path: "Chatrooms");
             DocumentReference docRef = chatroomsRef.Document(path: chatroom_id);
@@ -380,9 +402,9 @@ namespace Banter.Utilities
         {
             //? Clear these things
 
-            Dictionary<string, object>? user_info = await GetUserInfoById(user_id);
+            Dictionary<string, object> user_info = await GetUserInfoById(user_id) ?? [];
 
-            if (user_info == null)
+            if (user_info.Count == 0)
                 return "Unknown User"; // handle missing user gracefully
 
             if (!user_info.TryGetValue("name", out object? user_name) || user_name == null)
@@ -399,17 +421,17 @@ namespace Banter.Utilities
         /// A <see cref="Dictionary{TKey, TValue}"/> containing the user's document data (field names and values) if the user is found.
         /// Returns <c>null</c> if no document exists with the specified <paramref name="user_id"/>.
         /// </returns>
-        public static async Task<Dictionary<string, object>?> GetUserInfoById(string user_id)
+        public static async Task<Dictionary<string, object>> GetUserInfoById(string user_id)
         {
-            CollectionReference usersRef = db.Collection("Users");
-            DocumentReference docRef = usersRef.Document(user_id);
+            CollectionReference usersRef = db.Collection(path: "Users");
+            DocumentReference docRef = usersRef.Document(path: user_id);
 
             DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
             if (snapshot.Exists)
                 return snapshot.ToDictionary();
             else
-                return null;
+                return [];
         }
 
         /// <summary>
@@ -417,12 +439,12 @@ namespace Banter.Utilities
         /// </summary>
         /// <param name="username">The username to look up.</param>
         /// <returns>The user ID, or null if the username is not found.</returns>
-        public static async Task<string?> GetUserIdFromUsername(string username)
+        public static async Task<string> GetUserIdFromUsername(string username)
         {
-            CollectionReference usersRef = db.Collection("Users");
+            CollectionReference usersRef = db.Collection(path: "Users");
 
             // 1. Create a query to find the matching username
-            Query query = usersRef.WhereEqualTo("username", username);
+            Query query = usersRef.WhereEqualTo(fieldPath: "username", value: username);
 
             // 2. Execute the query
             QuerySnapshot snapshot = await query.GetSnapshotAsync();
@@ -433,7 +455,7 @@ namespace Banter.Utilities
                 return document.Id;
             }
 
-            return null;
+            return string.Empty;
         }
 
         /// <summary>
@@ -443,11 +465,14 @@ namespace Banter.Utilities
         /// <returns><c>true</c> if the username exists; otherwise, <c>false</c>.</returns>
         public static async Task<bool> ValidateUsername(string username)
         {
-            CollectionReference usersRef = db.Collection("Users");
+            CollectionReference usersRef = db.Collection(path: "Users");
             QuerySnapshot snapshot = await usersRef.GetSnapshotAsync();
 
             foreach (DocumentSnapshot document in snapshot.Documents)
-                if (document.Exists && document.TryGetValue("username", out string dbUsername))
+                if (
+                    document.Exists
+                    && document.TryGetValue(path: "username", value: out string dbUsername)
+                )
                     if (dbUsername == username)
                         return true;
 
@@ -461,9 +486,9 @@ namespace Banter.Utilities
         /// <returns><c>true</c> if the username is not taken; otherwise, <c>false</c>.</returns>
         public static async Task<bool> IsUsernameTaken(string username)
         {
-            CollectionReference usersRef = db.Collection("Users");
+            CollectionReference usersRef = db.Collection(path: "Users");
 
-            Query query = usersRef.WhereEqualTo("username", username);
+            Query query = usersRef.WhereEqualTo(fieldPath: "username", value: username);
             QuerySnapshot snapshot = await query.GetSnapshotAsync();
 
             return !(snapshot.Count > 0);
@@ -478,18 +503,24 @@ namespace Banter.Utilities
         {
             try
             {
-                CollectionReference usersRef = db.Collection("Users");
-                await usersRef.AddAsync(user);
+                CollectionReference usersRef = db.Collection(path: "Users");
+                await usersRef.AddAsync(documentData: user);
                 return true;
             }
             catch (Exception ex)
             {
                 // 🚨 IMPORTANT: Log the error message to your console or log file
                 // This will tell you if it's a PermissionDenied, NetworkError, etc.
-                Console.WriteLine("Firebase AddAccount FAILED: " + ex.Message);
+                Console.WriteLine(value: "Firebase AddAccount FAILED: " + ex.Message);
 
                 // If possible, show a very specific error during debug
-                MessageBox.ErrorQuery(50, 10, "DEBUG FAILED", ex.Message, "OK");
+                MessageBox.ErrorQuery(
+                    width: 50,
+                    height: 10,
+                    title: "DEBUG FAILED",
+                    message: ex.Message,
+                    buttons: ["OK"]
+                );
 
                 return false;
             }

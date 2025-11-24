@@ -40,7 +40,7 @@ namespace Banter.Windows
         /// </summary>
         private async Task OnSetButtonClicked()
         {
-            string? inputName = newNameTextField.Text.ToString();
+            string inputName = newNameTextField.Text.ToString() ?? string.Empty;
 
             if (string.IsNullOrEmpty(inputName))
                 return;
@@ -93,8 +93,8 @@ namespace Banter.Windows
         {
             Text = "Close",
 
-            X = Pos.AnchorEnd() - Pos.At("Close".Length + 4),
-            Y = Pos.At(0),
+            X = Pos.AnchorEnd() - Pos.At(n: "Close".Length + 4),
+            Y = Pos.At(n: 0),
 
             HotKeySpecifier = (Rune)0xffff,
         };
