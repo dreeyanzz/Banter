@@ -1,0 +1,1 @@
+cmd /c DEL "%APPDATA%\Banter\.installed_flag"
