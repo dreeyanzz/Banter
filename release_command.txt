@@ -1,1 +1,4 @@
 dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true --self-contained true
+
+obfuscated:
+dotnet publish -c Release -r win-x64 -p:PublishAot=true

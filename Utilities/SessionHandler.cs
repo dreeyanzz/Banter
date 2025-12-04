@@ -120,7 +120,7 @@ namespace Banter.Utilities
         /// <summary>
         /// Gets or sets the list of chatrooms the user is a member of.
         /// </summary>
-        public static List<(string ChatroomId, string ChatroomName)> Chatrooms
+        public static List<(string chatroom_id, string chatroom_name)> Chatrooms
         {
             get => _userChatrooms;
             set
