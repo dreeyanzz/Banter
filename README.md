@@ -1,98 +1,144 @@
-```
-▀█████████▄     ▄████████ ███▄▄▄▄       ███        ▄████████    ▄████████
-  ███    ███   ███    ███ ███▀▀▀██▄ ▀█████████▄   ███    ███   ███    ███
-  ███    ███   ███    ███ ███   ███    ▀███▀▀██   ███    █▀    ███    ███
- ▄███▄▄▄██▀    ███    ███ ███   ███     ███   ▀  ▄███▄▄▄      ▄███▄▄▄▄██▀
-▀▀███▀▀▀██▄  ▀███████████ ███   ███     ███     ▀▀███▀▀▀     ▀▀███▀▀▀▀▀
-  ███    ██▄   ███    ███ ███   ███     ███       ███    █▄  ▀███████████
-  ███    ███   ███    ███ ███   ███     ███       ███    ███   ███    ███
-▄█████████▀    ███    █▀   ▀█   █▀     ▄████▀     ██████████   ███    ███
-                        where modernity embraces tradition     ███    ███
-```
+Banter
 
-# Banter
+<div align="center">
 
-Banter is a modern, terminal-based chat application built with C# and .NET. It provides a lightweight and keyboard-centric interface for real-time communication, bringing a classic chat experience to the command line.
+<!-- You can replace this image link with a screenshot of your TUI later -->
 
-## Features
+<img src="https://www.google.com/search?q=https://raw.githubusercontent.com/dreeyanzz/Banter/main/Banter_Class_Diagram.png" alt="Banter Class Diagram" width="600"/>
 
-- **User Authentication**: Securely log in or create a new account.
-- **Chatrooms**: Create public or private chatrooms to organize conversations.
-- **Real-time Messaging**: Send and receive messages instantly.
-- **Message Pinning**: Pin important messages to the top of a chatroom for easy access.
-- **Chat Management**:
-  - Change chatroom names.
-  - Leave chatrooms you are a part of.
-  - Admins can delete chatrooms.
-  - Clear the message history of a chatroom.
-- **Profanity Filter**: Automatically censors inappropriate language in messages.
-- **Local Caching**: Caches user data locally for improved performance using LiteDB.
+Where modernity embraces tradition.
 
-## Technologies Used
+Download Installer • Banter Hub Website
 
-- **Backend & Core**: C# with .NET
-- **Terminal UI**: [Terminal.Gui](https://github.com/gui-cs/Terminal.Gui)
-- **Database**: Google Cloud Firestore
-- **Local Cache**: LiteDB
+</div>
 
-## Getting Started
+📖 Overview
 
-Follow these instructions to get a local copy of Banter up and running.
+Banter is a real-time, terminal-based chat application (TUI) built with C# and .NET. It bridges the gap between the nostalgic aesthetic of BBS/IRC systems and modern cloud architecture.
 
-### Prerequisites
+Unlike standard console applications that rely on scrolling text, Banter leverages Terminal.Gui to provide a rich, windowed interface—complete with mouse support, dialogs, and menus—strictly inside your terminal.
 
-- [.NET SDK](https://dotnet.microsoft.com/download) (Version 10.0 or compatible)
-- A Google Cloud Platform project with Firestore enabled.
+✨ Features
 
-### Installation & Setup
+💻 TUI Interface: A keyboard-centric, retro experience built on Terminal.Gui.
 
-1.  **Clone the repository:**
+☁️ Cloud Native: Powered by Google Cloud Firestore for real-time message syncing across clients.
 
-    ```sh
-    git clone <repository-url>
-    cd Banter
-    ```
+⚡ Local Caching: Utilizes LiteDB to cache user sessions and data locally, ensuring instant load times.
 
-2.  **Set up Firebase:**
+🔒 Secure Authentication: Robust login and account creation system.
 
-    - This project uses Firebase for its backend. You will need to set up your own Firebase project.
-    - The application is configured to use an embedded resource for the Firebase credentials (`banter-7717f-firebase-adminsdk-fbsvc-9cb1cd3095.json`).
-    - To use your own Firebase project, you need to:
-      1.  Go to your Firebase project settings and generate a new private key for the service account. This will download a JSON file.
-      2.  Rename the downloaded JSON file to match the one expected by the application or update the path in `Utilities/FirestoreManager.cs`.
-      3.  Make sure the JSON file is set as an "Embedded resource" in your project's `.csproj` file.
+🛡️ Smart Moderation: Integrated ProfanityChecker to automatically filter inappropriate content.
 
-3.  **Restore Dependencies:**
-    Open a terminal in the project root and run:
-    ```sh
-    dotnet restore
-    ```
+📌 Chat Management: Admin tools for pinning messages and managing rooms.
 
-### Running the Application
+🛠️ Tech Stack
 
-1.  **Build the project:**
+Component
 
-    ```sh
-    dotnet build
-    ```
+Technology
 
-2.  **Run the application:**
-    ```sh
-    dotnet run
-    ```
+Description
 
-## Project Structure
+Core
 
-The project is organized into the following main directories:
+C# / .NET
 
-- `Windows/`: Contains the various windows or "screens" of the application, built using `Terminal.Gui`.
-- `Utilities/`: Contains helper classes and modules for functionalities like:
-  - `FirebaseHelper.cs`: Interacting with the Firestore database.
-  - `ProfanityChecker.cs`: Filtering messages.
-  - `SessionHandler.cs`: Managing user sessions.
-  - And more for caching, validation, etc.
-- `Program.cs`: The main entry point of the application.
+The backbone of the application.
 
-## License
+UI Framework
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+Terminal.Gui
+
+Provides the TUI (Text User Interface) windowing system.
+
+Database
+
+Google Firestore
+
+Scalable NoSQL cloud database for real-time data.
+
+Caching
+
+LiteDB
+
+Embedded NoSQL database for local persistence.
+
+Architecture
+
+MVvm-ish
+
+Clean separation of UI (Windows/) and Logic (Utilities/).
+
+🚀 Installation
+
+Option 1: The Installer (Recommended)
+
+Download the standalone installer which handles all dependencies and creates a desktop shortcut.
+<br />
+👉 Download BanterSetup.exe
+
+Option 2: Build from Source
+
+If you are a developer and want to contribute:
+
+Clone the repository
+
+git clone [https://github.com/dreeyanzz/Banter.git](https://github.com/dreeyanzz/Banter.git)
+cd Banter
+
+
+Configuration
+
+The project uses an embedded firebase_config.json.
+
+To use your own database, update Utilities/FirebaseHelper.cs with your credentials.
+
+Build & Run
+
+dotnet restore
+dotnet build
+dotnet run
+
+
+📂 Project Structure
+
+A look at the source architecture:
+
+Banter/
+├── Banter.csproj          # Project configuration & Dependencies
+├── Program.cs             # Application Entry Point
+├── BanterLogo.txt         # ASCII Art Assets
+├── Utilities/             # Backend Logic Layer
+│   ├── FirebaseHelper.cs    # Firestore connection & sync
+│   ├── ProfanityChecker.cs  # Content filtering algorithms
+│   └── SessionHandler.cs    # LiteDB local caching logic
+└── Windows/               # UI Presentation Layer
+    ├── LoginWindow.cs       # Authentication Views
+    ├── RegisterWindow.cs    # Account Creation Views
+    └── ChatWindow.cs        # Main Chat Interface
+
+
+🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
+
+Fork the Project
+
+Create your Feature Branch (git checkout -b feature/AmazingFeature)
+
+Commit your Changes (git commit -m 'Add some AmazingFeature')
+
+Push to the Branch (git push origin feature/AmazingFeature)
+
+Open a Pull Request
+
+📄 License
+
+Distributed under the MIT License. See LICENSE for more information.
+
+<div align="center">
+
+Made with ❤️ by Adrian Seth Tabotabo
+
+</div>
