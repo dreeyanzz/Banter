@@ -1,103 +1,98 @@
-# Banter
-
-> **Where modernity embraces tradition.** \> A real-time, cloud-native chat application living strictly inside your terminal.
-
-[](https://github.com/dreeyanzz/Banter)
-[](https://opensource.org/licenses/MIT)
-[](https://github.com/gui-cs/Terminal.Gui)
-
-## 📖 Overview
-
-**Banter** is a Text User Interface (TUI) chat application that bridges the gap between the nostalgic aesthetic of BBS/IRC systems and modern cloud architecture.
-
-Unlike standard console applications that rely on simple scrolling text, Banter leverages **Terminal.Gui** to provide a rich, windowed interface—complete with mouse support, dialogs, and menus—all within your command line. Under the hood, it powers real-time communication using **Google Cloud Firestore** and ensures snappy performance with **LiteDB** local caching.
-
-## ✨ Key Features
-
-  * **🖥️ Rich TUI Experience**: Full windowing system, mouse support, and keyboard navigation inside the terminal.
-  * **⚡ Real-Time Sync**: Instant messaging powered by **Google Firestore**.
-  * **💾 Local Caching**: Uses **LiteDB** to store sessions and data locally, ensuring instant startup and offline capability.
-  * **🛡️ Smart Moderation**: Built-in `ProfanityChecker` to keep conversations clean.
-  * **🔐 Secure Auth**: Robust login and registration system.
-  * **💬 Modern Chat Features**: Message history, user online status, and responsive UI.
-
-## 🛠️ Tech Stack
-
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Language** | C\# / .NET | Core application logic. |
-| **UI Framework** | [Terminal.Gui](https://github.com/gui-cs/Terminal.Gui) | The TUI windowing toolkit. |
-| **Backend** | Google Firestore | NoSQL cloud database for real-time syncing. |
-| **Persistence** | LiteDB | Embedded NoSQL database for local caching. |
-
-## 📂 Project Structure
-
-A clean separation of concerns ensures the codebase is easy to navigate and maintain.
-
-```text
-Banter/
-├── 📄 Banter.csproj          # Project configuration
-├── 📄 Program.cs             # Entry point & app initialization
-├── 📂 Utilities/             # Logic & Backend Layer
-│   ├── 📄 FirebaseHelper.cs  # Firestore connection & sync logic
-│   ├── 📄 ProfanityChecker.cs# Content filtering algorithms
-│   └── 📄 SessionHandler.cs  # LiteDB local caching & auth state
-└── 📂 Windows/               # UI / Presentation Layer
-    ├── 📄 LoginWindow.cs     # Authentication UI
-    ├── 📄 RegisterWindow.cs  # User registration UI
-    └── 📄 ChatWindow.cs      # Main chat interface & message rendering
+```
+▀█████████▄     ▄████████ ███▄▄▄▄       ███        ▄████████    ▄████████
+  ███    ███   ███    ███ ███▀▀▀██▄ ▀█████████▄   ███    ███   ███    ███
+  ███    ███   ███    ███ ███   ███    ▀███▀▀██   ███    █▀    ███    ███
+ ▄███▄▄▄██▀    ███    ███ ███   ███     ███   ▀  ▄███▄▄▄      ▄███▄▄▄▄██▀
+▀▀███▀▀▀██▄  ▀███████████ ███   ███     ███     ▀▀███▀▀▀     ▀▀███▀▀▀▀▀
+  ███    ██▄   ███    ███ ███   ███     ███       ███    █▄  ▀███████████
+  ███    ███   ███    ███ ███   ███     ███       ███    ███   ███    ███
+▄█████████▀    ███    █▀   ▀█   █▀     ▄████▀     ██████████   ███    ███
+                        where modernity embraces tradition     ███    ███
 ```
 
-## 🚀 Getting Started
+# Banter
+
+Banter is a modern, terminal-based chat application built with C# and .NET. It provides a lightweight and keyboard-centric interface for real-time communication, bringing a classic chat experience to the command line.
+
+## Features
+
+- **User Authentication**: Securely log in or create a new account.
+- **Chatrooms**: Create public or private chatrooms to organize conversations.
+- **Real-time Messaging**: Send and receive messages instantly.
+- **Message Pinning**: Pin important messages to the top of a chatroom for easy access.
+- **Chat Management**:
+  - Change chatroom names.
+  - Leave chatrooms you are a part of.
+  - Admins can delete chatrooms.
+  - Clear the message history of a chatroom.
+- **Profanity Filter**: Automatically censors inappropriate language in messages.
+- **Local Caching**: Caches user data locally for improved performance using LiteDB.
+
+## Technologies Used
+
+- **Backend & Core**: C# with .NET
+- **Terminal UI**: [Terminal.Gui](https://github.com/gui-cs/Terminal.Gui)
+- **Database**: Google Cloud Firestore
+- **Local Cache**: LiteDB
+
+## Getting Started
+
+Follow these instructions to get a local copy of Banter up and running.
 
 ### Prerequisites
 
-  * [.NET 6.0 SDK](https://dotnet.microsoft.com/download) or later.
-  * A Google Cloud Project with **Firestore** enabled.
+- [.NET SDK](https://dotnet.microsoft.com/download) (Version 10.0 or compatible)
+- A Google Cloud Platform project with Firestore enabled.
 
-### Installation
+### Installation & Setup
 
-1.  **Clone the repository**
+1.  **Clone the repository:**
 
-    ```bash
-    git clone https://github.com/dreeyanzz/Banter.git
+    ```sh
+    git clone <repository-url>
     cd Banter
     ```
 
-2.  **Configuration**
+2.  **Set up Firebase:**
 
-      * The project requires Firebase credentials.
-      * Open `Utilities/FirebaseHelper.cs` and update it with your project's API details (or place your `firebase_config.json` if configured to read from file).
+    - This project uses Firebase for its backend. You will need to set up your own Firebase project.
+    - The application is configured to use an embedded resource for the Firebase credentials (`banter-7717f-firebase-adminsdk-fbsvc-9cb1cd3095.json`).
+    - To use your own Firebase project, you need to:
+      1.  Go to your Firebase project settings and generate a new private key for the service account. This will download a JSON file.
+      2.  Rename the downloaded JSON file to match the one expected by the application or update the path in `Utilities/FirestoreManager.cs`.
+      3.  Make sure the JSON file is set as an "Embedded resource" in your project's `.csproj` file.
 
-3.  **Build and Run**
-
-    ```bash
+3.  **Restore Dependencies:**
+    Open a terminal in the project root and run:
+    ```sh
     dotnet restore
+    ```
+
+### Running the Application
+
+1.  **Build the project:**
+
+    ```sh
     dotnet build
+    ```
+
+2.  **Run the application:**
+    ```sh
     dotnet run
     ```
 
-## 🕹️ Controls
+## Project Structure
 
-  * **Mouse**: You can click buttons, select text, and switch windows using your mouse.
-  * **Tab / Shift+Tab**: Navigate between input fields and buttons.
-  * **Enter**: Send message or activate button.
-  * **Ctrl+Q**: Quit the application.
+The project is organized into the following main directories:
 
-## 🤝 Contributing
+- `Windows/`: Contains the various windows or "screens" of the application, built using `Terminal.Gui`.
+- `Utilities/`: Contains helper classes and modules for functionalities like:
+  - `FirebaseHelper.cs`: Interacting with the Firestore database.
+  - `ProfanityChecker.cs`: Filtering messages.
+  - `SessionHandler.cs`: Managing user sessions.
+  - And more for caching, validation, etc.
+- `Program.cs`: The main entry point of the application.
 
-Contributions are welcome\! If you have ideas for new features (like file sharing, emojis, or direct messages), feel free to fork the repo and submit a Pull Request.
+## License
 
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
------
-
-> Made with ❤️ by **dreeyanzz**
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
