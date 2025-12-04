@@ -19,7 +19,7 @@ Unlike standard console applications that rely on simple scrolling text, Banter 
   * **💾 Local Caching**: Uses **LiteDB** to store sessions and data locally, ensuring instant startup and offline capability.
   * **🛡️ Smart Moderation**: Built-in `ProfanityChecker` to keep conversations clean.
   * **🔐 Secure Auth**: Robust login and registration system.
-  * **💬 Modern Chat Features**: Message history, user online status, and responsive UI.
+  * **💬 Modern Chat Features**: Message history, and responsive UI.
 
 ## 🛠️ Tech Stack
 
