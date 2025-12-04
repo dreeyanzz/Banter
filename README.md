@@ -80,9 +80,7 @@ Banter/
 ## 🕹️ Controls
 
   * **Mouse**: You can click buttons, select text, and switch windows using your mouse.
-  * **Tab / Shift+Tab**: Navigate between input fields and buttons.
   * **Enter**: Send message or activate button.
-  * **Ctrl+Q**: Quit the application.
 
 ## 🤝 Contributing
 
