@@ -77,6 +77,192 @@ namespace Banter.Windows
         }
 
         /// <summary>
+        /// Shows the window.
+        /// </summary>
+        public void Show()
+        {
+            Application.Top.Add(views: [window]);
+        }
+
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
+        public void Hide()
+        {
+            WindowHelper.CloseWindow(window: window);
+        }
+
+        /// <summary>
+        /// Starts a listener for new messages in a chatroom.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        private void StartMessagesListener(string chatroom_id)
+        {
+            CollectionReference messegesRef = db.Collection(path: "Chatrooms")
+                .Document(path: chatroom_id)
+                .Collection(path: "messages");
+
+            Query query = messegesRef.OrderBy(fieldPath: "timestamp");
+
+            _listener = query.Listen(
+                callback: (snapshot) => _ = OnMessageSnapshotReceived(snapshot: snapshot)
+            );
+        }
+
+        /// <summary>
+        /// Handles the snapshot received from the Firestore listener for messages.
+        /// </summary>
+        /// <param name="snapshot">The query snapshot.</param>
+        private async Task OnMessageSnapshotReceived(QuerySnapshot snapshot)
+        {
+            foreach (DocumentChange? change in snapshot.Changes)
+            {
+                string docId = change.Document.Id;
+
+                // Handle removals
+                if (change.ChangeType == DocumentChange.Type.Removed)
+                {
+                    int index = message_ids.IndexOf(item: docId);
+                    if (index >= 0)
+                    {
+                        message_ids.RemoveAt(index: index);
+                        messages.RemoveAt(index: index);
+                    }
+                    continue;
+                }
+
+                // Handle added or modified
+                DocumentSnapshot doc = change.Document;
+
+                if (
+                    !doc.Exists
+                    || !doc.TryGetValue(path: "sender_id", value: out string senderId)
+                    || !doc.TryGetValue(path: "text", value: out string message)
+                )
+                    continue;
+
+                if (
+                    !currentChatroomParticipants.TryGetValue(
+                        key: senderId,
+                        value: out string? senderName
+                    )
+                )
+                    senderName = "Unknown User";
+
+                string displayName =
+                    senderId == SessionHandler.UserId ? $"{senderName} (me)" : senderName;
+
+                bool isPinned = await FirebaseHelper.IsChatPinnedById(
+                    SessionHandler.CurrentChatroomId!,
+                    message_id: change.Document.Id
+                );
+
+                string chatEntry =
+                    $"{displayName}: {ProfanityChecker.CensorTextRobust(text: message)}";
+
+                int existingIndex = message_ids.IndexOf(item: docId);
+
+                switch (existingIndex)
+                {
+                    case >= 0:
+                        // Modified document → update
+                        messages[existingIndex] = chatEntry;
+                        break;
+
+                    default:
+                        // New message
+                        message_ids.Add(item: docId);
+                        messages.Add(item: chatEntry);
+                        break;
+                }
+            }
+
+            // Rebuild UI with fillers
+            //! OPTIMIZE THIS
+            bool needsFill = messages.Count < chatHistory.Frame.Height;
+            numFill = Math.Max(val1: 0, val2: chatHistory.Frame.Height - messages.Count);
+            IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
+            chatHistory.SetSource(source: needsFill ? [.. filler, .. messages] : messages);
+
+            Application.MainLoop.Invoke(action: ScrollToLatestChat);
+        }
+
+        /// <summary>
+        /// Starts a listener for changes to the chatroom document.
+        /// </summary>
+        /// <param name="chatroom_id">The ID of the chatroom.</param>
+        private async Task StartChatroomDocumentListener(string chatroom_id)
+        {
+            DocumentReference chatroomRef = db.Collection(path: "Chatrooms")
+                .Document(path: chatroom_id);
+
+            chatroomListener = chatroomRef.Listen(
+                callback: async (_) =>
+                {
+                    string newChatroomName = await FirebaseHelper.GetChatroomNameById(
+                        chatroom_id: chatroom_id
+                    );
+
+                    // ?What if newChatroomName is empty?
+
+                    currentPinnedIds = await FirebaseHelper.GetChatroomPinnedMessagesIdById(
+                        chatroom_id
+                    );
+
+                    // ?What if currentPinnedIds is empty?
+
+                    Application.MainLoop.Invoke(async () =>
+                    {
+                        chatroomName.Text = newChatroomName;
+                        chatroomName.X = Pos.Center();
+
+                        List<string> pinnedMessagesId =
+                            await FirebaseHelper.GetChatroomPinnedMessagesIdById(
+                                chatroom_id: chatroom_id
+                            );
+
+                        // Sets the pinned mark, if is marked, put '•', else nothing
+                        // if already marked with '•', leave it as it is, else add '•'
+                        // TODO: make pin indicator modular
+                        for (int i = 0; i < messages.Count; i++)
+                        {
+                            bool isPinned = currentPinnedIds.Contains(item: message_ids[i]);
+                            string messageEntry = messages[i];
+
+                            if (string.IsNullOrEmpty(value: messageEntry))
+                                continue;
+
+                            char lastCharacter = messageEntry[^1];
+
+                            if (isPinned)
+                            {
+                                if (lastCharacter == '•')
+                                    continue;
+
+                                messages[i] += "•";
+                            }
+                            else if (lastCharacter == '•')
+                                messages[i] = messageEntry[..^1];
+                        }
+
+                        bool needsFill = messages.Count < chatHistory.Frame.Height;
+                        numFill = Math.Max(
+                            val1: 0,
+                            val2: chatHistory.Frame.Height - messages.Count
+                        );
+                        IEnumerable<string> filler = Enumerable.Repeat(
+                            element: ".",
+                            count: numFill
+                        );
+                        chatHistory.SetSource(
+                            source: needsFill ? [.. filler, .. messages] : messages
+                        );
+                    });
+                }
+            );
+        }
+
+        /// <summary>
         /// Handles the text changed event of the search chat text field.
         /// </summary>
         private void OnSearchChatTextChanged()
@@ -91,6 +277,7 @@ namespace Banter.Windows
                     .. messages.Where(entry => entry.Contains(value: textToSearch)),
                 ];
 
+                //! OPTIMIZE THIS
                 bool needsFill = filtered.Count < chatHistory.Frame.Height;
                 numFill = Math.Max(val1: 0, val2: chatHistory.Frame.Height - filtered.Count);
                 IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
@@ -102,6 +289,7 @@ namespace Banter.Windows
             {
                 searchIndicatorLabel.Text = string.Empty;
 
+                //! OPTIMIZE THIS
                 bool needsFill = messages.Count < chatHistory.Frame.Height;
                 numFill = Math.Max(val1: 0, val2: chatHistory.Frame.Height - messages.Count);
                 IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
@@ -111,34 +299,6 @@ namespace Banter.Windows
             }
 
             Application.MainLoop.Invoke(action: ScrollToLatestChat);
-        }
-
-        /// <summary>
-        /// Handles the click event of the "Send" button.
-        /// </summary>
-        private async void OnButtonSendClicked()
-        {
-            string messageText = chatBox.Text.ToString() ?? string.Empty;
-            string senderId = SessionHandler.UserId ?? string.Empty;
-            string chatroomId = SessionHandler.CurrentChatroomId ?? string.Empty;
-
-            if (!(!string.IsNullOrWhiteSpace(value: messageText) && senderId != null))
-                return;
-            chatBox.Text = string.Empty;
-
-            Dictionary<string, object> message = new()
-            {
-                { "sender_id", senderId },
-                { "text", messageText },
-                { "timestamp", Timestamp.FromDateTime(dateTime: DateTime.UtcNow) },
-            };
-
-            // ? Add Message logic is here
-            //TODO: your forgot to update last chat dawg
-            await db.Collection(path: "Chatrooms")
-                .Document(path: chatroomId)
-                .Collection(path: "messages")
-                .AddAsync(documentData: message);
         }
 
         /// <summary>
@@ -185,6 +345,7 @@ namespace Banter.Windows
 
             if (SessionHandler.IsLoggedIn == false)
                 return;
+
             if (string.IsNullOrEmpty(value: chatroom_id))
             {
                 window.Add(view: labelEmptyChatroom);
@@ -192,11 +353,12 @@ namespace Banter.Windows
             }
 
             await FetchAndCacheParticipants(chatroomId: chatroom_id);
+
             string _chatroomName = await FirebaseHelper.GetChatroomNameById(
                 chatroom_id: SessionHandler.CurrentChatroomId! //! using `!` here
             );
 
-            // ?What if _chatroomName is empty?
+            //? What if _chatroomName is empty?
 
             Application.MainLoop.Invoke(action: () =>
             {
@@ -204,8 +366,8 @@ namespace Banter.Windows
                 chatroomName.X = Pos.Center();
             });
 
-            StartListener(chatroom_id: chatroom_id);
-            await StartChatroomListener(chatroom_id: chatroom_id);
+            StartMessagesListener(chatroom_id: chatroom_id);
+            await StartChatroomDocumentListener(chatroom_id: chatroom_id);
 
             Application.MainLoop.Invoke(action: () =>
             {
@@ -252,19 +414,31 @@ namespace Banter.Windows
         }
 
         /// <summary>
-        /// Shows the window.
+        /// Handles the click event of the "Send" button.
         /// </summary>
-        public void Show()
+        private async void OnButtonSendClicked()
         {
-            Application.Top.Add(views: [window]);
-        }
+            string messageText = chatBox.Text.ToString() ?? string.Empty;
+            string senderId = SessionHandler.UserId ?? string.Empty;
+            string chatroomId = SessionHandler.CurrentChatroomId ?? string.Empty;
 
-        /// <summary>
-        /// Hides the window.
-        /// </summary>
-        public void Hide()
-        {
-            WindowHelper.CloseWindow(window: window);
+            if (!(!string.IsNullOrWhiteSpace(value: messageText) && senderId != null))
+                return;
+            chatBox.Text = string.Empty;
+
+            Dictionary<string, object> message = new()
+            {
+                { "sender_id", senderId },
+                { "text", messageText },
+                { "timestamp", Timestamp.FromDateTime(dateTime: DateTime.UtcNow) },
+            };
+
+            //* Add Message logic is here
+            //TODO: your forgot to update last chat dawg
+            await db.Collection(path: "Chatrooms")
+                .Document(path: chatroomId)
+                .Collection(path: "messages")
+                .AddAsync(documentData: message);
         }
 
         /// <summary>
@@ -424,175 +598,6 @@ namespace Banter.Windows
             IsDefault = true,
             HotKeySpecifier = (Rune)0xffff,
         };
-
-        /// <summary>
-        /// Starts a listener for new messages in a chatroom.
-        /// </summary>
-        /// <param name="chatroom_id">The ID of the chatroom.</param>
-        private void StartListener(string chatroom_id)
-        {
-            CollectionReference messegesRef = db.Collection(path: "Chatrooms")
-                .Document(path: chatroom_id)
-                .Collection(path: "messages");
-
-            Query query = messegesRef.OrderBy(fieldPath: "timestamp");
-
-            _listener = query.Listen(
-                callback: (snapshot) => _ = OnSnapshotReceived(snapshot: snapshot)
-            );
-        }
-
-        /// <summary>
-        /// Handles the snapshot received from the Firestore listener for messages.
-        /// </summary>
-        /// <param name="snapshot">The query snapshot.</param>
-        private async Task OnSnapshotReceived(QuerySnapshot snapshot)
-        {
-            foreach (DocumentChange? change in snapshot.Changes)
-            {
-                string docId = change.Document.Id;
-
-                // Handle removals
-                if (change.ChangeType == DocumentChange.Type.Removed)
-                {
-                    int index = message_ids.IndexOf(item: docId);
-                    if (index >= 0)
-                    {
-                        message_ids.RemoveAt(index: index);
-                        messages.RemoveAt(index: index);
-                    }
-                    continue;
-                }
-
-                // Handle added or modified
-                DocumentSnapshot doc = change.Document;
-
-                if (
-                    !doc.Exists
-                    || !doc.TryGetValue(path: "sender_id", value: out string senderId)
-                    || !doc.TryGetValue(path: "text", value: out string message)
-                )
-                    continue;
-
-                if (
-                    !currentChatroomParticipants.TryGetValue(
-                        key: senderId,
-                        value: out string? senderName
-                    )
-                )
-                    senderName = "Unknown User";
-
-                string displayName =
-                    senderId == SessionHandler.UserId ? $"{senderName} (me)" : senderName;
-
-                bool isPinned = await FirebaseHelper.IsChatPinnedById(
-                    SessionHandler.CurrentChatroomId!,
-                    message_id: change.Document.Id
-                );
-
-                string chatEntry =
-                    $"{displayName}: {ProfanityChecker.CensorTextRobust(text: message)}";
-
-                int existingIndex = message_ids.IndexOf(item: docId);
-
-                switch (existingIndex)
-                {
-                    case >= 0:
-                        // Modified document → update
-                        messages[existingIndex] = chatEntry;
-                        break;
-
-                    default:
-                        // New message
-                        message_ids.Add(item: docId);
-                        messages.Add(item: chatEntry);
-                        break;
-                }
-            }
-
-            // Rebuild UI with fillers
-            bool needsFill = messages.Count < chatHistory.Frame.Height;
-            numFill = Math.Max(val1: 0, val2: chatHistory.Frame.Height - messages.Count);
-            IEnumerable<string> filler = Enumerable.Repeat(element: ".", count: numFill);
-            chatHistory.SetSource(source: needsFill ? [.. filler, .. messages] : messages);
-
-            Application.MainLoop.Invoke(action: ScrollToLatestChat);
-        }
-
-        /// <summary>
-        /// Starts a listener for changes to the chatroom document.
-        /// </summary>
-        /// <param name="chatroom_id">The ID of the chatroom.</param>
-        private async Task StartChatroomListener(string chatroom_id)
-        {
-            DocumentReference chatroomRef = db.Collection(path: "Chatrooms")
-                .Document(path: chatroom_id);
-
-            chatroomListener = chatroomRef.Listen(
-                callback: async (_) =>
-                {
-                    string newChatroomName = await FirebaseHelper.GetChatroomNameById(
-                        chatroom_id: chatroom_id
-                    );
-
-                    // ?What if newChatroomName is empty?
-
-                    currentPinnedIds = await FirebaseHelper.GetChatroomPinnedMessagesIdById(
-                        chatroom_id
-                    );
-
-                    // ?What if currentPinnedIds is empty?
-
-                    Application.MainLoop.Invoke(async () =>
-                    {
-                        chatroomName.Text = newChatroomName;
-                        chatroomName.X = Pos.Center();
-
-                        List<string> pinnedMessagesId =
-                            await FirebaseHelper.GetChatroomPinnedMessagesIdById(
-                                chatroom_id: chatroom_id
-                            );
-
-                        // Sets the pinned mark, if is marked, put '•', else nothing
-                        // if already marked with '•', leave it as it is, else add '•'
-                        // TODO: make pin indicator modular
-                        for (int i = 0; i < messages.Count; i++)
-                        {
-                            bool isPinned = currentPinnedIds.Contains(item: message_ids[i]);
-                            string messageEntry = messages[i];
-
-                            if (string.IsNullOrEmpty(value: messageEntry))
-                                continue;
-
-                            char lastCharacter = messageEntry[^1];
-
-                            if (isPinned)
-                            {
-                                if (lastCharacter == '•')
-                                    continue;
-
-                                messages[i] += "•";
-                            }
-                            else if (lastCharacter == '•')
-                                messages[i] = messageEntry[..^1];
-                        }
-
-                        bool needsFill = messages.Count < chatHistory.Frame.Height;
-                        numFill = Math.Max(
-                            val1: 0,
-                            val2: chatHistory.Frame.Height - messages.Count
-                        );
-                        IEnumerable<string> filler = Enumerable.Repeat(
-                            element: ".",
-                            count: numFill
-                        );
-                        chatHistory.SetSource(
-                            source: needsFill ? [.. filler, .. messages] : messages
-                        );
-                    });
-                }
-            );
-        }
 
         /// <summary>
         /// Scrolls the chat history to the latest chat.

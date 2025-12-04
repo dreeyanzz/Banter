@@ -20,7 +20,7 @@ namespace Banter.Windows
         public static ViewPinnedMessagesWindow Instance => lazyInstance.Value;
 
         private readonly FirestoreDb db = FirestoreManager.Instance.Database;
-        private FirestoreChangeListener chatroomListener;
+        private FirestoreChangeListener? chatroomListener;
         private readonly List<string> message_ids = [];
         private readonly List<string> messages = [];
         private int numFill = 0;
@@ -33,7 +33,8 @@ namespace Banter.Windows
 
             window.Leave += (_) =>
             {
-                // Does not work
+                //! Does not work
+                //TODO: Make this window such that when going out of the window it closes
                 Hide();
             };
 
@@ -45,6 +46,7 @@ namespace Banter.Windows
                     return;
 
                 string chat_id = message_ids[selectedIndex];
+
                 await FirebaseHelper.RemovePinChatroomMessage(
                     chatroom_id: SessionHandler.CurrentChatroomId!,
                     message_id: chat_id
@@ -170,11 +172,10 @@ namespace Banter.Windows
             {
                 if (!message_ids.Contains(item: message_id))
                 {
-                    string text =
-                        await FirebaseHelper.GetChatroomMessageById(
-                            chatroom_id: SessionHandler.CurrentChatroomId!,
-                            message_id: message_id
-                        ) ?? string.Empty;
+                    string text = await FirebaseHelper.GetChatroomMessageById(
+                        chatroom_id: SessionHandler.CurrentChatroomId!,
+                        message_id: message_id
+                    );
 
                     if (!string.IsNullOrEmpty(value: text))
                     {

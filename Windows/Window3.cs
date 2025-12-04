@@ -20,9 +20,13 @@ namespace Banter.Windows
         private Window3()
         {
             clearMessagesButton.Clicked += async () => await OnClearMessagesButtonClicked();
+
             deleteChatroomButton.Clicked += async () => await OnDeleteChatroomButtonClicked();
+
             SessionHandler.CurrentChatroomChanged += async (_) => await OnCurrentChatroomChanged();
+
             leaveChatroomButton.Clicked += async () => await OnLeaveChatroomButton();
+
             changeChatroomNameButton.Clicked += async () =>
                 await OnChangeChatroomNameButtonClicked();
 

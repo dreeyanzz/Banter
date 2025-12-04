@@ -30,13 +30,15 @@ namespace Banter.Windows
                 participants_ids.Clear();
             };
 
+            addButton.Clicked += async () => await OnAddButtonClicked();
+
             removeLastButton.Clicked += () =>
             {
-                if (participants.Count > 0)
-                {
-                    participants.RemoveAt(index: participants.Count - 1);
-                    participants_ids.RemoveAt(index: participants_ids.Count - 1);
-                }
+                if (participants.Count <= 0)
+                    return;
+
+                participants.RemoveAt(index: participants.Count - 1);
+                participants_ids.RemoveAt(index: participants_ids.Count - 1);
             };
 
             clearButton.Clicked += () =>
@@ -46,7 +48,6 @@ namespace Banter.Windows
             };
 
             participantsListView.SetSource(source: participants);
-            addButton.Clicked += async () => await OnAddButtonClicked();
             createButton.Clicked += async () => await OnCreateButtonClicked();
 
             window.Enter += (_) =>
@@ -76,6 +77,22 @@ namespace Banter.Windows
         }
 
         /// <summary>
+        /// Shows the window.
+        /// </summary>
+        public void Show()
+        {
+            WindowHelper.FocusWindow(window: window);
+        }
+
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
+        public void Hide()
+        {
+            Application.Top.Remove(view: window);
+        }
+
+        /// <summary>
         /// Handles the click event of the "Add" button.
         /// </summary>
         private async Task OnAddButtonClicked()
@@ -85,7 +102,8 @@ namespace Banter.Windows
             if (string.IsNullOrEmpty(value: inputUsername))
                 return;
 
-            if (inputUsername == SessionHandler.Username)
+            bool isOwnUsername = inputUsername == SessionHandler.Username;
+            if (isOwnUsername)
             {
                 MessageBox.ErrorQuery(
                     title: "Error",
@@ -107,11 +125,12 @@ namespace Banter.Windows
                 return;
             }
 
-            string participant_id =
-                await FirebaseHelper.GetUserIdFromUsername(username: inputUsername) ?? string.Empty;
+            string participant_id = await FirebaseHelper.GetUserIdFromUsername(
+                username: inputUsername
+            );
 
-            participants_ids.Add(item: participant_id); //! using `!` here
             participants.Add(item: inputUsername);
+            participants_ids.Add(item: participant_id);
             usersTextField.Text = string.Empty;
         }
 
@@ -128,22 +147,6 @@ namespace Banter.Windows
             Hide();
             participants.Clear();
             participants_ids.Clear();
-        }
-
-        /// <summary>
-        /// Shows the window.
-        /// </summary>
-        public void Show()
-        {
-            WindowHelper.FocusWindow(window: window);
-        }
-
-        /// <summary>
-        /// Hides the window.
-        /// </summary>
-        public void Hide()
-        {
-            Application.Top.Remove(view: window);
         }
 
         /// <summary>

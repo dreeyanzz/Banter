@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Banter.Windows;
 using Terminal.Gui;
 
@@ -41,7 +40,7 @@ namespace Banter
                         MessageBox.Query(
                             "Help",
                             "Before you use this app, make sure you have strong internet.\nDo not forget that you can use both Mouse and Keyboard!",
-                            ["Confirm"]
+                            "Confirm"
                         )
                 ),
                 new("Quit", "", () => Application.RequestStop()),

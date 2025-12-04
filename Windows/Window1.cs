@@ -23,6 +23,7 @@ namespace Banter.Windows
         bool isFiltered = false;
         List<string> filteredNames = [];
         List<string> filteredIds = [];
+
         private int numFill = 0;
 
         private Window1()
@@ -194,6 +195,22 @@ namespace Banter.Windows
         }
 
         /// <summary>
+        /// Shows the window.
+        /// </summary>
+        public void Show()
+        {
+            Application.Top.Add(views: [window]);
+        }
+
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
+        public void Hide()
+        {
+            Application.Top.Remove(view: window);
+        }
+
+        /// <summary>
         /// Handles the event when the user's chatrooms change.
         /// </summary>
         private async void OnUserChatroomsChanged() =>
@@ -225,22 +242,6 @@ namespace Banter.Windows
             });
 
         /// <summary>
-        /// Shows the window.
-        /// </summary>
-        public void Show()
-        {
-            Application.Top.Add(views: [window]);
-        }
-
-        /// <summary>
-        /// Hides the window.
-        /// </summary>
-        public void Hide()
-        {
-            Application.Top.Remove(view: window);
-        }
-
-        /// <summary>
         /// The main window for this view.
         /// </summary>
         private readonly Window window = new()
@@ -250,8 +251,8 @@ namespace Banter.Windows
             Height = Dim.Fill(),
             Width = Dim.Percent(n: 23),
 
-            X = 0,
-            Y = 0,
+            X = Pos.At(n: 0),
+            Y = Pos.At(n: 0),
 
             ColorScheme = CustomColorScheme.Window,
         };

@@ -233,6 +233,7 @@ namespace Banter.Windows
                 password: inputPassword,
                 username: inputUsername
             );
+
             if (!await FirebaseHelper.AddAccount(user: user))
             {
                 MessageBox.ErrorQuery(
@@ -246,8 +247,9 @@ namespace Banter.Windows
 
                 return;
             }
+
             MessageBox.Query(
-                title: "Service Error",
+                title: "Account Created!",
                 message: "Account creating success!",
                 buttons: ["Ok"]
             );
@@ -311,7 +313,7 @@ namespace Banter.Windows
             X = Pos.Center(),
             Y = Pos.Center() - Pos.At(n: 1),
 
-            Width = 50,
+            Width = Dim.Sized(n: 50),
 
             Secret = true,
         };
@@ -335,7 +337,7 @@ namespace Banter.Windows
             X = Pos.Center(),
             Y = Pos.Center() + Pos.At(n: 1),
 
-            Width = 50,
+            Width = Dim.Sized(n: 50),
 
             Secret = true,
         };
@@ -372,7 +374,7 @@ namespace Banter.Windows
             X = Pos.Center(),
             Y = Pos.Bottom(view: showHidePasswords) + Pos.At(n: 1),
 
-            Width = 50,
+            Width = Dim.Sized(n: 50),
 
             Secret = false,
         };
@@ -396,7 +398,7 @@ namespace Banter.Windows
             X = Pos.Center(),
             Y = Pos.Bottom(view: nameTextField) + Pos.At(n: 1),
 
-            Width = 50,
+            Width = Dim.Sized(n: 50),
 
             Secret = false,
         };

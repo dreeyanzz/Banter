@@ -50,17 +50,6 @@ namespace Banter.Windows
         }
 
         /// <summary>
-        /// Enables or disables all interactive UI elements.
-        /// </summary>
-        /// <param name="isEnabled">Whether the elements should be enabled.</param>
-        private void SetInteractables(bool isEnabled)
-        {
-            usernameTextField.Enabled = isEnabled;
-            passwordTextField.Enabled = isEnabled;
-            logInButton.Enabled = isEnabled;
-        }
-
-        /// <summary>
         /// Shows the window.
         /// </summary>
         public void Show()
@@ -88,6 +77,17 @@ namespace Banter.Windows
             this.BanterLogo.Height = BanterLogo.Count;
             this.BanterLogo.Width = BanterLogo[1].Length;
             window.Add(view: this.BanterLogo);
+        }
+
+        /// <summary>
+        /// Enables or disables all interactive UI elements.
+        /// </summary>
+        /// <param name="isEnabled">Whether the elements should be enabled.</param>
+        private void SetInteractables(bool isEnabled)
+        {
+            usernameTextField.Enabled = isEnabled;
+            passwordTextField.Enabled = isEnabled;
+            logInButton.Enabled = isEnabled;
         }
 
         /// <summary>
@@ -126,8 +126,9 @@ namespace Banter.Windows
                 return;
             }
 
-            Dictionary<string, object> user_info =
-                await FirebaseHelper.GetUserInfoById(user_id: user_id) ?? [];
+            Dictionary<string, object> user_info = await FirebaseHelper.GetUserInfoById(
+                user_id: user_id
+            );
 
             if (user_info.Count == 0)
             {
@@ -143,7 +144,7 @@ namespace Banter.Windows
                 return;
             }
 
-            if (!user_info.TryGetValue(key: "password", value: out object dbPassword)) //Using nullable here
+            if (!user_info.TryGetValue(key: "password", value: out object? dbPassword)) //Using nullable here
             {
                 MessageBox.Query(
                     title: "Message",
@@ -170,10 +171,10 @@ namespace Banter.Windows
             }
 
             SessionHandler.UserId = user_id;
-            if (user_info.TryGetValue(key: "name", value: out object name))
+            if (user_info.TryGetValue(key: "name", value: out object? name))
                 SessionHandler.Name = (string)name;
 
-            if (user_info.TryGetValue(key: "username", value: out object username))
+            if (user_info.TryGetValue(key: "username", value: out object? username))
                 SessionHandler.Username = (string)username;
 
             SessionHandler.IsLoggedIn = true;
@@ -186,6 +187,7 @@ namespace Banter.Windows
             passwordTextField.Text = string.Empty;
             WindowHelper.CloseWindow(window: window);
 
+            // Show the three main windows
             Window1.Instance.Show();
             Window2.Instance.Show();
             Window3.Instance.Show();
@@ -193,6 +195,7 @@ namespace Banter.Windows
 
         /// <summary>
         /// Handles the click event of the "Create Account" button.
+        /// Closes this window and then opens CreateAccountWindow
         /// </summary>
         private void OnCreateAccountButtonClicked()
         {

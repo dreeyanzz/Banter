@@ -23,14 +23,17 @@ namespace Banter.Windows
             closeButton.Clicked += Hide;
             setButton.Clicked += async () => await OnSetButtonClicked();
 
-            window.Enter += (_) => setButton.IsDefault = true;
+            window.Enter += (_) =>
+            {
+                setButton.IsDefault = true;
+                Application.MainLoop.Invoke(action: () => dummyView.SetFocus());
+            };
 
             window.Leave += (_) =>
             {
                 setButton.IsDefault = false;
                 Hide();
             };
-            window.Enter += (_) => Application.MainLoop.Invoke(action: () => dummyView.SetFocus());
 
             window.Add(views: [newNameTextField, setButton, closeButton]);
         }
@@ -42,7 +45,7 @@ namespace Banter.Windows
         {
             string inputName = newNameTextField.Text.ToString() ?? string.Empty;
 
-            if (string.IsNullOrEmpty(inputName))
+            if (string.IsNullOrEmpty(value: inputName))
                 return;
 
             await FirebaseHelper.ChangeChatroomName(
@@ -67,7 +70,7 @@ namespace Banter.Windows
         public void Hide()
         {
             newNameTextField.Text = string.Empty;
-            Application.Top.Remove(view: window);
+            WindowHelper.CloseWindow(window: window);
         }
 
         /// <summary>
@@ -104,7 +107,7 @@ namespace Banter.Windows
         /// </summary>
         private readonly TextField newNameTextField = new()
         {
-            X = 0,
+            X = Pos.At(n: 0),
             Y = Pos.Center(),
 
             Width = Dim.Fill() - Dim.Width(view: setButton),
@@ -117,7 +120,7 @@ namespace Banter.Windows
         {
             Text = "Set",
 
-            X = Pos.AnchorEnd() - Pos.At(n: "Set".Length + 4),
+            X = Pos.AnchorEnd() - Pos.At(n: "Set".Length + 6),
             Y = Pos.Center(),
 
             HotKeySpecifier = (Rune)0xffff,

@@ -9,48 +9,31 @@ namespace Banter.Utilities
     {
         private static FirestoreChangeListener? chatroomsListener;
 
-        // --- Private Backing Fields ---
+        #region Private Backing Fields
+
         private static string? _username;
         private static string? _name;
-        private static string? _user_id;
-        private static string? _current_chatroom_id;
+        private static string? _userId;
+        private static string? _currentChatroomId;
         private static bool _isLoggedIn = false;
-        private static List<(string chatroom_id, string chatroom_name)> _userChatrooms = [];
+        private static List<(string ChatroomId, string ChatroomName)> _userChatrooms = [];
 
-        // --- Public Events ---
-        /// <summary>
-        /// Occurs when the username changes.
-        /// </summary>
+        #endregion
+
+        #region Public Events
+
         public static event Action<string?>? UsernameChanged;
-
-        /// <summary>
-        /// Occurs when the name changes.
-        /// </summary>
         public static event Action<string?>? NameChanged;
-
-        /// <summary>
-        /// Occurs when the user ID changes.
-        /// </summary>
         public static event Action<string?>? UserIdChanged;
-
-        /// <summary>
-        /// Occurs when the current chatroom changes.
-        /// </summary>
         public static event Action<string?>? CurrentChatroomChanged;
-
-        /// <summary>
-        /// Occurs when the login state changes.
-        /// </summary>
         public static event Action<bool>? IsLoggedInChanged;
-
-        /// <summary>
-        /// Occurs when the user's chatrooms change.
-        /// </summary>
         public static event Action<
-            List<(string chatroom_id, string chatroom_name)>
+            List<(string ChatroomId, string ChatroomName)>
         >? UserChatroomsChanged;
 
-        // --- Public Properties ---
+        #endregion
+
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the current user's username.
@@ -89,13 +72,13 @@ namespace Banter.Utilities
         /// </summary>
         public static string? UserId
         {
-            get => _user_id;
+            get => _userId;
             set
             {
-                if (_user_id != value)
+                if (_userId != value)
                 {
-                    _user_id = value;
-                    UserIdChanged?.Invoke(_user_id);
+                    _userId = value;
+                    UserIdChanged?.Invoke(_userId);
                 }
             }
         }
@@ -105,16 +88,15 @@ namespace Banter.Utilities
         /// </summary>
         public static string? CurrentChatroomId
         {
-            get => _current_chatroom_id;
+            get => _currentChatroomId;
             set
             {
-                if (IsLoggedIn == false)
-                    return;
-
-                if (_current_chatroom_id != value)
+                // Removed the "if (!IsLoggedIn)" check here.
+                // We want to be able to clear this value (set to null) even during logout.
+                if (_currentChatroomId != value)
                 {
-                    _current_chatroom_id = value;
-                    CurrentChatroomChanged?.Invoke(_current_chatroom_id);
+                    _currentChatroomId = value;
+                    CurrentChatroomChanged?.Invoke(_currentChatroomId);
                 }
             }
         }
@@ -138,11 +120,12 @@ namespace Banter.Utilities
         /// <summary>
         /// Gets or sets the list of chatrooms the user is a member of.
         /// </summary>
-        public static List<(string chatroom_id, string chatroom_name)> Chatrooms
+        public static List<(string ChatroomId, string ChatroomName)> Chatrooms
         {
             get => _userChatrooms;
             set
             {
+                // Note: Reference equality check is fine here if we always assign a NEW list instance.
                 if (_userChatrooms != value)
                 {
                     _userChatrooms = value;
@@ -150,6 +133,10 @@ namespace Banter.Utilities
                 }
             }
         }
+
+        #endregion
+
+        #region Session Lifecycle
 
         /// <summary>
         /// Clears the current session data and logs the user out.
@@ -159,12 +146,15 @@ namespace Banter.Utilities
             if (chatroomsListener != null)
                 await chatroomsListener.StopAsync();
 
+            // Reset properties (triggers events for UI cleanup)
+            CurrentChatroomId = null;
+            Chatrooms = [];
             Username = null;
             Name = null;
             UserId = null;
-            CurrentChatroomId = null;
+
+            // Set IsLoggedIn last to ensure UI knows we are fully done
             IsLoggedIn = false;
-            Chatrooms = [];
         }
 
         /// <summary>
@@ -172,7 +162,7 @@ namespace Banter.Utilities
         /// </summary>
         public static async Task StartChatroomsListener()
         {
-            if (!IsLoggedIn)
+            if (!IsLoggedIn || string.IsNullOrEmpty(UserId))
                 return;
 
             CollectionReference chatroomsRef = FirebaseHelper.db.Collection("Chatrooms");
@@ -180,22 +170,31 @@ namespace Banter.Utilities
 
             chatroomsListener = query.Listen(async snapshot =>
             {
-                List<(string Id, string Name)> chatroomsList = [];
-
-                foreach (DocumentSnapshot doc in snapshot.Documents)
+                // OPTIMIZATION: Use Task.WhenAll to fetch names in parallel
+                // instead of waiting for them one by one in a foreach loop.
+                var chatroomTasks = snapshot.Documents.Select(async doc =>
                 {
-                    string chatroom_name = await FirebaseHelper.GetChatroomNameById(doc.Id);
+                    string name = await FirebaseHelper.GetChatroomNameById(doc.Id);
+                    return (ChatroomId: doc.Id, ChatroomName: name);
+                });
 
-                    chatroomsList.Add((doc.Id, chatroom_name));
+                var results = await Task.WhenAll(chatroomTasks);
+                var chatroomsList = results.ToList();
+
+                // Validation: Check if the user was kicked out of the current chatroom
+                // We use ?. operator to avoid crashing if CurrentChatroomId is null
+                if (
+                    !string.IsNullOrEmpty(CurrentChatroomId)
+                    && !chatroomsList.Any(x => x.ChatroomId == CurrentChatroomId)
+                )
+                {
+                    CurrentChatroomId = null; // Kick user to dashboard/main menu
                 }
-
-                List<string> chatroomIds = [.. chatroomsList.Select(x => x.Id)]; // no value
-
-                if (!chatroomIds.Contains(SessionHandler.CurrentChatroomId!)) //! quite incomprehensive
-                    CurrentChatroomId = "";
 
                 Chatrooms = chatroomsList;
             });
         }
+
+        #endregion
     }
 }
