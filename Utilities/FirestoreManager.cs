@@ -34,7 +34,7 @@ namespace Banter.Utilities
 
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
-                string resourceName = "Banter.banter-7717f-firebase-adminsdk-fbsvc-9cb1cd3095.json";
+                string resourceName = "Banter.firebase-service-account.json";
 
                 // 5. Load the file as a Stream
                 GoogleCredential credential;

@@ -28,7 +28,7 @@
   ],
   "copyFormatting": "none",
   "copyOnSelect": false,
-  "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+  "defaultProfile": "{5cfb9bec-57d6-4d97-b625-32a7141c09ad}",
   "keybindings": [
     {
       "id": "User.copy.644BA8F2",
@@ -62,28 +62,18 @@
         "font": {
           "builtinGlyphs": false,
           "face": "JetBrains Mono",
-          "size": 12
+          "size": 12,
+          "features": {
+            "calt": 0,
+            "liga": 0,
+            "dlig": 0
+          }
         },
-        "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+        "guid": "{5cfb9bec-57d6-4d97-b625-32a7141c09ad}",
         "hidden": false,
         "name": "Banter",
         "scrollbarState": "hidden",
         "useAcrylic": true
-      },
-      {
-        "name": "Vibe_Test_Profile",
-        "guid": "{8a4f5b9d-4c8a-4b1e-9c2d-5f6e7a8b9c0d}",
-        "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-        "hidden": false,
-
-        "colorScheme": "Solarized Dark",
-        "font": {
-          "face": "Cascadia Mono",
-          "size": 14
-        },
-        "useAcrylic": false,
-        "scrollbarState": "visible",
-        "cursorShape": "vintage"
       }
     ]
   },
