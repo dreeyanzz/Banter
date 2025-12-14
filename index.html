@@ -20,6 +20,49 @@
         --purple: #9b59b6; /* Purple for Installer */
       }
 
+      /* --- NEW STYLES FOR DOCS SELECTION --- */
+
+      /* Allow the card to be a div but keep the layout */
+      div.nav-card {
+        cursor: default; /* The card itself isn't clickable, only the buttons inside */
+      }
+
+      .action-buttons {
+        margin-top: auto;
+        display: flex;
+        gap: 15px;
+        width: 100%;
+      }
+
+      .sub-link {
+        font-family: "Fira Code", monospace;
+        font-size: 0.85rem;
+        font-weight: bold;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.2s ease;
+        flex: 1; /* Make them split the width evenly */
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      /* Specific styling for the Docs buttons */
+      .docs .sub-link {
+        color: var(--yellow);
+        background-color: rgba(241, 196, 15, 0.05);
+      }
+
+      .docs .sub-link:hover {
+        background-color: var(--yellow);
+        color: #1a1a1a; /* Dark text on yellow background */
+        box-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
+      }
+
       * {
         box-sizing: border-box;
       }
@@ -334,7 +377,7 @@
       </div>
 
       <div class="nav-grid">
-        <a href="./documentation-website/index.html" class="nav-card docs">
+        <div class="nav-card docs">
           <h2>
             <svg
               width="24"
@@ -358,8 +401,20 @@
             Technical breakdown, schema definitions, C# source code analysis,
             and implementation details.
           </p>
-          <span class="action-link">./read_docs.sh &rarr;</span>
-        </a>
+
+          <div class="action-buttons">
+            <a href="./documentation-website/index.html" class="sub-link">
+              <span>&lt;web/&gt;</span>
+            </a>
+            <a
+              href="/documentation/documentation.pdf"
+              target="_blank"
+              class="sub-link"
+            >
+              <span>.pdf</span>
+            </a>
+          </div>
+        </div>
 
         <a href="./presentation-website/index.html" class="nav-card pres">
           <h2>
