@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Banter | TUI Chat Documentation</title>
+    <title>Banter | Complete Documentation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap"
@@ -13,6 +13,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <link rel="icon" type="image/png" href="BanterLogo.png" />
     <script>
       tailwind.config = {
         darkMode: "class",
@@ -24,10 +25,10 @@
             },
             colors: {
               dark: {
-                950: "#020617", // Deepest background
-                900: "#0f172a", // Main BG
-                800: "#1e293b", // Card BG
-                700: "#334155", // Borders
+                950: "#020617",
+                900: "#0f172a",
+                800: "#1e293b",
+                700: "#334155",
               },
               accent: {
                 cyan: "#22d3ee",
@@ -38,15 +39,24 @@
                 red: "#f87171",
               },
             },
-            animation: {
-              "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-            },
           },
         },
       };
     </script>
     <style>
-      /* Custom Scrollbar */
+      .cursor-blink {
+        animation: blink 1s step-end infinite;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -67,7 +77,6 @@
         color: #e2e8f0;
       }
 
-      /* Glow effects */
       .glow-card {
         transition: all 0.3s ease;
         border: 1px solid #334155;
@@ -99,58 +108,6 @@
         opacity: 1;
       }
 
-      /* AI Card specific style - Dashed to indicate "Proposed" */
-      .ai-card {
-        border-style: dashed;
-        opacity: 0.8;
-      }
-      .ai-card:hover {
-        border-style: solid;
-        border-color: #fbbf24;
-        box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
-        opacity: 1;
-      }
-
-      /* Wiki Code Block Styles */
-      .wiki-code {
-        background-color: #0f172a;
-        border-left: 3px solid #22d3ee;
-        padding: 1rem;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 0.8rem;
-        color: #cbd5e1;
-        margin-bottom: 1rem;
-
-        /* NEW LINES TO ADD: */
-        max-width: 85%; /* Forces it to never be wider than the screen */
-        overflow-x: hidden; /* Cuts off anything that sticks out */
-      }
-      .keyword {
-        color: #c084fc;
-      } /* Purple */
-      .type {
-        color: #22d3ee;
-      } /* Cyan */
-      .string {
-        color: #4ade80;
-      } /* Green */
-      .comment {
-        color: #64748b;
-        font-style: italic;
-      } /* Slate */
-
-      /* View Transitions */
-      .view-section {
-        display: none;
-        opacity: 0;
-        transition: opacity 0.4s ease-in-out;
-      }
-      .view-section.active-view {
-        display: block;
-        opacity: 1;
-      }
-
-      /* Code block styling */
       pre {
         background-color: #020617;
         border: 1px solid #1e293b;
@@ -161,10 +118,28 @@
         font-size: 0.9rem;
       }
 
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        background: #1e293b;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        color: #22d3ee;
+      }
+
+      pre code {
+        background: none;
+        padding: 0;
+      }
+
       .gradient-text {
         background: linear-gradient(to right, #22d3ee, #c084fc);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+      }
+
+      .nav-link {
+        transition: all 0.2s ease;
       }
 
       .nav-link.active {
@@ -177,25 +152,75 @@
         );
       }
 
-      /* Typing cursor effect for title */
-      .cursor-blink {
-        animation: blink 1s step-end infinite;
+      .keyword {
+        color: #c084fc;
       }
-      @keyframes blink {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0;
-        }
+      .type {
+        color: #22d3ee;
+      }
+      .string {
+        color: #4ade80;
+      }
+      .comment {
+        color: #64748b;
+        font-style: italic;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+      }
+
+      th {
+        background: #1e293b;
+        border: 1px solid #334155;
+        padding: 0.75rem;
+        text-align: left;
+        font-weight: 600;
+        color: #22d3ee;
+      }
+
+      td {
+        border: 1px solid #334155;
+        padding: 0.75rem;
+        color: #cbd5e1;
+      }
+
+      tr:hover {
+        background: rgba(34, 211, 238, 0.05);
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .badge-primary {
+        background: #22d3ee;
+        color: #020617;
+      }
+      .badge-secondary {
+        background: #c084fc;
+        color: #020617;
+      }
+      .badge-warning {
+        background: #fbbf24;
+        color: #020617;
+      }
+      .badge-error {
+        background: #f87171;
+        color: #020617;
       }
     </style>
   </head>
   <body
     class="font-sans antialiased selection:bg-cyan-500 selection:text-white overflow-x-hidden"
   >
-    <!-- Navbar (Mobile) / Sidebar (Desktop) container -->
     <div class="flex min-h-screen flex-col lg:flex-row">
       <!-- Sidebar Navigation -->
       <aside
@@ -210,987 +235,2226 @@
             </h1>
           </div>
           <p class="text-xs text-slate-500 font-mono mt-1">> v1.0.0 stable</p>
-        </div>
-
-        <!-- View Toggle -->
-        <div class="px-4 py-6">
-          <div class="flex bg-dark-950 p-1 rounded-lg border border-dark-700">
-            <button
-              onclick="switchView('overview')"
-              id="btn-overview"
-              class="flex-1 py-2 text-xs font-bold rounded transition-all bg-dark-800 text-white shadow"
-            >
-              DOCS
-            </button>
-            <button
-              onclick="switchView('wiki')"
-              id="btn-wiki"
-              class="flex-1 py-2 text-xs font-bold rounded transition-all text-slate-500 hover:text-white"
-            >
-              WIKI / CODE
-            </button>
-          </div>
-        </div>
-
-        <!-- Navigation Links (Dynamic) -->
-        <nav id="nav-overview" class="px-4 space-y-1 font-mono text-sm flex-1">
-          <p
-            class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3"
-          >
-            Table of Contents
+          <p class="text-xs text-slate-600 font-mono mt-1">
+            Complete Documentation
           </p>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="p-4">
+          <div class="mb-2">
+            <p
+              class="text-xs font-mono text-slate-500 uppercase tracking-wider px-3 mb-2"
+            >
+              Documentation
+            </p>
+          </div>
           <a
             href="#overview"
-            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+            class="nav-link block px-3 py-2 text-sm text-slate-400 hover:text-white rounded"
           >
-            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">01</span>
-            Project Overview
+            <i class="fas fa-home w-4 mr-2"></i> 01. Project Overview
           </a>
           <a
             href="#requirements"
-            class="nav-link flex items-center px-3 py-2.5 text-slate-400 hover:text-white rounded transition-colors"
+            class="nav-link block px-3 py-2 text-sm text-slate-400 hover:text-white rounded"
           >
-            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">02</span>
-            Requirements
+            <i class="fas fa-cog w-4 mr-2"></i> 02. Requirements
           </a>
           <a
             href="#file-handling"
-            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+            class="nav-link block px-3 py-2 text-sm text-slate-400 hover:text-white rounded"
           >
-            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">03</span>
-            Data & File Handling
+            <i class="fas fa-file w-4 mr-2"></i> 03. File Handling
           </a>
           <a
             href="#code-structure"
-            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+            class="nav-link block px-3 py-2 text-sm text-slate-400 hover:text-white rounded"
           >
-            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">04</span>
-            Code Structure
+            <i class="fas fa-code w-4 mr-2"></i> 04. Code Structure
           </a>
           <a
-            href="#ui"
-            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+            href="#user-interface"
+            class="nav-link block px-3 py-2 text-sm text-slate-400 hover:text-white rounded"
           >
-            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">05</span>
-            User Interface
+            <i class="fas fa-desktop w-4 mr-2"></i> 05. User Interface
           </a>
           <a
             href="#challenges"
-            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+            class="nav-link block px-3 py-2 text-sm text-slate-400 hover:text-white rounded"
           >
-            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">06</span>
-            Challenges & Solutions
+            <i class="fas fa-exclamation-triangle w-4 mr-2"></i> 06. Challenges
           </a>
           <a
             href="#testing"
-            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+            class="nav-link block px-3 py-2 text-sm text-slate-400 hover:text-white rounded"
           >
-            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">07</span>
-            Testing
+            <i class="fas fa-flask w-4 mr-2"></i> 07. Testing
           </a>
           <a
             href="#future"
-            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+            class="nav-link block px-3 py-2 text-sm text-slate-400 hover:text-white rounded"
           >
-            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">08</span>
-            Future Enhancements
+            <i class="fas fa-rocket w-4 mr-2"></i> 08. Future
           </a>
           <a
             href="#conclusion"
-            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+            class="nav-link block px-3 py-2 text-sm text-slate-400 hover:text-white rounded"
           >
-            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">09</span>
-            Conclusion
+            <i class="fas fa-flag-checkered w-4 mr-2"></i> 09. Conclusion
           </a>
-        </nav>
-
-        <nav
-          id="nav-wiki"
-          class="px-4 space-y-1 font-mono text-sm flex-1 hidden"
-        >
-          <p
-            class="px-3 text-xs font-semibold text-accent-cyan uppercase tracking-wider mb-3"
+          <a
+            href="#appendix"
+            class="nav-link block px-3 py-2 text-sm text-slate-400 hover:text-white rounded"
           >
-            Code Explorer
-          </p>
-          <button
-            onclick="scrollToTopic('wiki-main')"
-            class="w-full text-left px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
-          >
-            <i class="fas fa-code mr-2 text-xs"></i> Main Loop
-          </button>
-          <button
-            onclick="scrollToTopic('wiki-firebase')"
-            class="w-full text-left px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
-          >
-            <i class="fas fa-cloud mr-2 text-xs"></i> Firestore Logic
-          </button>
-          <button
-            onclick="scrollToTopic('wiki-threading')"
-            class="w-full text-left px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
-          >
-            <i class="fas fa-microchip mr-2 text-xs"></i> UI Threading
-          </button>
+            <i class="fas fa-book w-4 mr-2"></i> 10. Appendix
+          </a>
         </nav>
       </aside>
 
-      <!-- Mobile Header -->
-      <header
-        class="lg:hidden bg-dark-900 border-b border-dark-700 p-4 flex items-center justify-between sticky top-0 z-40"
+      <!-- Mobile Menu Toggle -->
+      <button
+        id="menu-toggle"
+        class="lg:hidden fixed top-4 left-4 z-50 bg-dark-800 p-3 rounded-lg border border-dark-700 text-white"
       >
-        <div class="flex items-center gap-2">
-          <i class="fas fa-terminal text-accent-cyan"></i>
-          <span class="font-mono font-bold text-white">BANTER</span>
-        </div>
-        <button id="menu-toggle" class="text-slate-400 hover:text-white">
-          <i class="fas fa-bars text-xl"></i>
-        </button>
-      </header>
+        <i class="fas fa-bars"></i>
+      </button>
 
-      <!-- MAIN CONTENT -->
-      <main
-        class="flex-1 lg:ml-72 p-6 lg:p-12 max-w-6xl mx-auto w-full min-h-screen flex flex-col"
-      >
-        <!-- ============================================================== -->
-        <!-- VIEW 1: STANDARD DOCUMENTATION -->
-        <!-- ============================================================== -->
-        <div id="view-overview" class="view-section active-view flex-1">
-          <!-- Hero -->
-          <div class="mb-16 mt-4 animate-fade-in">
-            <div
-              class="inline-flex items-center px-3 py-1 rounded-full border border-accent-green/30 bg-accent-green/10 text-accent-green text-xs font-mono mb-4"
-            >
-              <span
-                class="w-2 h-2 rounded-full bg-accent-green mr-2 animate-pulse"
-              ></span>
-              System Online
-            </div>
-            <h1
-              class="text-4xl md:text-6xl font-bold font-mono mb-4 text-white tracking-tight"
-            >
-              <span class="gradient-text">Banter Documentation</span
-              ><span class="cursor-blink text-accent-cyan">_</span>
-            </h1>
-            <p class="text-slate-400 text-lg max-w-2xl leading-relaxed">
-              C# Console Application Project Documentation. A modern,
-              terminal-based chat application merging CLI nostalgia with
-              real-time cloud power.
+      <!-- Main Content -->
+      <main class="flex-1 lg:ml-72 p-6 lg:p-12 max-w-6xl">
+        <!-- Header -->
+        <div class="mb-16 mt-4 animate-fade-in">
+          <div
+            class="inline-flex items-center px-3 py-1 rounded-full border border-accent-green/30 bg-accent-green/10 text-accent-green text-xs font-mono mb-4"
+          >
+            <span
+              class="w-2 h-2 rounded-full bg-accent-green mr-2 animate-pulse"
+            ></span>
+            System Online
+          </div>
+          <h1
+            class="text-4xl md:text-6xl font-bold font-mono mb-4 text-white tracking-tight"
+          >
+            <span class="gradient-text">Banter Documentation</span
+            ><span class="cursor-blink text-accent-cyan">_</span>
+          </h1>
+          <p class="text-slate-400 text-lg max-w-2xl leading-relaxed">
+            C# Console Application Project Documentation. A modern,
+            terminal-based chat application merging CLI nostalgia with real-time
+            cloud power.
+          </p>
+        </div>
+
+        <!-- Section 1: Project Overview -->
+        <section id="overview" class="mb-20 scroll-mt-24">
+          <div class="border-l-4 border-accent-cyan pl-6 mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">
+              01. Project Overview
+            </h2>
+            <p class="text-slate-400 text-sm">
+              Purpose, Features, and Technology Stack
             </p>
           </div>
 
-          <!-- 1. Project Overview -->
-          <section id="overview" class="mb-24 scroll-mt-24">
-            <h2
-              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
-            >
-              <span class="text-accent-cyan mr-3">01.</span> Project Overview
-            </h2>
-            <div class="grid gap-6">
-              <div class="glow-card bg-dark-800 p-6 rounded-lg">
-                <h3 class="text-lg font-semibold text-white mb-3 font-mono">
-                  Purpose
-                </h3>
-                <p class="text-slate-400 leading-relaxed">
-                  The purpose of this project is to demonstrate a fully
-                  functional, real-time chat application running entirely within
-                  the console environment, utilizing advanced C# asynchronous
-                  programming.
-                </p>
-              </div>
-              <div class="grid md:grid-cols-2 gap-6">
-                <div class="glow-card bg-dark-800 p-6 rounded-lg">
-                  <h3
-                    class="text-lg font-semibold text-accent-green mb-3 font-mono"
-                  >
-                    <i class="fas fa-code-branch mr-2"></i>Features
-                  </h3>
-                  <ul class="space-y-2 text-slate-400 text-sm">
-                    <li class="flex items-start">
-                      <span class="text-accent-green mr-2">>></span> Real-time
-                      Messaging (Firestore)
-                    </li>
-                    <li class="flex items-start">
-                      <span class="text-accent-green mr-2">>></span> User
-                      Authentication & Profanity Filter
-                    </li>
-                    <li class="flex items-start">
-                      <span class="text-accent-green mr-2">>></span> Chatroom
-                      Management (Create, Join, Pin)
-                    </li>
-                    <li class="flex items-start">
-                      <span class="text-accent-green mr-2">>></span> Local
-                      Caching (LiteDB)
-                    </li>
-                  </ul>
-                </div>
-                <div class="glow-card bg-dark-800 p-6 rounded-lg">
-                  <h3
-                    class="text-lg font-semibold text-accent-purple mb-3 font-mono"
-                  >
-                    <i class="fas fa-users mr-2"></i>Target Audience
-                  </h3>
-                  <p class="text-slate-400 text-sm leading-relaxed">
-                    Developers, CLI enthusiasts, and users who prefer efficient,
-                    text-based interfaces over heavy graphical GUIs.
+          <div class="bg-dark-800 rounded-lg p-6 border border-dark-700 mb-6">
+            <h3 class="text-xl font-bold text-accent-cyan mb-4">
+              <i class="fas fa-bullseye mr-2"></i> Purpose
+            </h3>
+            <p class="text-slate-300 leading-relaxed mb-4">
+              Banter is a real-time, cloud-powered chat application built
+              entirely for the terminal environment. The project aims to
+              demonstrate modern C# programming techniques, including
+              asynchronous programming, real-time data synchronization with
+              Firebase Firestore, and advanced terminal UI development using
+              Terminal.Gui. It bridges the gap between nostalgic command-line
+              interfaces and contemporary cloud technology, proving that
+              powerful applications don't always need graphical interfaces.
+            </p>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-6">
+            <i class="fas fa-star text-accent-gold mr-2"></i> Features
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3">
+                <i class="fas fa-lock text-accent-green text-2xl mt-1"></i>
+                <div>
+                  <h4 class="font-bold text-white mb-2">User Authentication</h4>
+                  <p class="text-sm text-slate-400">
+                    Secure login system with username/password validation and
+                    account creation workflow
                   </p>
                 </div>
               </div>
-              <div
-                class="border border-dark-700 rounded-lg p-5 bg-black/40 font-mono text-sm relative overflow-hidden group"
-              >
-                <div
-                  class="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <i class="fab fa-js text-slate-600"></i>
-                </div>
-                <span class="text-slate-500">// Technology Stack</span><br />
-                <span class="text-accent-cyan">const</span>
-                <span class="text-accent-pink">BanterStack</span> = {<br />
-                &nbsp;&nbsp;language:
-                <span class="text-accent-green">"C# (.NET 8.0/10.0)"</span
-                >,<br />
-                &nbsp;&nbsp;ui_framework:
-                <span class="text-accent-green">"Terminal.Gui"</span>,<br />
-                &nbsp;&nbsp;cloud_db:
-                <span class="text-accent-green">"Google Cloud Firestore"</span
-                >,<br />
-                &nbsp;&nbsp;local_cache:
-                <span class="text-accent-green">"LiteDB"</span>,<br />
-                &nbsp;&nbsp;format:
-                <span class="text-accent-green">"Console Application"</span
-                ><br />
-                };
-              </div>
             </div>
-          </section>
 
-          <!-- 2. Requirements -->
-          <section id="requirements" class="mb-24 scroll-mt-24">
-            <h2
-              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
-            >
-              <span class="text-accent-cyan mr-3">02.</span> Requirements
-            </h2>
-            <div class="grid md:grid-cols-3 gap-6">
-              <div class="glow-card bg-dark-800 p-6 rounded-lg">
-                <i
-                  class="fas fa-laptop-code text-accent-purple text-3xl mb-4"
-                ></i>
-                <h3 class="text-lg font-bold text-white mb-2">Prerequisites</h3>
-                <ul class="text-slate-400 text-sm space-y-1">
-                  <li>- .NET SDK 10.0 (or 8.0+)</li>
-                  <li>- Google Cloud Project</li>
-                  <li>- Visual Studio / VS Code</li>
-                  <li>- Git Version Control</li>
-                </ul>
-              </div>
-
-              <div class="glow-card bg-dark-800 p-6 rounded-lg">
-                <i class="fas fa-server text-accent-cyan text-3xl mb-4"></i>
-                <h3 class="text-lg font-bold text-white mb-2">
-                  System Requirements
-                </h3>
-                <ul class="text-slate-400 text-sm space-y-1">
-                  <li>- Windows 10/11 / Linux / MacOS</li>
-                  <li>- 4GB RAM Minimum</li>
-                  <li>- Stable Internet Connection</li>
-                  <li>- Terminal with Color Support</li>
-                </ul>
-              </div>
-
-              <div class="glow-card bg-dark-800 p-6 rounded-lg">
-                <i class="fas fa-download text-accent-green text-3xl mb-4"></i>
-                <h3 class="text-lg font-bold text-white mb-2">
-                  Installation Steps
-                </h3>
-                <p class="text-slate-400 text-sm font-mono">
-                  1. git clone [repo]<br />
-                  2. dotnet restore<br />
-                  3. dotnet build<br />
-                  4. dotnet run
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <!-- 3. File Handling -->
-          <section id="file-handling" class="mb-24 scroll-mt-24">
-            <h2
-              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
-            >
-              <span class="text-accent-cyan mr-3">03.</span> Data & File
-              Handling
-            </h2>
-
-            <div
-              class="bg-dark-800 rounded-lg border border-dark-700 overflow-hidden mb-6 shadow-lg"
-            >
-              <div
-                class="bg-black/40 px-4 py-2 border-b border-dark-700 flex items-center gap-2"
-              >
-                <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                <span class="ml-2 font-mono text-xs text-slate-500"
-                  >StorageArchitecture</span
-                >
-              </div>
-              <div class="p-6">
-                <h3 class="text-lg font-bold text-white mb-2 font-mono">
-                  Hybrid Storage Approach
-                </h3>
-                <p class="text-slate-400 mb-6 text-sm leading-relaxed">
-                  Banter primarily uses .json files for Google Cloud credentials
-                  and .db (LiteDB) for local caching of user data. It also reads
-                  .txt files for ASCII art assets.
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div
-                    class="p-4 bg-dark-900 rounded border border-dark-700 hover:border-accent-cyan transition-colors"
-                  >
-                    <div class="flex items-center justify-between mb-2">
-                      <span class="text-accent-cyan font-bold"
-                        >Firestore (Cloud)</span
-                      >
-                      <i class="fas fa-cloud text-slate-600"></i>
-                    </div>
-                    <p class="text-slate-500 text-xs">
-                      Stores Users, Chatrooms, and Messages. Handles real-time
-                      synchronization using event listeners.
-                    </p>
-                  </div>
-                  <div
-                    class="p-4 bg-dark-900 rounded border border-dark-700 hover:border-accent-purple transition-colors"
-                  >
-                    <div class="flex items-center justify-between mb-2">
-                      <span class="text-accent-purple font-bold"
-                        >LiteDB (Local)</span
-                      >
-                      <i class="fas fa-database text-slate-600"></i>
-                    </div>
-                    <p class="text-slate-500 text-xs">
-                      NoSQL file-based database used to cache user profiles,
-                      reducing API calls and improving speed.
-                    </p>
-                  </div>
-                  <div
-                    class="p-4 bg-dark-900 rounded border border-dark-700 hover:border-accent-green transition-colors"
-                  >
-                    <div class="flex items-center justify-between mb-2">
-                      <span class="text-accent-green font-bold"
-                        >Assets (IO)</span
-                      >
-                      <i class="fas fa-file-alt text-slate-600"></i>
-                    </div>
-                    <p class="text-slate-500 text-xs">
-                      <code>StreamReader</code> is used to load
-                      <code>BanterLogo.txt</code> for the ASCII art branding.
-                      Credentials loaded via Embedded Resources.
-                    </p>
-                  </div>
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3">
+                <i class="fas fa-comments text-accent-cyan text-2xl mt-1"></i>
+                <div>
+                  <h4 class="font-bold text-white mb-2">Real-Time Messaging</h4>
+                  <p class="text-sm text-slate-400">
+                    Instant message delivery using Firestore real-time listeners
+                    with automatic UI updates
+                  </p>
                 </div>
               </div>
             </div>
-          </section>
 
-          <!-- 4. Code Structure -->
-          <section id="code-structure" class="mb-24 scroll-mt-24">
-            <h2
-              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
-            >
-              <span class="text-accent-cyan mr-3">04.</span> Code Structure
-            </h2>
-            <div class="grid lg:grid-cols-2 gap-8">
-              <div class="sticky top-24">
-                <h3
-                  class="font-mono text-accent-purple mb-4 text-sm uppercase tracking-wider"
-                >
-                  Source Tree
-                </h3>
-                <ul class="space-y-3 font-mono text-sm text-slate-400">
-                  <li
-                    class="pl-4 border-l border-dark-700 hover:border-accent-cyan hover:text-white transition-colors cursor-pointer group"
-                  >
-                    <span class="group-hover:text-accent-cyan">Program.cs</span>
-                    <span class="block text-[10px] text-slate-600 mt-1"
-                      >Application Entry Point</span
-                    >
-                  </li>
-                  <li
-                    class="pl-4 border-l border-dark-700 hover:border-accent-cyan hover:text-white transition-colors cursor-pointer group"
-                  >
-                    <span class="group-hover:text-accent-cyan">Windows/</span>
-                    <span class="block text-[10px] text-slate-600 mt-1"
-                      >UI Screens (LogIn, Chat)</span
-                    >
-                  </li>
-                  <li
-                    class="pl-4 border-l border-dark-700 hover:border-accent-cyan hover:text-white transition-colors cursor-pointer group"
-                  >
-                    <span class="group-hover:text-accent-cyan">Utilities/</span>
-                    <span class="block text-[10px] text-slate-600 mt-1"
-                      >FirebaseHelper, ProfanityChecker</span
-                    >
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3
-                  class="font-mono text-accent-green mb-4 text-sm uppercase tracking-wider"
-                >
-                  Modularity & Reusability
-                </h3>
-                <p class="text-slate-400 text-sm mb-4">
-                  The code strictly adheres to Separation of Concerns. The
-                  <strong>UI Layer</strong> (Terminal.Gui windows) is completely
-                  decoupled from the
-                  <strong>Data Layer</strong> (FirebaseHelper). This allows
-                  methods like <code>GetUserId</code> to be reused across
-                  different windows without code duplication.
-                </p>
-                <button
-                  onclick="switchView('wiki')"
-                  class="text-accent-cyan hover:underline text-sm self-start"
-                >
-                  <i class="fas fa-arrow-right mr-1"></i> View Code Walkthrough
-                  in Wiki
-                </button>
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3">
+                <i class="fas fa-users text-accent-purple text-2xl mt-1"></i>
+                <div>
+                  <h4 class="font-bold text-white mb-2">Chatroom Management</h4>
+                  <p class="text-sm text-slate-400">
+                    Create individual or group chats, manage participants, and
+                    assign admin privileges
+                  </p>
+                </div>
               </div>
             </div>
-          </section>
 
-          <!-- 5. User Interface -->
-          <section id="ui" class="mb-24 scroll-mt-24">
-            <h2
-              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
-            >
-              <span class="text-accent-cyan mr-3">05.</span> User Interface
-            </h2>
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3">
+                <i class="fas fa-thumbtack text-accent-pink text-2xl mt-1"></i>
+                <div>
+                  <h4 class="font-bold text-white mb-2">Message Pinning</h4>
+                  <p class="text-sm text-slate-400">
+                    Pin important messages for quick reference with dedicated
+                    pinned message viewer
+                  </p>
+                </div>
+              </div>
+            </div>
 
-            <div class="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 class="text-lg font-bold text-white mb-3">Terminal.Gui</h3>
-                <p class="text-slate-400 mb-4 text-sm leading-relaxed">
-                  Banter leverages the <code>Terminal.Gui</code> library to
-                  create a rich TUI. Unlike standard console apps, it supports
-                  <strong>mouse interaction</strong>, overlapping windows,
-                  menus, and dialog boxes.
-                </p>
-                <div
-                  class="glow-card bg-dark-800 p-4 rounded border border-dark-700"
-                >
-                  <h4 class="font-mono text-xs text-slate-500 mb-2 uppercase">
-                    Console Preview
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3">
+                <i class="fas fa-search text-accent-gold text-2xl mt-1"></i>
+                <div>
+                  <h4 class="font-bold text-white mb-2">
+                    Search Functionality
                   </h4>
-                  <div class="font-mono text-xs">
-                    <div
-                      class="text-white flex justify-between border-b border-slate-600 pb-1 mb-2"
-                    >
-                      <span>[ General Chat ]</span>
-                      <span>[X]</span>
-                    </div>
-                    <div class="text-slate-400">dreeyanzz: Hello world!</div>
-                    <div class="text-accent-cyan">user2: Is this terminal?</div>
-                    <div
-                      class="mt-2 border-t border-slate-600 pt-1 text-slate-500"
-                    >
-                      Type a message..._
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h3 class="text-lg font-bold text-white mb-3">UX Philosophy</h3>
-                <ul class="space-y-3 text-slate-400 text-sm">
-                  <li class="flex items-center gap-2">
-                    <i class="fas fa-check text-accent-green"></i>
-                    <span
-                      ><strong>Cyberpunk Aesthetic:</strong> High contrast dark
-                      mode by default.</span
-                    >
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <i class="fas fa-check text-accent-green"></i>
-                    <span
-                      ><strong>Navigation:</strong> Full support for Tab
-                      navigation and Keyboard shortcuts.</span
-                    >
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <i class="fas fa-check text-accent-green"></i>
-                    <span
-                      ><strong>Feedback:</strong> Pop-up dialogs for errors and
-                      notifications.</span
-                    >
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          <!-- 6. Challenges -->
-          <section id="challenges" class="mb-24 scroll-mt-24">
-            <h2
-              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
-            >
-              <span class="text-accent-cyan mr-3">06.</span> Challenges &
-              Solutions
-            </h2>
-
-            <div class="space-y-4">
-              <!-- Challenge 1 -->
-              <div
-                class="glow-card bg-dark-800 p-6 rounded-lg border-l-4 border-l-red-500"
-              >
-                <div class="flex justify-between items-start mb-2">
-                  <h3 class="font-bold text-white">Challenge: UI Threading</h3>
-                  <span
-                    class="text-xs font-mono bg-red-500/10 text-red-400 px-2 py-1 rounded"
-                    >Critical</span
-                  >
-                </div>
-                <p class="text-slate-400 text-sm mb-4">
-                  Firestore event listeners run on background threads. Updating
-                  the TUI directly from these threads caused race conditions and
-                  visual artifacts (crashing the UI loop).
-                </p>
-                <div
-                  class="flex items-start gap-2 text-sm bg-dark-900 p-2 rounded"
-                >
-                  <i
-                    class="fas fa-lightbulb text-accent-green shrink-0 mt-0.5"
-                  ></i>
-
-                  <div class="min-w-0 flex-1 break-words">
-                    <span class="text-white font-semibold">Solution:</span>
-                    <span class="text-slate-400">
-                      Used <code>Application.MainLoop.Invoke()</code> to marshal
-                      updates back to the main UI thread.
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Challenge 2 -->
-              <div
-                class="glow-card bg-dark-800 p-6 rounded-lg border-l-4 border-l-yellow-500"
-              >
-                <div class="flex justify-between items-start mb-2">
-                  <h3 class="font-bold text-white">
-                    Challenge: Firestore Quotas
-                  </h3>
-                  <span
-                    class="text-xs font-mono bg-yellow-500/10 text-yellow-400 px-2 py-1 rounded"
-                    >Performance</span
-                  >
-                </div>
-                <p class="text-slate-400 text-sm mb-4">
-                  Fetching user details for every message in a chatroom rapidly
-                  consumed Firestore read quotas.
-                </p>
-                <div
-                  class="flex items-center gap-2 text-sm bg-dark-900 p-2 rounded"
-                >
-                  <i class="fas fa-lightbulb text-accent-green"></i>
-                  <span class="text-white font-semibold">Solution:</span>
-                  <span class="text-slate-400"
-                    >Implemented <strong>LiteDB</strong> to cache user profiles
-                    locally.</span
-                  >
+                  <p class="text-sm text-slate-400">
+                    Search through chatrooms and message history with real-time
+                    filtering
+                  </p>
                 </div>
               </div>
             </div>
-          </section>
 
-          <!-- 7. Testing -->
-          <section id="testing" class="mb-24 scroll-mt-24">
-            <h2
-              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
-            >
-              <span class="text-accent-cyan mr-3">07.</span> Testing
-            </h2>
-
-            <div class="overflow-x-auto border border-dark-700 rounded-lg">
-              <table class="w-full text-left text-sm">
-                <thead
-                  class="bg-dark-800 text-slate-400 font-mono uppercase text-xs"
-                >
-                  <tr>
-                    <th class="p-4">Test Case</th>
-                    <th class="p-4">Input</th>
-                    <th class="p-4">Expected</th>
-                    <th class="p-4">Result</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-dark-700 text-slate-300">
-                  <tr class="hover:bg-dark-800/50 transition-colors">
-                    <td class="p-4">User Login</td>
-                    <td class="p-4 font-mono text-xs text-slate-500">
-                      Valid Credentials
-                    </td>
-                    <td class="p-4">Transition to Chat Window</td>
-                    <td class="p-4 text-accent-green font-bold">
-                      <i class="fas fa-check-circle mr-1"></i> PASS
-                    </td>
-                  </tr>
-                  <tr class="hover:bg-dark-800/50 transition-colors">
-                    <td class="p-4">Profanity Filter</td>
-                    <td class="p-4 font-mono text-xs text-slate-500">
-                      "badword"
-                    </td>
-                    <td class="p-4">Replaces with "****"</td>
-                    <td class="p-4 text-accent-green font-bold">
-                      <i class="fas fa-check-circle mr-1"></i> PASS
-                    </td>
-                  </tr>
-                  <tr class="hover:bg-dark-800/50 transition-colors">
-                    <td class="p-4">Offline Mode</td>
-                    <td class="p-4 font-mono text-xs text-slate-500">
-                      Disconnect Network
-                    </td>
-                    <td class="p-4">Show "Reconnecting..." Dialog</td>
-                    <td class="p-4 text-accent-green font-bold">
-                      <i class="fas fa-check-circle mr-1"></i> PASS
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <p class="text-slate-400 text-sm">
-              <strong>Limitations:</strong> No end-to-end encryption in current
-              build. Requires internet.
-            </p>
-          </section>
-
-          <!-- 8. Future Enhancements -->
-          <section id="future" class="mb-24 scroll-mt-24">
-            <h2
-              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
-            >
-              <span class="text-accent-cyan mr-3">08.</span> Future Enhancements
-            </h2>
-
-            <div class="grid md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <h3 class="text-lg font-semibold text-white mb-2">
-                  Planned Features (AI Integration)
-                  <span
-                    class="text-[10px] bg-accent-gold/20 text-accent-gold px-2 rounded"
-                    >PROPOSED</span
-                  >
-                </h3>
-                <ul class="space-y-2 text-slate-400 text-sm">
-                  <li>
-                    - <strong>Spark Summary:</strong> Summarize chat history via
-                    Gemini API.
-                  </li>
-                  <li>
-                    - <strong>Auto-Translate:</strong> Real-time message
-                    translation.
-                  </li>
-                  <li>- <strong>BanterBot:</strong> AI NPC for moderation.</li>
-                </ul>
-              </div>
-              <div>
-                <h3 class="text-lg font-semibold text-white mb-2">
-                  Performance Improvements
-                </h3>
-                <p class="text-slate-400 text-sm">
-                  Future versions could optimize the search algorithm (using
-                  Binary Search for locally cached users) and implement lazy
-                  loading for message history to reduce memory usage.
-                </p>
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3">
+                <i class="fas fa-ban text-accent-red text-2xl mt-1"></i>
+                <div>
+                  <h4 class="font-bold text-white mb-2">Profanity Filter</h4>
+                  <p class="text-sm text-slate-400">
+                    Advanced profanity detection and censoring supporting
+                    multiple languages
+                  </p>
+                </div>
               </div>
             </div>
-          </section>
 
-          <!-- 9. Conclusion -->
-          <section id="conclusion" class="mb-12 scroll-mt-24">
-            <h2
-              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
-            >
-              <span class="text-accent-cyan mr-3">09.</span> Conclusion
-            </h2>
-            <h3 class="text-lg font-bold text-white mb-2">Reflection</h3>
-            <p class="text-slate-400 text-sm mb-4 leading-relaxed">
-              This project was instrumental in bridging the gap between
-              theoretical C# knowledge and practical application development.
-              Dealing with asynchronous streams and event-driven architectures
-              provided a steep but rewarding learning curve.
-            </p>
-
-            <h3 class="text-lg font-bold text-white mb-2">Takeaways</h3>
-            <p class="text-slate-400 text-sm leading-relaxed">
-              Key skills developed include: managing file I/O safely,
-              structuring scalable applications, and handling concurrency in a
-              UI environment.
-            </p>
-          </section>
-
-          <!-- 10. Appendix -->
-          <section id="appendix" class="mb-24">
-            <h2
-              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
-            >
-              <span class="text-slate-500 mr-3">--</span> Appendix
-            </h2>
-            <p class="text-slate-400 text-sm mb-2">
-              <strong>References:</strong> Microsoft Docs, Google Cloud
-              Documentation.
-            </p>
-            <p class="text-slate-400 text-sm">
-              <strong>Source Code:</strong> See link below.
-            </p>
-          </section>
-
-          <!-- Main Footer with Socials -->
-          <div class="mt-auto py-12 border-t border-dark-700">
-            <div class="flex flex-col items-center justify-center gap-6">
-              <h3 class="text-xl font-mono font-bold text-white">
-                Connect with the Developer
-              </h3>
-              <div
-                class="flex flex-col md:flex-row justify-center gap-4 md:gap-6 w-full"
-              >
-                <a
-                  href="https://facebook.com/dreeyanzz"
-                  target="_blank"
-                  class="flex items-center justify-center gap-3 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-600/30 px-6 py-3 rounded-lg transition-all group w-full md:w-auto"
-                >
-                  <i
-                    class="fab fa-facebook text-blue-500 text-2xl group-hover:scale-110 transition-transform"
-                  ></i>
-                  <span class="text-blue-400 font-mono">/dreeyanzz</span>
-                </a>
-
-                <a
-                  href="https://github.com/dreeyanzz/Banter"
-                  target="_blank"
-                  class="flex items-center justify-center gap-3 bg-dark-800 hover:bg-dark-700 border border-dark-700 px-6 py-3 rounded-lg transition-all group w-full md:w-auto"
-                >
-                  <i
-                    class="fab fa-github text-white text-2xl group-hover:scale-110 transition-transform"
-                  ></i>
-                  <span class="text-slate-300 font-mono">dreeyanzz/Banter</span>
-                </a>
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3">
+                <i class="fas fa-palette text-accent-purple text-2xl mt-1"></i>
+                <div>
+                  <h4 class="font-bold text-white mb-2">
+                    Custom Color Schemes
+                  </h4>
+                  <p class="text-sm text-slate-400">
+                    Cyberpunk-inspired terminal aesthetics with customizable UI
+                    elements
+                  </p>
+                </div>
               </div>
-              <p class="text-slate-600 text-xs mt-4">
-                &copy; 2025 Banter Project. All rights reserved.
+            </div>
+
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3">
+                <i class="fas fa-bolt text-accent-gold text-2xl mt-1"></i>
+                <div>
+                  <h4 class="font-bold text-white mb-2">Local Caching</h4>
+                  <p class="text-sm text-slate-400">
+                    LiteDB integration for offline data persistence and reduced
+                    API calls
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-users-cog text-accent-cyan mr-2"></i> Target
+            Audience
+          </h3>
+          <div class="bg-dark-800 rounded-lg p-6 border border-dark-700 mb-6">
+            <div class="mb-4">
+              <h4 class="font-bold text-accent-green mb-2">Primary Users</h4>
+              <p class="text-slate-300 text-sm">
+                Developers, system administrators, and CLI enthusiasts who
+                appreciate efficient text-based interfaces and want to avoid the
+                overhead of traditional GUI applications.
+              </p>
+            </div>
+            <div class="mb-4">
+              <h4 class="font-bold text-accent-purple mb-2">Secondary Users</h4>
+              <p class="text-slate-300 text-sm">
+                Computer science students learning about asynchronous
+                programming, cloud integration, and terminal application
+                development.
+              </p>
+            </div>
+            <div>
+              <h4 class="font-bold text-accent-cyan mb-2">Use Cases</h4>
+              <p class="text-slate-300 text-sm">
+                Lightweight team communication, remote server administration
+                chat, educational demonstrations of real-time systems, and
+                nostalgic computing experiences.
               </p>
             </div>
           </div>
-        </div>
 
-        <!-- ============================================================== -->
-        <!-- VIEW 2: WIKI / CODE EXPLORER (Interactive Deep Dive) -->
-        <!-- ============================================================== -->
-        <div id="view-wiki" class="view-section flex-1">
-          <div class="flex items-center justify-between mb-8">
-            <h1 class="text-3xl font-mono font-bold text-white">
-              <span class="text-accent-cyan">dev</span>_wiki
-            </h1>
-            <div class="text-xs text-slate-500 font-mono">
-              interactive_mode: <span class="text-green-500">ACTIVE</span>
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-layer-group text-accent-purple mr-2"></i>
+            Technology Stack
+          </h3>
+          <div class="bg-dark-950 rounded-lg p-6 border border-dark-700">
+            <pre
+              class="text-sm"
+            ><code><span class="keyword">const</span> <span class="type">BanterStack</span> = {
+  <span class="string">language</span>: <span class="string">"C# (.NET 10.0)"</span>,
+  <span class="string">ui_framework</span>: <span class="string">"Terminal.Gui v1.19.0"</span>,
+  <span class="string">cloud_database</span>: <span class="string">"Google Cloud Firestore v3.11.0"</span>,
+  <span class="string">local_cache</span>: <span class="string">"LiteDB v5.0.21"</span>,
+  <span class="string">ai_integration</span>: <span class="string">"OpenAI API v2.6.0"</span>,
+  <span class="string">authentication</span>: <span class="string">"Firebase Auth (Custom)"</span>,
+  <span class="string">deployment</span>: <span class="string">"Cross-platform Console"</span>
+};</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 2: Requirements -->
+        <section id="requirements" class="mb-20 scroll-mt-24">
+          <div class="border-l-4 border-accent-green pl-6 mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">02. Requirements</h2>
+            <p class="text-slate-400 text-sm">
+              Software, System, and Installation
+            </p>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-cog text-accent-cyan mr-2"></i> Software
+            Requirements
+          </h3>
+          <div class="overflow-x-auto mb-8">
+            <table>
+              <thead>
+                <tr>
+                  <th>Component</th>
+                  <th>Version</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>.NET SDK</code></td>
+                  <td>10.0 or higher</td>
+                  <td>Runtime environment for C# application</td>
+                </tr>
+                <tr>
+                  <td><code>Visual Studio / VS Code</code></td>
+                  <td>Latest</td>
+                  <td>Integrated Development Environment</td>
+                </tr>
+                <tr>
+                  <td><code>Git</code></td>
+                  <td>2.0+</td>
+                  <td>Version control system</td>
+                </tr>
+                <tr>
+                  <td><code>Google Cloud Account</code></td>
+                  <td>Active</td>
+                  <td>Firestore database access</td>
+                </tr>
+                <tr>
+                  <td><code>Firebase Service Account</code></td>
+                  <td>JSON Key</td>
+                  <td>Authentication credentials</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-server text-accent-purple mr-2"></i> System
+            Requirements
+          </h3>
+          <div class="bg-dark-800 rounded-lg p-6 border border-dark-700 mb-8">
+            <ul class="space-y-2 text-slate-300">
+              <li>
+                <i class="fas fa-check text-accent-green mr-2"></i
+                ><strong>Operating System:</strong> Windows 10/11, macOS 10.15+,
+                or Linux (Ubuntu 20.04+)
+              </li>
+              <li>
+                <i class="fas fa-check text-accent-green mr-2"></i
+                ><strong>Memory:</strong> Minimum 4GB RAM (8GB recommended for
+                development)
+              </li>
+              <li>
+                <i class="fas fa-check text-accent-green mr-2"></i
+                ><strong>Storage:</strong> 500MB free disk space
+              </li>
+              <li>
+                <i class="fas fa-check text-accent-green mr-2"></i
+                ><strong>Network:</strong> Stable internet connection with
+                minimum 1 Mbps bandwidth
+              </li>
+              <li>
+                <i class="fas fa-check text-accent-green mr-2"></i
+                ><strong>Terminal:</strong> Modern terminal emulator with
+                Unicode and color support
+              </li>
+            </ul>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-download text-accent-cyan mr-2"></i> Installation
+            Steps
+          </h3>
+
+          <div class="space-y-4">
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-green mb-4">
+                Option 1: Quick Install (Recommended)
+              </h4>
+              <img
+                src="image.png"
+                alt="Banter Installer Options"
+                class="w-full rounded-lg border border-dark-600 shadow-lg mb-4"
+              />
+              <p class="text-slate-300 text-sm mb-4">
+                For the easiest experience, you don't need to build the code
+                manually. Simply click the button below to download the
+                standalone Windows installer directly.
+              </p>
+              <a
+                href="../Banter/Output/BanterSetup.exe"
+                class="inline-flex items-center justify-center px-6 py-3 bg-accent-cyan/10 hover:bg-accent-cyan/20 text-accent-cyan font-bold rounded-lg border border-accent-cyan/50 transition-all duration-300 w-full sm:w-auto"
+              >
+                <i class="fas fa-download mr-2"></i> Download Installer
+              </a>
+            </div>
+
+            <div class="flex items-center my-6">
+              <div class="flex-grow border-t border-dark-700"></div>
+              <span class="flex-shrink-0 mx-4 text-slate-500 text-sm"
+                >OR BUILD FROM SOURCE</span
+              >
+              <div class="flex-grow border-t border-dark-700"></div>
+            </div>
+
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-green mb-3">
+                Step 1: Clone the Repository
+              </h4>
+              <pre
+                class="text-sm"
+              ><code>git clone https://github.com/dreeyanzz/Banter.git
+cd Banter</code></pre>
+            </div>
+
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-green mb-3">
+                Step 2: Configure Firebase
+              </h4>
+              <ol
+                class="list-decimal list-inside space-y-2 text-slate-300 text-sm"
+              >
+                <li>
+                  Create a Firebase project at
+                  <code>console.firebase.google.com</code>
+                </li>
+                <li>Enable Firestore Database in the Firebase Console</li>
+                <li>Generate a service account key (JSON file)</li>
+                <li>
+                  Place the JSON file in the project root as
+                  <code>firebase-service-account.json</code>
+                </li>
+                <li>Update <code>Banter.csproj</code> to embed the resource</li>
+              </ol>
+            </div>
+
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-green mb-3">
+                Step 3: Restore Dependencies
+              </h4>
+              <pre class="text-sm"><code>dotnet restore</code></pre>
+            </div>
+
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-green mb-3">
+                Step 4: Build the Application
+              </h4>
+              <pre
+                class="text-sm"
+              ><code>dotnet build --configuration Release</code></pre>
+            </div>
+
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-green mb-3">
+                Step 5: Run the Application
+              </h4>
+              <pre class="text-sm"><code>dotnet run</code></pre>
             </div>
           </div>
 
-          <p class="text-slate-400 mb-8 text-sm">
-            Welcome to the deep dive. Here you can see how Banter handles the
-            complexities of a TUI application, specifically threading and async
-            data fetching.
+          <div
+            class="bg-accent-gold/10 border border-accent-gold/30 rounded-lg p-6 mt-6"
+          >
+            <div class="flex gap-3">
+              <i
+                class="fas fa-exclamation-triangle text-accent-gold text-xl mt-1"
+              ></i>
+              <div>
+                <h4 class="font-bold text-accent-gold mb-2">Important</h4>
+                <p class="text-sm text-slate-300">
+                  Ensure your Firebase service account has the necessary
+                  permissions (Firestore read/write access). The application
+                  will fail to start without valid credentials.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3: File Handling -->
+        <section id="file-handling" class="mb-20 scroll-mt-24">
+          <div class="border-l-4 border-accent-purple pl-6 mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">
+              03. File Handling Overview
+            </h2>
+            <p class="text-slate-400 text-sm">
+              File Types, Operations, and Error Handling
+            </p>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-file-alt text-accent-cyan mr-2"></i> File Types and
+            Purpose
+          </h3>
+          <div class="overflow-x-auto mb-8">
+            <table>
+              <thead>
+                <tr>
+                  <th>File Type</th>
+                  <th>Usage</th>
+                  <th>Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>.json</code></td>
+                  <td>Firebase service account credentials</td>
+                  <td><code>firebase-service-account.json</code></td>
+                </tr>
+                <tr>
+                  <td><code>.txt</code></td>
+                  <td>ASCII art assets (logo, branding)</td>
+                  <td><code>BanterLogo.txt</code></td>
+                </tr>
+                <tr>
+                  <td><code>.db</code></td>
+                  <td>LiteDB local cache database</td>
+                  <td><code>banter-cache.db</code></td>
+                </tr>
+                <tr>
+                  <td><code>.cs</code></td>
+                  <td>C# source code files</td>
+                  <td>
+                    <code>Program.cs</code>, <code>FirebaseHelper.cs</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-code text-accent-green mr-2"></i> File Operations
+          </h3>
+
+          <div class="bg-dark-800 rounded-lg p-6 border border-dark-700 mb-6">
+            <h4 class="font-bold text-accent-cyan mb-3">Reading Files</h4>
+            <p class="text-slate-300 text-sm mb-3">
+              The application uses <code>File.ReadAllLines()</code> for reading
+              text files such as the ASCII logo:
+            </p>
+            <pre
+              class="text-sm"
+            ><code><span class="keyword">private void</span> <span class="type">DisplayLogo</span>()
+{
+    <span class="type">List</span>&lt;<span class="type">string</span>&gt; BanterLogo = [.. <span class="type">File</span>.<span class="type">ReadAllLines</span>(<span class="string">"BanterLogo.txt"</span>)];
+    BanterLogo.<span class="type">Insert</span>(<span class="string">0</span>, <span class="keyword">new</span> <span class="type">string</span>(<span class="string">' '</span>, BanterLogo[<span class="string">0</span>].Length));
+    <span class="keyword">this</span>.BanterLogo.<span class="type">SetSource</span>(BanterLogo);
+}</code></pre>
+          </div>
+
+          <div class="bg-dark-800 rounded-lg p-6 border border-dark-700 mb-6">
+            <h4 class="font-bold text-accent-cyan mb-3">Embedded Resources</h4>
+            <p class="text-slate-300 text-sm mb-3">
+              Firebase credentials are embedded as resources to avoid external
+              file dependencies:
+            </p>
+            <pre
+              class="text-sm"
+            ><code><span class="type">Assembly</span> assembly = <span class="type">Assembly</span>.<span class="type">GetExecutingAssembly</span>();
+<span class="type">string</span> resourceName = <span class="string">"Banter.firebase-service-account.json"</span>;
+
+<span class="type">GoogleCredential</span> credential;
+<span class="keyword">using</span> (<span class="type">Stream</span>? stream = assembly.<span class="type">GetManifestResourceStream</span>(resourceName))
+{
+    <span class="keyword">if</span> (stream == <span class="keyword">null</span>)
+        <span class="keyword">throw new</span> <span class="type">Exception</span>(<span class="string">"Error: Could not find embedded JSON key."</span>);
+    
+    credential = <span class="type">GoogleCredential</span>.<span class="type">FromStream</span>(stream);
+}</code></pre>
+          </div>
+
+          <div class="bg-dark-800 rounded-lg p-6 border border-dark-700 mb-6">
+            <h4 class="font-bold text-accent-cyan mb-3">
+              Writing to Cloud (Firestore)
+            </h4>
+            <p class="text-slate-300 text-sm mb-3">
+              All persistent data is written to Firestore, not local files:
+            </p>
+            <pre
+              class="text-sm"
+            ><code><span class="comment">// Adding a new message</span>
+<span class="type">Dictionary</span>&lt;<span class="type">string</span>, <span class="type">object</span>&gt; message = <span class="keyword">new</span>()
+{
+    { <span class="string">"sender_id"</span>, senderId },
+    { <span class="string">"text"</span>, messageText },
+    { <span class="string">"timestamp"</span>, <span class="type">Timestamp</span>.<span class="type">FromDateTime</span>(<span class="type">DateTime</span>.UtcNow) }
+};
+
+<span class="keyword">await</span> db.<span class="type">Collection</span>(<span class="string">"Chatrooms"</span>)
+    .<span class="type">Document</span>(chatroomId)
+    .<span class="type">Collection</span>(<span class="string">"messages"</span>)
+    .<span class="type">AddAsync</span>(message);</code></pre>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-exclamation-circle text-accent-red mr-2"></i> Error
+            Handling
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-red mb-3">
+                Missing Embedded Resource
+              </h4>
+              <pre
+                class="text-xs"
+              ><code><span class="keyword">if</span> (stream == <span class="keyword">null</span>)
+{
+    <span class="keyword">throw new</span> <span class="type">Exception</span>(
+        <span class="string">"Error: Could not find the "</span> +
+        <span class="string">"embedded JSON key."</span>
+    );
+}</code></pre>
+            </div>
+
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-red mb-3">
+                Firestore Connection Failure
+              </h4>
+              <pre class="text-xs"><code><span class="keyword">try</span>
+{
+    Database = <span class="keyword">new</span> <span class="type">FirestoreDbBuilder</span>
+    {
+        ProjectId = ProjectId,
+        Credential = credential
+    }.<span class="type">Build</span>();
+}
+<span class="keyword">catch</span> (<span class="type">Exception</span> ex)
+{
+    <span class="type">Console</span>.<span class="type">WriteLine</span>(ex.Message);
+    Database = <span class="keyword">null</span>!;
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 4: Code Structure -->
+        <section id="code-structure" class="mb-20 scroll-mt-24">
+          <div class="border-l-4 border-accent-cyan pl-6 mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">
+              04. Code Structure
+            </h2>
+            <p class="text-slate-400 text-sm">
+              Architecture, Classes, and Modularity
+            </p>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-project-diagram text-accent-purple mr-2"></i>
+            Project File Structure
+          </h3>
+          <div
+            class="bg-dark-950 rounded-lg p-6 border border-dark-700 mb-8 font-mono text-sm"
+          >
+            <div class="space-y-1 text-slate-300">
+              <div>
+                <i class="fas fa-folder text-accent-cyan mr-2"></i>
+                <span class="text-accent-cyan">Banter/</span>
+              </div>
+              <div class="ml-4">
+                <i class="fas fa-file-code text-accent-green mr-2"></i>
+                Program.cs <span class="text-slate-500">// Entry point</span>
+              </div>
+              <div class="ml-4">
+                <i class="fas fa-file text-accent-green mr-2"></i> Banter.csproj
+                <span class="text-slate-500">// Project config</span>
+              </div>
+              <div class="ml-4">
+                <i class="fas fa-file-alt text-accent-green mr-2"></i>
+                BanterLogo.txt <span class="text-slate-500">// ASCII logo</span>
+              </div>
+              <div class="ml-4">
+                <i class="fas fa-key text-accent-gold mr-2"></i>
+                firebase-service-account.json
+              </div>
+              <div class="ml-4 mt-2">
+                <i class="fas fa-folder text-accent-cyan mr-2"></i>
+                <span class="text-accent-cyan">Utilities/</span>
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-purple mr-2"></i>
+                CustomColorScheme.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-purple mr-2"></i>
+                FirebaseHelper.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-purple mr-2"></i>
+                FirestoreManager.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-purple mr-2"></i>
+                Interfaces.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-purple mr-2"></i>
+                Models.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-purple mr-2"></i>
+                ProfanityChecker.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-purple mr-2"></i>
+                SessionHandler.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-purple mr-2"></i>
+                Validator.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-purple mr-2"></i>
+                WindowHelper.cs
+              </div>
+              <div class="ml-4 mt-2">
+                <i class="fas fa-folder text-accent-cyan mr-2"></i>
+                <span class="text-accent-cyan">Windows/</span>
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-pink mr-2"></i>
+                AbstractWindow.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-pink mr-2"></i>
+                LogInWindow.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-pink mr-2"></i>
+                CreateAccountWindow.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-pink mr-2"></i>
+                Window1.cs <span class="text-slate-500">// Chatroom list</span>
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-pink mr-2"></i>
+                Window2.cs <span class="text-slate-500">// Main chat</span>
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-pink mr-2"></i>
+                Window3.cs <span class="text-slate-500">// Chat info</span>
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-pink mr-2"></i>
+                CreateChatroomWindow.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-pink mr-2"></i>
+                ChangeChatroomNameWindow.cs
+              </div>
+              <div class="ml-8">
+                <i class="fas fa-file-code text-accent-pink mr-2"></i>
+                ViewPinnedMessagesWindow.cs
+              </div>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-cubes text-accent-green mr-2"></i> Key Classes
+          </h3>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-cyan mb-2 flex items-center">
+                <i class="fas fa-database mr-2"></i> FirebaseHelper
+              </h4>
+              <p class="text-slate-300 text-sm mb-3">
+                Static utility class providing all Firestore operations. Acts as
+                the central API for database interactions.
+              </p>
+              <div class="text-xs text-slate-400 space-y-1">
+                <div><code>AddAccount(User user)</code></div>
+                <div><code>GetUserName(string user_id)</code></div>
+                <div><code>CreateChatroom(List&lt;string&gt;)</code></div>
+                <div><code>PinChatroomMessage(...)</code></div>
+              </div>
+            </div>
+
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-purple mb-2 flex items-center">
+                <i class="fas fa-user-shield mr-2"></i> SessionHandler
+              </h4>
+              <p class="text-slate-300 text-sm mb-3">
+                Manages global application state including logged-in user info,
+                current chatroom, and chatroom list with event-driven updates.
+              </p>
+              <div class="text-xs text-slate-400 space-y-1">
+                <div><code>Username</code>, <code>UserId</code></div>
+                <div><code>CurrentChatroomId</code></div>
+                <div><code>IsLoggedIn</code></div>
+                <div><code>ClearSession()</code></div>
+              </div>
+            </div>
+
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-red mb-2 flex items-center">
+                <i class="fas fa-filter mr-2"></i> ProfanityChecker
+              </h4>
+              <p class="text-slate-300 text-sm mb-3">
+                Implements both simple and robust profanity filtering with
+                leetspeak normalization.
+              </p>
+              <div class="text-xs text-slate-400 space-y-1">
+                <div><code>CensorTextSimple(string)</code></div>
+                <div><code>CensorTextRobust(string)</code></div>
+                <div>Handles obfuscated profanity</div>
+              </div>
+            </div>
+
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-green mb-2 flex items-center">
+                <i class="fas fa-check-circle mr-2"></i> Validator
+              </h4>
+              <p class="text-slate-300 text-sm mb-3">
+                Provides validation methods for common data formats like email
+                addresses.
+              </p>
+              <div class="text-xs text-slate-400 space-y-1">
+                <div><code>IsValidEmail(string)</code></div>
+                <div>Uses comprehensive regex</div>
+                <div>Timeout protection</div>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-route text-accent-cyan mr-2"></i> Real-Time
+            Messaging Flow
+          </h3>
+
+          <div class="space-y-4">
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-green mb-3">
+                Step 1: User Sends Message
+              </h4>
+              <pre
+                class="text-sm"
+              ><code><span class="keyword">private async void</span> <span class="type">OnButtonSendClicked</span>()
+{
+    <span class="type">string</span> messageText = chatBox.Text.<span class="type">ToString</span>() ?? <span class="string">""</span>;
+    
+    <span class="keyword">if</span> (<span class="type">string</span>.<span class="type">IsNullOrWhiteSpace</span>(messageText)) <span class="keyword">return</span>;
+    
+    chatBox.Text = <span class="string">""</span>; <span class="comment">// Clear input immediately</span>
+    
+    <span class="type">Dictionary</span>&lt;<span class="type">string</span>, <span class="type">object</span>&gt; message = <span class="keyword">new</span>()
+    {
+        { <span class="string">"sender_id"</span>, SessionHandler.UserId },
+        { <span class="string">"text"</span>, messageText },
+        { <span class="string">"timestamp"</span>, <span class="type">Timestamp</span>.<span class="type">FromDateTime</span>(<span class="type">DateTime</span>.UtcNow) }
+    };
+    
+    <span class="keyword">await</span> db.<span class="type">Collection</span>(<span class="string">"Chatrooms"</span>)
+        .<span class="type">Document</span>(SessionHandler.CurrentChatroomId)
+        .<span class="type">Collection</span>(<span class="string">"messages"</span>)
+        .<span class="type">AddAsync</span>(message);
+}</code></pre>
+            </div>
+
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-cyan mb-3">
+                Step 2: Firestore Listener Receives Update
+              </h4>
+              <pre
+                class="text-sm"
+              ><code><span class="keyword">private void</span> <span class="type">StartMessagesListener</span>(<span class="type">string</span> chatroom_id)
+{
+    <span class="type">CollectionReference</span> messagesRef = db.<span class="type">Collection</span>(<span class="string">"Chatrooms"</span>)
+        .<span class="type">Document</span>(chatroom_id)
+        .<span class="type">Collection</span>(<span class="string">"messages"</span>);
+    
+    <span class="type">Query</span> query = messagesRef.<span class="type">OrderBy</span>(<span class="string">"timestamp"</span>);
+    
+    _listener = query.<span class="type">Listen</span>(snapshot => 
+        _ = <span class="type">OnMessageSnapshotReceived</span>(snapshot));
+}</code></pre>
+            </div>
+
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-purple mb-3">
+                Step 3: Update UI (Thread Marshalling)
+              </h4>
+              <pre
+                class="text-sm"
+              ><code><span class="keyword">private async</span> <span class="type">Task</span> <span class="type">OnMessageSnapshotReceived</span>(<span class="type">QuerySnapshot</span> snapshot)
+{
+    <span class="keyword">foreach</span> (<span class="type">DocumentChange</span> change <span class="keyword">in</span> snapshot.Changes)
+    {
+        <span class="type">string</span> message = change.Document.<span class="type">GetValue</span>&lt;<span class="type">string</span>&gt;(<span class="string">"text"</span>);
+        messages.<span class="type">Add</span>(message);
+    }
+    
+    <span class="comment">// CRITICAL: Marshal to UI thread</span>
+    <span class="type">Application</span>.MainLoop.<span class="type">Invoke</span>(() => {
+        chatHistory.<span class="type">SetSource</span>(messages);
+        <span class="type">ScrollToLatestChat</span>();
+    });
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 5: User Interface -->
+        <section id="user-interface" class="mb-20 scroll-mt-24">
+          <div class="border-l-4 border-accent-pink pl-6 mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">
+              05. User Interface
+            </h2>
+            <p class="text-slate-400 text-sm">
+              Design, Usability, and Terminal.Gui
+            </p>
+          </div>
+
+          <div class="bg-dark-800 rounded-lg p-6 border border-dark-700 mb-8">
+            <h3 class="text-xl font-bold text-white mb-4">
+              <i class="fas fa-magic text-accent-purple mr-2"></i> Design
+              Philosophy
+            </h3>
+            <p class="text-slate-300 mb-4">
+              Banter leverages the powerful <code>Terminal.Gui</code> framework
+              to create a rich, interactive terminal user interface. Unlike
+              traditional console applications that rely solely on
+              <code>Console.WriteLine()</code>, Terminal.Gui provides a
+              widget-based system with full mouse and keyboard navigation,
+              making the experience comparable to modern desktop applications.
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div class="text-center">
+                <i class="fas fa-mouse text-accent-cyan text-3xl mb-2"></i>
+                <p class="text-sm text-slate-400">Mouse Support</p>
+              </div>
+              <div class="text-center">
+                <i class="fas fa-keyboard text-accent-green text-3xl mb-2"></i>
+                <p class="text-sm text-slate-400">Keyboard Nav</p>
+              </div>
+              <div class="text-center">
+                <i
+                  class="fas fa-window-restore text-accent-purple text-3xl mb-2"
+                ></i>
+                <p class="text-sm text-slate-400">Windows</p>
+              </div>
+              <div class="text-center">
+                <i class="fas fa-sync-alt text-accent-gold text-3xl mb-2"></i>
+                <p class="text-sm text-slate-400">Real-time</p>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-th text-accent-cyan mr-2"></i> Application Layout
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-green mb-3">Window 1 (Left)</h4>
+              <p class="text-sm text-slate-400 mb-3">Chatroom List</p>
+              <ul class="text-xs text-slate-500 space-y-1">
+                <li>• Search chatrooms</li>
+                <li>• Create new chats</li>
+                <li>• User info</li>
+                <li>• Logout button</li>
+              </ul>
+            </div>
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-cyan mb-3">Window 2 (Center)</h4>
+              <p class="text-sm text-slate-400 mb-3">Main Chat View</p>
+              <ul class="text-xs text-slate-500 space-y-1">
+                <li>• Message history</li>
+                <li>• Search messages</li>
+                <li>• Input field</li>
+                <li>• Send button</li>
+              </ul>
+            </div>
+            <div class="bg-dark-800 rounded-lg p-6 border border-dark-700">
+              <h4 class="font-bold text-accent-purple mb-3">
+                Window 3 (Right)
+              </h4>
+              <p class="text-sm text-slate-400 mb-3">Chat Info</p>
+              <ul class="text-xs text-slate-500 space-y-1">
+                <li>• Clear messages</li>
+                <li>• Rename chatroom</li>
+                <li>• Leave/Delete chat</li>
+                <li>• Admin options</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-exchange-alt text-accent-green mr-2"></i>
+            Input/Output Examples
+          </h3>
+          <div class="overflow-x-auto mb-8">
+            <table>
+              <thead>
+                <tr>
+                  <th>Input Type</th>
+                  <th>Example Input</th>
+                  <th>Expected Output</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Valid Login</td>
+                  <td><code>dreeyanzz</code> / <code>pass123</code></td>
+                  <td>Successfully logged in, transition to main chat</td>
+                </tr>
+                <tr>
+                  <td>Invalid Username</td>
+                  <td><code>nonexistent</code></td>
+                  <td>MessageBox: "Account not found."</td>
+                </tr>
+                <tr>
+                  <td>Wrong Password</td>
+                  <td><code>wrongpass</code></td>
+                  <td>MessageBox: "Wrong password..."</td>
+                </tr>
+                <tr>
+                  <td>Empty Fields</td>
+                  <td>(empty)</td>
+                  <td>MessageBox: "Username or Password cannot be empty!"</td>
+                </tr>
+                <tr>
+                  <td>Send Message</td>
+                  <td><code>Hello world!</code></td>
+                  <td>Message appears in chat for all users</td>
+                </tr>
+                <tr>
+                  <td>Profanity</td>
+                  <td><code>This is shit</code></td>
+                  <td>Displayed as: <code>This is ****</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-universal-access text-accent-purple mr-2"></i>
+            Accessibility Features
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h4 class="font-bold text-accent-green mb-2 text-sm">Hotkeys</h4>
+              <p class="text-xs text-slate-400">
+                All buttons can be activated with Alt + underlined letter
+              </p>
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h4 class="font-bold text-accent-cyan mb-2 text-sm">
+                Tab Navigation
+              </h4>
+              <p class="text-xs text-slate-400">
+                Tab/Shift+Tab cycles through interactive elements
+              </p>
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h4 class="font-bold text-accent-purple mb-2 text-sm">
+                Enter Key
+              </h4>
+              <p class="text-xs text-slate-400">
+                Default button activation (e.g., Send button)
+              </p>
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h4 class="font-bold text-accent-pink mb-2 text-sm">
+                Mouse Wheel
+              </h4>
+              <p class="text-xs text-slate-400">
+                Scroll through message history
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 6: Challenges -->
+        <section id="challenges" class="mb-20 scroll-mt-24">
+          <div class="border-l-4 border-accent-red pl-6 mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">
+              06. Challenges and Solutions
+            </h2>
+            <p class="text-slate-400 text-sm">
+              Technical Obstacles and Problem-Solving
+            </p>
+          </div>
+
+          <div class="space-y-6">
+            <!-- Challenge 1 -->
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3 mb-4">
+                <span class="badge badge-error">CRITICAL</span>
+                <h3 class="text-xl font-bold text-white">
+                  Challenge 1: Terminal.Gui Threading Issues
+                </h3>
+              </div>
+
+              <h4 class="font-bold text-accent-red mb-2">Problem</h4>
+              <p class="text-slate-300 text-sm mb-4">
+                As a beginner to Terminal.Gui, the most significant challenge
+                was understanding thread safety. Firestore's real-time listeners
+                operate on background threads, but Terminal.Gui's UI components
+                can only be safely modified from the main UI thread. Attempting
+                to update a ListView or TextField from a background thread would
+                cause race conditions, visual artifacts, and application
+                crashes.
+              </p>
+
+              <h4 class="font-bold text-accent-green mb-2">Solution</h4>
+              <p class="text-slate-300 text-sm mb-3">
+                Use <code>Application.MainLoop.Invoke()</code> to marshal all UI
+                updates back to the main thread:
+              </p>
+              <pre
+                class="text-xs"
+              ><code><span class="comment">// ✅ CORRECT: Marshal to main thread</span>
+<span class="keyword">private async</span> <span class="type">Task</span> <span class="type">OnMessageSnapshotReceived</span>(<span class="type">QuerySnapshot</span> snapshot)
+{
+    <span class="keyword">foreach</span> (<span class="type">DocumentChange</span> change <span class="keyword">in</span> snapshot.Changes)
+    {
+        <span class="type">string</span> message = change.Document.<span class="type">GetValue</span>&lt;<span class="type">string</span>&gt;(<span class="string">"text"</span>);
+        messages.<span class="type">Add</span>(message);
+    }
+    
+    <span class="comment">// This lambda runs on the main UI thread</span>
+    <span class="type">Application</span>.MainLoop.<span class="type">Invoke</span>(() => {
+        chatHistory.<span class="type">SetSource</span>(messages);
+        <span class="type">ScrollToLatestChat</span>();
+    });
+}</code></pre>
+
+              <div
+                class="bg-dark-950 rounded-lg p-4 border border-accent-cyan/30 mt-4"
+              >
+                <p class="text-sm text-slate-300">
+                  <i class="fas fa-lightbulb text-accent-gold mr-2"></i>
+                  <strong>Learning Outcome:</strong> This challenge taught me
+                  the fundamentals of UI thread affinity and asynchronous
+                  programming.
+                </p>
+              </div>
+            </div>
+
+            <!-- Challenge 2 -->
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3 mb-4">
+                <span class="badge badge-warning">DIFFICULTY</span>
+                <h3 class="text-xl font-bold text-white">
+                  Challenge 2: Terminal.Gui Layout System
+                </h3>
+              </div>
+
+              <h4 class="font-bold text-accent-red mb-2">Problem</h4>
+              <p class="text-slate-300 text-sm mb-4">
+                Terminal.Gui's layout system uses <code>Pos</code> and
+                <code>Dim</code> objects for positioning and sizing, which was
+                initially confusing. Understanding the difference between
+                <code>Pos.At()</code>, <code>Pos.Center()</code>,
+                <code>Pos.Percent()</code>, and
+                <code>Pos.AnchorEnd()</code> required significant trial and
+                error.
+              </p>
+
+              <h4 class="font-bold text-accent-green mb-2">Solution</h4>
+              <pre
+                class="text-xs"
+              ><code><span class="comment">// Proper centering</span>
+<span class="type">Button</span> myButton = <span class="keyword">new</span>()
+{
+    Text = <span class="string">"Click Me"</span>,
+    X = <span class="type">Pos</span>.<span class="type">Center</span>(),              <span class="comment">// Centers horizontally</span>
+    Y = <span class="type">Pos</span>.<span class="type">Center</span>() - <span class="type">Pos</span>.<span class="type">At</span>(2),  <span class="comment">// Centers vertically, offset up</span>
+    Width = <span class="type">Dim</span>.<span class="type">Sized</span>(20)          <span class="comment">// Fixed width</span>
+};
+
+<span class="comment">// Fill remaining space</span>
+<span class="type">TextField</span> inputField = <span class="keyword">new</span>()
+{
+    X = <span class="type">Pos</span>.<span class="type">At</span>(0),
+    Y = <span class="type">Pos</span>.<span class="type">AnchorEnd</span>() - <span class="type">Pos</span>.<span class="type">At</span>(1),
+    Width = <span class="type">Dim</span>.<span class="type">Fill</span>() - <span class="type">Dim</span>.<span class="type">Width</span>(sendButton)
+};</code></pre>
+            </div>
+
+            <!-- Challenge 3 -->
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3 mb-4">
+                <span class="badge badge-secondary">PERFORMANCE</span>
+                <h3 class="text-xl font-bold text-white">
+                  Challenge 3: Firestore Query Optimization
+                </h3>
+              </div>
+
+              <h4 class="font-bold text-accent-red mb-2">Problem</h4>
+              <p class="text-slate-300 text-sm mb-4">
+                Each message displayed required fetching the sender's name from
+                the Users collection. With hundreds of messages, this resulted
+                in hundreds of Firestore read operations, quickly consuming free
+                tier quotas and causing noticeable lag.
+              </p>
+
+              <h4 class="font-bold text-accent-green mb-2">Solution</h4>
+              <p class="text-slate-300 text-sm mb-3">
+                Implemented a caching strategy that fetches all chatroom
+                participants once when the chatroom is opened:
+              </p>
+              <pre
+                class="text-xs"
+              ><code><span class="keyword">private readonly</span> <span class="type">Dictionary</span>&lt;<span class="type">string</span>, <span class="type">string</span>&gt; currentChatroomParticipants = [];
+
+<span class="keyword">private async</span> <span class="type">Task</span> <span class="type">FetchAndCacheParticipants</span>(<span class="type">string</span> chatroomId)
+{
+    currentChatroomParticipants.<span class="type">Clear</span>();
+    
+    <span class="keyword">foreach</span> (<span class="type">string</span> id <span class="keyword">in</span> participantIds)
+    {
+        <span class="type">string</span> name = <span class="keyword">await</span> <span class="type">GetUserName</span>(id);
+        currentChatroomParticipants[id] = name;
+    }
+}
+
+<span class="comment">// Now messages just look up the cached name - O(1)</span>
+<span class="type">string</span> name = currentChatroomParticipants[senderId];</code></pre>
+
+              <div class="grid grid-cols-2 gap-3 mt-4">
+                <div class="bg-dark-950 rounded-lg p-3 border border-dark-700">
+                  <p class="text-xs text-accent-red mb-1">Before</p>
+                  <p class="text-xs text-slate-400">300 messages = 300 reads</p>
+                </div>
+                <div class="bg-dark-950 rounded-lg p-3 border border-dark-700">
+                  <p class="text-xs text-accent-green mb-1">After</p>
+                  <p class="text-xs text-slate-400">
+                    300 messages = 5-10 reads
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Challenge 4 -->
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3 mb-4">
+                <span class="badge badge-error">CRITICAL</span>
+                <h3 class="text-xl font-bold text-white">
+                  Challenge 4: Event Listener Memory Leaks
+                </h3>
+              </div>
+
+              <h4 class="font-bold text-accent-red mb-2">Problem</h4>
+              <p class="text-slate-300 text-sm mb-4">
+                When switching between chatrooms, old Firestore listeners were
+                not being properly disposed, causing multiple listeners to run
+                simultaneously and resulting in duplicate messages appearing in
+                the UI.
+              </p>
+
+              <h4 class="font-bold text-accent-green mb-2">Solution</h4>
+              <pre
+                class="text-xs"
+              ><code><span class="keyword">private</span> <span class="type">FirestoreChangeListener</span>? _listener;
+
+<span class="keyword">private void</span> <span class="type">OnChatroomChanged</span>(<span class="type">string</span>? chatroom_id)
+{
+    <span class="comment">// CRITICAL: Stop old listener before starting new one</span>
+    _listener?.<span class="type">StopAsync</span>();
+    _listener = <span class="keyword">null</span>;
+    
+    <span class="comment">// Clear old data</span>
+    messages.<span class="type">Clear</span>();
+    
+    <span class="keyword">if</span> (<span class="type">string</span>.<span class="type">IsNullOrEmpty</span>(chatroom_id)) <span class="keyword">return</span>;
+    
+    <span class="comment">// Start new listener</span>
+    <span class="type">StartMessagesListener</span>(chatroom_id);
+}</code></pre>
+            </div>
+
+            <!-- Challenge 5 -->
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <div class="flex items-start gap-3 mb-4">
+                <span class="badge badge-secondary">COMPLEXITY</span>
+                <h3 class="text-xl font-bold text-white">
+                  Challenge 5: Profanity Filter Bypass Detection
+                </h3>
+              </div>
+
+              <h4 class="font-bold text-accent-red mb-2">Problem</h4>
+              <p class="text-slate-300 text-sm mb-4">
+                Simple word-based profanity filters could be easily bypassed
+                with leetspeak (<code>f4ck</code>, <code>@ss</code>) or spacing
+                (<code>f u c k</code>).
+              </p>
+
+              <h4 class="font-bold text-accent-green mb-2">Solution</h4>
+              <p class="text-slate-300 text-sm mb-3">
+                Implemented a two-tier system with a robust filter that
+                normalizes text before checking:
+              </p>
+              <pre
+                class="text-xs"
+              ><code><span class="keyword">public static</span> <span class="type">string</span> <span class="type">CensorTextRobust</span>(<span class="type">string</span> text)
+{
+    <span class="comment">// 1. Remove non-alphanumeric characters</span>
+    <span class="comment">// 2. Convert to lowercase</span>
+    <span class="comment">// 3. Map leetspeak to normal letters (@ → a, 3 → e, 4 → a, etc.)</span>
+    <span class="type">string</span> normalized = <span class="type">NormalizeText</span>(text);
+    
+    <span class="comment">// 4. Search for profanity in normalized text</span>
+    <span class="keyword">foreach</span> (<span class="type">string</span> profaneWord <span class="keyword">in</span> ProfaneWordsArray)
+    {
+        <span class="keyword">if</span> (normalized.<span class="type">Contains</span>(profaneWord))
+        {
+            <span class="type">CensorOriginalText</span>(text, profaneWord);
+        }
+    }
+    
+    <span class="keyword">return</span> text;
+}</code></pre>
+            </div>
+          </div>
+
+          <div
+            class="bg-accent-cyan/10 border border-accent-cyan/30 rounded-lg p-6 mt-8"
+          >
+            <div class="flex gap-3">
+              <i
+                class="fas fa-graduation-cap text-accent-cyan text-xl mt-1"
+              ></i>
+              <div>
+                <h4 class="font-bold text-accent-cyan mb-2">Reflection</h4>
+                <p class="text-sm text-slate-300">
+                  These challenges significantly improved my debugging skills. I
+                  learned to anticipate issues before they occur, use proper
+                  error handling, and think about edge cases. The experience of
+                  overcoming these obstacles was invaluable for my growth as a
+                  developer.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 7: Testing -->
+        <section id="testing" class="mb-20 scroll-mt-24">
+          <div class="border-l-4 border-accent-gold pl-6 mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">07. Testing</h2>
+            <p class="text-slate-400 text-sm">
+              Test Cases, Results, and Limitations
+            </p>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-vial text-accent-cyan mr-2"></i> Authentication
+            Tests
+          </h3>
+          <div class="overflow-x-auto mb-8">
+            <table>
+              <thead>
+                <tr>
+                  <th>Test ID</th>
+                  <th>Test Case</th>
+                  <th>Input</th>
+                  <th>Expected Result</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>AUTH-01</code></td>
+                  <td>Valid Login</td>
+                  <td><code>dreeyanzz</code> / <code>pass123</code></td>
+                  <td>Successful login, transition to chat</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>AUTH-02</code></td>
+                  <td>Invalid Username</td>
+                  <td><code>nonexistent</code></td>
+                  <td>Error: "Account not found."</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>AUTH-03</code></td>
+                  <td>Wrong Password</td>
+                  <td><code>wrongpass</code></td>
+                  <td>Error: "Wrong password..."</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>AUTH-04</code></td>
+                  <td>Empty Credentials</td>
+                  <td>(empty fields)</td>
+                  <td>Error: "Username or Password cannot be empty!"</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>AUTH-05</code></td>
+                  <td>Short Username</td>
+                  <td><code>abc</code> (3 chars)</td>
+                  <td>Error: "Username must be at least 8 characters long"</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>AUTH-06</code></td>
+                  <td>Duplicate Username</td>
+                  <td><code>dreeyanzz</code> (existing)</td>
+                  <td>Error: "Username already taken"</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>AUTH-07</code></td>
+                  <td>Invalid Email</td>
+                  <td><code>notanemail</code></td>
+                  <td>Error: "Invalid email format!"</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>AUTH-08</code></td>
+                  <td>Password Mismatch</td>
+                  <td><code>pass123</code> / <code>pass456</code></td>
+                  <td>Error: "Passwords must match!"</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-comments text-accent-green mr-2"></i> Messaging
+            Tests
+          </h3>
+          <div class="overflow-x-auto mb-8">
+            <table>
+              <thead>
+                <tr>
+                  <th>Test ID</th>
+                  <th>Test Case</th>
+                  <th>Input</th>
+                  <th>Expected Result</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>MSG-01</code></td>
+                  <td>Send Valid Message</td>
+                  <td><code>Hello world!</code></td>
+                  <td>Message appears in chat for all users</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>MSG-02</code></td>
+                  <td>Send Empty Message</td>
+                  <td>(empty)</td>
+                  <td>No message sent, input cleared</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>MSG-03</code></td>
+                  <td>Profanity Filter (Simple)</td>
+                  <td><code>This is shit</code></td>
+                  <td>Displayed as: <code>This is ****</code></td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>MSG-04</code></td>
+                  <td>Profanity Filter (Leetspeak)</td>
+                  <td><code>f4ck this</code></td>
+                  <td>Displayed as: <code>**** this</code></td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>MSG-05</code></td>
+                  <td>Profanity Filter (Spaced)</td>
+                  <td><code>f u c k</code></td>
+                  <td>Displayed as: <code>*********</code></td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>MSG-06</code></td>
+                  <td>Pin Message</td>
+                  <td>Select message, press Enter</td>
+                  <td>Message pinned, indicated with <code>•</code></td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>MSG-07</code></td>
+                  <td>View Pinned Messages</td>
+                  <td>Click "View pinned messages"</td>
+                  <td>Modal window shows all pinned messages</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><code>MSG-08</code></td>
+                  <td>Unpin Message</td>
+                  <td>Select in modal, press Enter</td>
+                  <td>Message unpinned, <code>•</code> removed</td>
+                  <td><span class="badge badge-primary">PASS</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-chart-bar text-accent-purple mr-2"></i> Test
+            Results Summary
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div
+              class="bg-dark-800 rounded-lg p-6 border border-dark-700 text-center"
+            >
+              <p class="text-4xl font-bold text-accent-cyan mb-2">38</p>
+              <p class="text-sm text-slate-400">Total Tests</p>
+            </div>
+            <div
+              class="bg-dark-800 rounded-lg p-6 border border-dark-700 text-center"
+            >
+              <p class="text-4xl font-bold text-accent-green mb-2">35</p>
+              <p class="text-sm text-slate-400">Passed</p>
+            </div>
+            <div
+              class="bg-dark-800 rounded-lg p-6 border border-dark-700 text-center"
+            >
+              <p class="text-4xl font-bold text-accent-gold mb-2">3</p>
+              <p class="text-sm text-slate-400">Known Issues</p>
+            </div>
+            <div
+              class="bg-dark-800 rounded-lg p-6 border border-dark-700 text-center"
+            >
+              <p class="text-4xl font-bold text-accent-green mb-2">92%</p>
+              <p class="text-sm text-slate-400">Pass Rate</p>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-exclamation-triangle text-accent-gold mr-2"></i>
+            Known Limitations
+          </h3>
+          <div
+            class="bg-accent-gold/10 border border-accent-gold/30 rounded-lg p-6"
+          >
+            <ul class="space-y-3 text-slate-300">
+              <li class="flex gap-3">
+                <i class="fas fa-lock-open text-accent-gold mt-1"></i>
+                <div>
+                  <strong>No End-to-End Encryption:</strong> Messages are stored
+                  in plaintext in Firestore. User passwords are also stored in
+                  plaintext (NOT recommended for production).
+                </div>
+              </li>
+              <li class="flex gap-3">
+                <i class="fas fa-wifi text-accent-gold mt-1"></i>
+                <div>
+                  <strong>Internet Required:</strong> The application cannot
+                  function offline. A future version could implement offline
+                  queueing.
+                </div>
+              </li>
+              <li class="flex gap-3">
+                <i class="fas fa-language text-accent-gold mt-1"></i>
+                <div>
+                  <strong>Limited Unicode Support:</strong> Some emoji and
+                  special Unicode characters may not render correctly depending
+                  on the terminal emulator.
+                </div>
+              </li>
+              <li class="flex gap-3">
+                <i class="fas fa-file text-accent-gold mt-1"></i>
+                <div>
+                  <strong>No File Sharing:</strong> Only text messages are
+                  supported. Future versions could add file uploads via Firebase
+                  Storage.
+                </div>
+              </li>
+              <li class="flex gap-3">
+                <i class="fas fa-video text-accent-gold mt-1"></i>
+                <div>
+                  <strong>No Voice/Video:</strong> Text-only communication.
+                  WebRTC integration would be needed for real-time voice/video
+                  calls.
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Section 8: Future Enhancements -->
+        <section id="future" class="mb-20 scroll-mt-24">
+          <div class="border-l-4 border-accent-purple pl-6 mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">
+              08. Future Enhancements
+            </h2>
+            <p class="text-slate-400 text-sm">
+              Planned Features and Improvements
+            </p>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-shield-alt text-accent-red mr-2"></i> Security
+            Improvements
+          </h3>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-cyan mb-3 flex items-center">
+                <i class="fas fa-key mr-2"></i> JWT Authentication
+              </h4>
+              <p class="text-slate-300 text-sm mb-3">
+                Replace plaintext password storage with JWT (JSON Web Tokens)
+                for secure, stateless authentication. This would allow session
+                management across multiple devices and provide token expiration
+                for better security.
+              </p>
+              <pre
+                class="text-xs"
+              ><code><span class="comment">// Future implementation</span>
+<span class="keyword">public static async</span> <span class="type">Task</span>&lt;<span class="type">string</span>&gt; <span class="type">Login</span>(<span class="type">string</span> username, <span class="type">string</span> password)
+{
+    <span class="type">string</span> hashedPassword = <span class="type">BCrypt</span>.<span class="type">HashPassword</span>(password);
+    <span class="type">bool</span> isValid = <span class="keyword">await</span> <span class="type">ValidateCredentials</span>(username, hashedPassword);
+    
+    <span class="keyword">if</span> (isValid)
+        <span class="keyword">return</span> <span class="type">GenerateJWT</span>(username);
+    
+    <span class="keyword">return</span> <span class="keyword">null</span>;
+}</code></pre>
+            </div>
+
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-purple mb-3 flex items-center">
+                <i class="fas fa-lock mr-2"></i> End-to-End Encryption
+              </h4>
+              <p class="text-slate-300 text-sm mb-3">
+                Implement E2EE using AES-256 encryption for messages. Each
+                chatroom would have a unique encryption key shared only among
+                participants, ensuring that even Firestore admins cannot read
+                message contents.
+              </p>
+              <pre
+                class="text-xs"
+              ><code><span class="comment">// Future implementation</span>
+<span class="keyword">public static async</span> <span class="type">Task</span> <span class="type">SendEncryptedMessage</span>(<span class="type">string</span> message, <span class="type">string</span> key)
+{
+    <span class="type">string</span> encrypted = <span class="type">AES</span>.<span class="type">Encrypt</span>(message, key);
+    <span class="keyword">await</span> <span class="type">FirebaseHelper</span>.<span class="type">AddMessage</span>(encrypted);
+}</code></pre>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-robot text-accent-cyan mr-2"></i> AI Integration
+          </h3>
+          <div class="glow-card bg-dark-800 rounded-lg p-6 border-dashed mb-8">
+            <div class="flex items-start gap-3 mb-4">
+              <span class="badge badge-warning">PROPOSED</span>
+              <h4 class="font-bold text-accent-gold text-lg">
+                OpenAI-Powered Features
+              </h4>
+            </div>
+            <p class="text-slate-300 text-sm mb-4">
+              The project already includes the OpenAI package. Future versions
+              could leverage GPT models for:
+            </p>
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+              <li class="flex gap-2 text-sm text-slate-300">
+                <i class="fas fa-magic text-accent-purple mt-1"></i>
+                <span
+                  ><strong>Smart Replies:</strong> Suggest contextual message
+                  responses</span
+                >
+              </li>
+              <li class="flex gap-2 text-sm text-slate-300">
+                <i class="fas fa-language text-accent-cyan mt-1"></i>
+                <span
+                  ><strong>Message Translation:</strong> Real-time translation
+                  between languages</span
+                >
+              </li>
+              <li class="flex gap-2 text-sm text-slate-300">
+                <i class="fas fa-file-alt text-accent-green mt-1"></i>
+                <span
+                  ><strong>Chat Summarization:</strong> AI-generated summaries
+                  of long conversations</span
+                >
+              </li>
+              <li class="flex gap-2 text-sm text-slate-300">
+                <i class="fas fa-shield-alt text-accent-red mt-1"></i>
+                <span
+                  ><strong>Moderation Bot:</strong> AI assistant for automatic
+                  spam detection</span
+                >
+              </li>
+            </ul>
+            <pre
+              class="text-xs"
+            ><code><span class="comment">// Example: AI-powered chat summary</span>
+<span class="keyword">public static async</span> <span class="type">Task</span>&lt;<span class="type">string</span>&gt; <span class="type">SummarizeChatHistory</span>(<span class="type">List</span>&lt;<span class="type">string</span>&gt; messages)
+{
+    <span class="type">string</span> chatText = <span class="type">string</span>.<span class="type">Join</span>(<span class="string">"\n"</span>, messages);
+    
+    <span class="keyword">var</span> completion = <span class="keyword">await</span> openAiClient.<span class="type">GetChatCompletionsAsync</span>(
+        <span class="keyword">new</span> <span class="type">ChatCompletionsOptions</span> {
+            Messages = {
+                <span class="keyword">new</span> <span class="type">ChatMessage</span>(<span class="type">ChatRole</span>.System, <span class="string">"Summarize this chat"</span>),
+                <span class="keyword">new</span> <span class="type">ChatMessage</span>(<span class="type">ChatRole</span>.User, chatText)
+            }
+        }
+    );
+    
+    <span class="keyword">return</span> completion.Value.Choices[0].Message.Content;
+}</code></pre>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-phone text-accent-green mr-2"></i> Voice and Video
+            Calls
+          </h3>
+          <div class="bg-dark-800 rounded-lg p-6 border border-dark-700 mb-8">
+            <h4 class="font-bold text-accent-cyan mb-3">WebRTC Integration</h4>
+            <p class="text-slate-300 text-sm mb-3">
+              Add real-time voice and video calling capabilities using WebRTC.
+              This would require:
+            </p>
+            <ul class="space-y-2 text-sm text-slate-400">
+              <li>
+                <i class="fas fa-check text-accent-green mr-2"></i>Signaling
+                server for peer connection negotiation
+              </li>
+              <li>
+                <i class="fas fa-check text-accent-green mr-2"></i>STUN/TURN
+                servers for NAT traversal
+              </li>
+              <li>
+                <i class="fas fa-check text-accent-green mr-2"></i>Audio/video
+                encoding/decoding libraries
+              </li>
+              <li>
+                <i class="fas fa-check text-accent-green mr-2"></i>UI for call
+                controls (mute, camera toggle, screen share)
+              </li>
+            </ul>
+            <div
+              class="bg-accent-gold/10 border border-accent-gold/30 rounded-lg p-4 mt-4"
+            >
+              <p class="text-sm text-slate-300">
+                <i
+                  class="fas fa-exclamation-triangle text-accent-gold mr-2"
+                ></i>
+                <strong>Challenge:</strong> Terminal applications cannot
+                directly render video. Would need to spawn a separate window or
+                use ASCII art video rendering (novelty feature).
+              </p>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-smile text-accent-pink mr-2"></i> Additional
+            Features
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h5 class="font-bold text-accent-cyan text-sm mb-2">
+                Emoji Support
+              </h5>
+              <p class="text-xs text-slate-400">
+                Add emoji picker and proper Unicode rendering
+              </p>
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h5 class="font-bold text-accent-green text-sm mb-2">
+                File Sharing
+              </h5>
+              <p class="text-xs text-slate-400">
+                Upload/download files via Firebase Storage
+              </p>
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h5 class="font-bold text-accent-purple text-sm mb-2">
+                Code Highlighting
+              </h5>
+              <p class="text-xs text-slate-400">
+                Detect code blocks and apply syntax coloring
+              </p>
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h5 class="font-bold text-accent-pink text-sm mb-2">
+                Message Reactions
+              </h5>
+              <p class="text-xs text-slate-400">
+                React to messages with emoji/icons
+              </p>
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h5 class="font-bold text-accent-gold text-sm mb-2">
+                Thread Replies
+              </h5>
+              <p class="text-xs text-slate-400">
+                Reply to specific messages, creating threads
+              </p>
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h5 class="font-bold text-accent-cyan text-sm mb-2">
+                User Status
+              </h5>
+              <p class="text-xs text-slate-400">
+                Online/Offline/Away indicators
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 9: Conclusion -->
+        <section id="conclusion" class="mb-20 scroll-mt-24">
+          <div class="border-l-4 border-accent-green pl-6 mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">09. Conclusion</h2>
+            <p class="text-slate-400 text-sm">Reflection and Takeaways</p>
+          </div>
+
+          <div class="bg-dark-800 rounded-lg p-6 border border-dark-700 mb-8">
+            <h3 class="text-xl font-bold text-white mb-4">
+              <i class="fas fa-book-open text-accent-cyan mr-2"></i> Reflection
+            </h3>
+            <p class="text-slate-300 leading-relaxed mb-4">
+              This project was a transformative learning experience that bridged
+              the gap between theoretical C# knowledge and practical application
+              development. Building Banter from the ground up taught me not just
+              how to write code, but how to architect a complete,
+              production-ready application with real-time capabilities, cloud
+              integration, and a polished user experience.
+            </p>
+            <p class="text-slate-300 leading-relaxed mb-4">
+              The most valuable aspect was encountering and overcoming
+              real-world challenges that don't appear in textbooks or tutorials.
+              Wrestling with Terminal.Gui's threading model, optimizing
+              Firestore queries to avoid quota limits, and implementing a robust
+              profanity filter that handles obfuscation - these challenges
+              forced me to think critically and creatively.
+            </p>
+            <p class="text-slate-300 leading-relaxed">
+              I learned how to program even more effectively, reducing my time
+              to debug because I can already foresee what is about to happen for
+              specific scenarios. It also made me explore external APIs like
+              Firestore and others, expanding my understanding of cloud services
+              and real-time data synchronization.
+            </p>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-trophy text-accent-gold mr-2"></i> Key Takeaways
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-cyan mb-2">
+                Asynchronous Programming
+              </h4>
+              <p class="text-sm text-slate-400">
+                Mastered async/await patterns, learned to prevent deadlocks, and
+                understood the importance of ConfigureAwait. Can now write
+                responsive applications that don't block the UI thread.
+              </p>
+            </div>
+
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-green mb-2">
+                Cloud Integration
+              </h4>
+              <p class="text-sm text-slate-400">
+                Gained hands-on experience with Firebase Firestore, including
+                real-time listeners, document queries, batch operations, and
+                authentication.
+              </p>
+            </div>
+
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-purple mb-2">
+                File Handling in C#
+              </h4>
+              <p class="text-sm text-slate-400">
+                Learned to read text files, embed resources in assemblies,
+                handle file I/O exceptions, and manage file lifecycle in
+                different build configurations.
+              </p>
+            </div>
+
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-pink mb-2">Error Handling</h4>
+              <p class="text-sm text-slate-400">
+                Implemented comprehensive try-catch blocks, graceful
+                degradation, and user-friendly error messages. Learned when to
+                throw exceptions vs. return nulls.
+              </p>
+            </div>
+
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-gold mb-2">
+                Application Architecture
+              </h4>
+              <p class="text-sm text-slate-400">
+                Practiced separation of concerns, singleton pattern,
+                event-driven architecture, and dependency management for
+                maintainable code structures.
+              </p>
+            </div>
+
+            <div class="glow-card bg-dark-800 rounded-lg p-6">
+              <h4 class="font-bold text-accent-red mb-2">
+                Debugging & Problem-Solving
+              </h4>
+              <p class="text-sm text-slate-400">
+                Developed the ability to foresee potential issues before they
+                occur, trace execution through complex async call stacks, and
+                use logging effectively.
+              </p>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-heart text-accent-pink mr-2"></i> Personal Growth
+          </h3>
+          <div class="bg-dark-800 rounded-lg p-6 border border-dark-700 mb-8">
+            <p class="text-slate-300 mb-4">
+              Beyond technical skills, this project taught me valuable lessons
+              about perseverance and growth mindset. There were moments of
+              frustration when dealing with obscure Terminal.Gui bugs or when
+              Firestore listeners wouldn't behave as expected. But pushing
+              through those challenges and seeing the application come together
+              was incredibly rewarding.
+            </p>
+            <p class="text-slate-300 mb-4">
+              I've become more confident in my ability to tackle unfamiliar
+              technologies and solve complex problems. When I started this
+              project, I had never worked with Terminal.Gui, Firestore, or
+              asynchronous programming at this scale. Now, I not only understand
+              these technologies but can explain them to others and make
+              informed architectural decisions.
+            </p>
+          </div>
+
+          <div
+            class="bg-gradient-to-r from-accent-cyan/10 to-accent-purple/10 border-2 border-accent-cyan/30 rounded-lg p-8 text-center"
+          >
+            <i class="fas fa-flag-checkered text-accent-cyan text-4xl mb-4"></i>
+            <h4 class="text-2xl font-bold text-white mb-3">Thank You</h4>
+            <p class="text-slate-300 mb-4">
+              Thank you for reading this comprehensive documentation. Banter is
+              more than just a chat application - it's a testament to what can
+              be achieved with dedication, curiosity, and a willingness to
+              learn.
+            </p>
+            <p class="text-sm text-slate-400">
+              If you have feedback, suggestions, or would like to contribute to
+              Banter, please reach out via the links in the Appendix.
+            </p>
+          </div>
+        </section>
+
+        <!-- Section 10: Appendix -->
+        <section id="appendix" class="mb-20 scroll-mt-24">
+          <div class="border-l-4 border-accent-cyan pl-6 mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">10. Appendix</h2>
+            <p class="text-slate-400 text-sm">
+              References, Resources, and Links
+            </p>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fab fa-github text-accent-cyan mr-2"></i> Source Code
+          </h3>
+          <div class="bg-dark-950 rounded-lg p-6 border border-dark-700 mb-8">
+            <p class="text-slate-300 mb-4">
+              The complete source code for Banter is available on GitHub:
+            </p>
+            <div
+              class="bg-dark-800 rounded-lg p-4 border border-accent-cyan/30"
+            >
+              <p class="font-mono text-sm text-accent-cyan mb-2">
+                <i class="fas fa-link mr-2"></i>
+                https://github.com/dreeyanzz/Banter
+              </p>
+              <pre
+                class="text-xs"
+              ><code>git clone https://github.com/dreeyanzz/Banter.git</code></pre>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-book text-accent-green mr-2"></i> References
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h4 class="font-bold text-accent-cyan text-sm mb-2">
+                Microsoft .NET
+              </h4>
+              <a
+                href="https://docs.microsoft.com/dotnet"
+                target="_blank"
+                class="text-xs text-slate-400 hover:text-accent-cyan"
+                >docs.microsoft.com/dotnet</a
+              >
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h4 class="font-bold text-accent-cyan text-sm mb-2">
+                Terminal.Gui
+              </h4>
+              <a
+                href="https://github.com/gui-cs/Terminal.Gui"
+                target="_blank"
+                class="text-xs text-slate-400 hover:text-accent-cyan"
+                >github.com/gui-cs/Terminal.Gui</a
+              >
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h4 class="font-bold text-accent-cyan text-sm mb-2">
+                Google Firestore
+              </h4>
+              <a
+                href="https://firebase.google.com/docs/firestore"
+                target="_blank"
+                class="text-xs text-slate-400 hover:text-accent-cyan"
+                >firebase.google.com/docs/firestore</a
+              >
+            </div>
+            <div class="bg-dark-800 rounded-lg p-4 border border-dark-700">
+              <h4 class="font-bold text-accent-cyan text-sm mb-2">LiteDB</h4>
+              <a
+                href="https://www.litedb.org"
+                target="_blank"
+                class="text-xs text-slate-400 hover:text-accent-cyan"
+                >www.litedb.org</a
+              >
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-puzzle-piece text-accent-purple mr-2"></i>
+            Dependencies
+          </h3>
+          <div class="overflow-x-auto mb-8">
+            <table>
+              <thead>
+                <tr>
+                  <th>Package</th>
+                  <th>Version</th>
+                  <th>License</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Terminal.Gui</code></td>
+                  <td>1.19.0</td>
+                  <td>MIT</td>
+                  <td>Terminal user interface framework</td>
+                </tr>
+                <tr>
+                  <td><code>Google.Cloud.Firestore</code></td>
+                  <td>3.11.0</td>
+                  <td>Apache 2.0</td>
+                  <td>Cloud database integration</td>
+                </tr>
+                <tr>
+                  <td><code>LiteDB</code></td>
+                  <td>5.0.21</td>
+                  <td>MIT</td>
+                  <td>Local NoSQL database</td>
+                </tr>
+                <tr>
+                  <td><code>OpenAI</code></td>
+                  <td>2.6.0</td>
+                  <td>MIT</td>
+                  <td>AI integration (future use)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-user text-accent-pink mr-2"></i> Connect with
+            Developer
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <a
+              href="https://github.com/dreeyanzz"
+              target="_blank"
+              class="glow-card bg-dark-800 rounded-lg p-6 text-center hover:border-accent-cyan"
+            >
+              <i class="fab fa-github text-accent-cyan text-4xl mb-3"></i>
+              <h4 class="font-bold text-white mb-1">GitHub</h4>
+              <p class="text-sm text-slate-400">@dreeyanzz</p>
+            </a>
+            <a
+              href="https://facebook.com/dreeyanzz"
+              target="_blank"
+              class="glow-card bg-dark-800 rounded-lg p-6 text-center hover:border-accent-purple"
+            >
+              <i class="fab fa-facebook text-accent-purple text-4xl mb-3"></i>
+              <h4 class="font-bold text-white mb-1">Facebook</h4>
+              <p class="text-sm text-slate-400">/dreeyanzz</p>
+            </a>
+            <div class="glow-card bg-dark-800 rounded-lg p-6 text-center">
+              <i class="fas fa-envelope text-accent-green text-4xl mb-3"></i>
+              <h4 class="font-bold text-white mb-1">Email</h4>
+              <p class="text-sm text-slate-400">Via GitHub</p>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-4">
+            <i class="fas fa-chart-line text-accent-gold mr-2"></i> Project
+            Statistics
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div
+              class="bg-dark-800 rounded-lg p-6 border border-dark-700 text-center"
+            >
+              <p class="text-4xl font-bold text-accent-green mb-2">2,500+</p>
+              <p class="text-sm text-slate-400">Lines of Code</p>
+            </div>
+            <div
+              class="bg-dark-800 rounded-lg p-6 border border-dark-700 text-center"
+            >
+              <p class="text-4xl font-bold text-accent-cyan mb-2">23</p>
+              <p class="text-sm text-slate-400">Classes</p>
+            </div>
+            <div
+              class="bg-dark-800 rounded-lg p-6 border border-dark-700 text-center"
+            >
+              <p class="text-4xl font-bold text-accent-purple mb-2">100+</p>
+              <p class="text-sm text-slate-400">Hours Developed</p>
+            </div>
+            <div
+              class="bg-dark-800 rounded-lg p-6 border border-dark-700 text-center"
+            >
+              <p class="text-4xl font-bold text-accent-gold mb-2">4</p>
+              <p class="text-sm text-slate-400">External APIs</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="border-t border-dark-700 pt-8 pb-4 text-center">
+          <p class="text-slate-400 mb-2">
+            © 2025 Banter Project. All rights reserved.
           </p>
-
-          <!-- Topic 1: Main Loop -->
-          <div id="wiki-main" class="mb-16 scroll-mt-24">
-            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
-              <i class="fas fa-code text-accent-purple mr-3"></i> The
-              Application Loop
-            </h3>
-            <p class="text-slate-400 text-sm mb-4">
-              Terminal.Gui requires a blocking main loop. We initialize our
-              <code>FirestoreManager</code> before this loop starts to ensure
-              credentials are loaded.
-            </p>
-
-            <!-- Code Sample -->
-            <div class="wiki-code rounded-lg">
-              <span class="keyword">public static void</span>
-              <span class="type">Main</span>(<span class="type">string</span>[]
-              args)<br />
-              {<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Application</span
-              >.Init();<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"
-                >// 1. Initialize Cloud Connection</span
-              ><br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">FirestoreManager</span
-              >.Initialize();<br /><br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"
-                >// 2. Start the Blocking UI Loop</span
-              ><br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Application</span
-              >.Run(<span class="keyword">new</span>
-              <span class="type">LogInWindow</span>());<br /><br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Application</span
-              >.Shutdown();<br />
-              }
-            </div>
+          <p class="text-sm text-slate-500 font-mono">
+            Built with ❤️ using C#, Terminal.Gui, and Firebase Firestore
+          </p>
+          <div class="mt-4 flex justify-center gap-4 text-sm">
+            <a
+              href="https://github.com/dreeyanzz/Banter"
+              target="_blank"
+              class="text-accent-cyan hover:underline"
+              >GitHub</a
+            >
+            <span class="text-slate-600">|</span>
+            <a
+              href="https://facebook.com/dreeyanzz"
+              target="_blank"
+              class="text-accent-cyan hover:underline"
+              >Facebook</a
+            >
+            <span class="text-slate-600">|</span>
+            <a href="#overview" class="text-accent-cyan hover:underline"
+              >Back to Top</a
+            >
           </div>
-
-          <!-- Topic 2: Async Firestore -->
-          <div id="wiki-firebase" class="mb-16 scroll-mt-24">
-            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
-              <i class="fas fa-cloud text-accent-cyan mr-3"></i> Async Data
-              Fetching
-            </h3>
-            <p class="text-slate-400 text-sm mb-4">
-              We cannot block the UI thread while waiting for Google Cloud. We
-              use <code>async/await</code> for login and fetching messages.
-            </p>
-
-            <div class="wiki-code rounded-lg">
-              <span class="keyword">public static async Task</span>&lt;<span
-                class="type"
-                >string</span
-              >?&gt; <span class="type">GetUserId</span>(<span class="type"
-                >string</span
-              >
-              username)<br />
-              {<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type"
-                >CollectionReference</span
-              >
-              usersRef = db.Collection(<span class="string">"Users"</span
-              >);<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Query</span> query =
-              usersRef.WhereEqualTo(<span class="string">"username"</span>,
-              username);<br />
-              <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"
-                >// Await here prevents UI freeze</span
-              ><br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">QuerySnapshot</span>
-              snapshot =
-              <span class="keyword">await</span> query.GetSnapshotAsync();<br />
-              <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>
-              (snapshot.Count > 0)
-              <span class="keyword">return</span> snapshot[0].Id;<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return null</span
-              >;<br />
-              }
-            </div>
-          </div>
-
-          <!-- Topic 3: Threading -->
-          <div id="wiki-threading" class="mb-16 scroll-mt-24">
-            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
-              <i class="fas fa-microchip text-accent-red mr-3"></i> UI Thread
-              Marshalling
-            </h3>
-            <p class="text-slate-400 text-sm mb-4">
-              <strong>Crucial:</strong> Firestore events fire on a background
-              thread. You <em>cannot</em> update the UI directly from there. You
-              must marshal execution back to the Main Loop.
-            </p>
-
-            <div class="wiki-code rounded-lg border-accent-red">
-              <span class="keyword">private void</span>
-              <span class="type">OnMessageReceived</span>(<span class="type"
-                >QuerySnapshot</span
-              >
-              snap)<br />
-              {<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">foreach</span>
-              (<span class="keyword">var</span> change
-              <span class="keyword">in</span> snap.Changes)<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;{<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type"
-                >string</span
-              >
-              text = change.Document.GetValue&lt;<span class="type">string</span
-              >&gt;(<span class="string">"text"</span>);<br />
-              <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
-                class="comment"
-                >// CRITICAL: Marshal to UI Thread</span
-              ><br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type"
-                >Application</span
-              >.MainLoop.Invoke(() => {<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
-                class="keyword"
-                >this</span
-              >.chatView.AddText(text);<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
-                class="keyword"
-                >this</span
-              >.chatView.ScrollToBottom();<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;}<br />
-              }
-            </div>
-          </div>
-        </div>
+        </footer>
       </main>
     </div>
 
     <script>
-      // View Switching Logic
-      function switchView(viewName) {
-        // Transition Opacity
-        document.querySelectorAll(".view-section").forEach((el) => {
-          el.classList.remove("active-view");
-          setTimeout(() => {
-            if (!el.classList.contains("active-view"))
-              el.style.display = "none";
-          }, 400);
+      // Smooth scrolling
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+
+      // Active navigation highlighting
+      window.addEventListener("scroll", () => {
+        const sections = document.querySelectorAll("section[id]");
+        const navLinks = document.querySelectorAll(".nav-link");
+
+        let current = "";
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+          if (pageYOffset >= sectionTop - 200) {
+            current = section.getAttribute("id");
+          }
         });
 
-        // Toggle Sidebar Buttons
-        const btnOverview = document.getElementById("btn-overview");
-        const btnWiki = document.getElementById("btn-wiki");
-        const navOverview = document.getElementById("nav-overview");
-        const navWiki = document.getElementById("nav-wiki");
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href") === `#${current}`) {
+            link.classList.add("active");
+          }
+        });
+      });
 
-        if (viewName === "overview") {
-          btnOverview.className =
-            "flex-1 py-2 text-xs font-bold rounded transition-all bg-dark-800 text-white shadow";
-          btnWiki.className =
-            "flex-1 py-2 text-xs font-bold rounded transition-all text-slate-500 hover:text-white";
-          navOverview.classList.remove("hidden");
-          navWiki.classList.add("hidden");
-        } else {
-          btnWiki.className =
-            "flex-1 py-2 text-xs font-bold rounded transition-all bg-dark-800 text-white shadow";
-          btnOverview.className =
-            "flex-1 py-2 text-xs font-bold rounded transition-all text-slate-500 hover:text-white";
-          navWiki.classList.remove("hidden");
-          navOverview.classList.add("hidden");
-        }
-
-        // Display new view
-        const target = document.getElementById("view-" + viewName);
-        target.style.display = "block";
-        setTimeout(() => {
-          target.classList.add("active-view");
-        }, 10);
-
-        window.scrollTo(0, 0);
-      }
-
-      function scrollToTopic(id) {
-        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
-      }
-
-      // Mobile Menu
+      // Mobile menu toggle
       const menuToggle = document.getElementById("menu-toggle");
       const sidebar = document.getElementById("sidebar");
       const overlay = document.createElement("div");
       overlay.className =
-        "fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity duration-300";
+        "fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden lg:hidden";
       document.body.appendChild(overlay);
 
       function toggleMenu() {
@@ -1198,30 +2462,14 @@
         if (isClosed) {
           sidebar.classList.remove("-translate-x-full");
           overlay.classList.remove("hidden");
-          setTimeout(() => overlay.classList.add("opacity-100"), 10);
         } else {
           sidebar.classList.add("-translate-x-full");
-          overlay.classList.remove("opacity-100");
-          setTimeout(() => {
-            overlay.classList.add("hidden");
-          }, 300);
+          overlay.classList.add("hidden");
         }
       }
 
       menuToggle.addEventListener("click", toggleMenu);
       overlay.addEventListener("click", toggleMenu);
-
-      // Initial Fade In
-      document.addEventListener("DOMContentLoaded", () => {
-        const fadeElements = document.querySelectorAll(".animate-fade-in");
-        fadeElements.forEach((el) => {
-          el.style.opacity = 0;
-          setTimeout(() => {
-            el.style.transition = "opacity 1s ease";
-            el.style.opacity = 1;
-          }, 100);
-        });
-      });
     </script>
   </body>
 </html>

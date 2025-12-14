@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banter | TUI Chat Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              mono: ['"JetBrains Mono"', "monospace"],
+              sans: ['"Inter"', "sans-serif"],
+            },
+            colors: {
+              dark: {
+                950: "#020617", // Deepest background
+                900: "#0f172a", // Main BG
+                800: "#1e293b", // Card BG
+                700: "#334155", // Borders
+              },
+              accent: {
+                cyan: "#22d3ee",
+                purple: "#c084fc",
+                green: "#4ade80",
+                pink: "#f472b6",
+                gold: "#fbbf24",
+                red: "#f87171",
+              },
+            },
+            animation: {
+              "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+      }
+
+      body {
+        background-color: #0f172a;
+        color: #e2e8f0;
+      }
+
+      /* Glow effects */
+      .glow-card {
+        transition: all 0.3s ease;
+        border: 1px solid #334155;
+        position: relative;
+        overflow: hidden;
+      }
+      .glow-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(34, 211, 238, 0.5),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .glow-card:hover {
+        transform: translateY(-2px);
+        border-color: #22d3ee;
+        box-shadow: 0 0 20px rgba(34, 211, 238, 0.1);
+      }
+      .glow-card:hover::before {
+        opacity: 1;
+      }
+
+      /* AI Card specific style - Dashed to indicate "Proposed" */
+      .ai-card {
+        border-style: dashed;
+        opacity: 0.8;
+      }
+      .ai-card:hover {
+        border-style: solid;
+        border-color: #fbbf24;
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
+        opacity: 1;
+      }
+
+      /* Wiki Code Block Styles */
+      .wiki-code {
+        background-color: #0f172a;
+        border-left: 3px solid #22d3ee;
+        padding: 1rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+
+        /* NEW LINES TO ADD: */
+        max-width: 85%; /* Forces it to never be wider than the screen */
+        overflow-x: hidden; /* Cuts off anything that sticks out */
+      }
+      .keyword {
+        color: #c084fc;
+      } /* Purple */
+      .type {
+        color: #22d3ee;
+      } /* Cyan */
+      .string {
+        color: #4ade80;
+      } /* Green */
+      .comment {
+        color: #64748b;
+        font-style: italic;
+      } /* Slate */
+
+      /* View Transitions */
+      .view-section {
+        display: none;
+        opacity: 0;
+        transition: opacity 0.4s ease-in-out;
+      }
+      .view-section.active-view {
+        display: block;
+        opacity: 1;
+      }
+
+      /* Code block styling */
+      pre {
+        background-color: #020617;
+        border: 1px solid #1e293b;
+        padding: 1.25rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+      }
+
+      .gradient-text {
+        background: linear-gradient(to right, #22d3ee, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .nav-link.active {
+        color: #22d3ee;
+        border-left: 2px solid #22d3ee;
+        background: linear-gradient(
+          90deg,
+          rgba(34, 211, 238, 0.1) 0%,
+          transparent 100%
+        );
+      }
+
+      /* Typing cursor effect for title */
+      .cursor-blink {
+        animation: blink 1s step-end infinite;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="font-sans antialiased selection:bg-cyan-500 selection:text-white overflow-x-hidden"
+  >
+    <!-- Navbar (Mobile) / Sidebar (Desktop) container -->
+    <div class="flex min-h-screen flex-col lg:flex-row">
+      <!-- Sidebar Navigation -->
+      <aside
+        class="w-64 lg:w-72 fixed inset-y-0 left-0 z-50 bg-dark-900 border-r border-dark-700 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out overflow-y-auto"
+        id="sidebar"
+      >
+        <div class="p-6 sticky top-0 bg-dark-900 z-10 border-b border-dark-700">
+          <div class="flex items-center gap-3 mb-1">
+            <i class="fas fa-terminal text-accent-cyan text-2xl"></i>
+            <h1 class="font-mono text-xl font-bold text-white tracking-tighter">
+              BANTER<span class="text-accent-cyan">.cs</span>
+            </h1>
+          </div>
+          <p class="text-xs text-slate-500 font-mono mt-1">> v1.0.0 stable</p>
+        </div>
+
+        <!-- View Toggle -->
+        <div class="px-4 py-6">
+          <div class="flex bg-dark-950 p-1 rounded-lg border border-dark-700">
+            <button
+              onclick="switchView('overview')"
+              id="btn-overview"
+              class="flex-1 py-2 text-xs font-bold rounded transition-all bg-dark-800 text-white shadow"
+            >
+              DOCS
+            </button>
+            <button
+              onclick="switchView('wiki')"
+              id="btn-wiki"
+              class="flex-1 py-2 text-xs font-bold rounded transition-all text-slate-500 hover:text-white"
+            >
+              WIKI / CODE
+            </button>
+          </div>
+        </div>
+
+        <!-- Navigation Links (Dynamic) -->
+        <nav id="nav-overview" class="px-4 space-y-1 font-mono text-sm flex-1">
+          <p
+            class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3"
+          >
+            Table of Contents
+          </p>
+          <a
+            href="#overview"
+            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">01</span>
+            Project Overview
+          </a>
+          <a
+            href="#requirements"
+            class="nav-link flex items-center px-3 py-2.5 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">02</span>
+            Requirements
+          </a>
+          <a
+            href="#file-handling"
+            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">03</span>
+            Data & File Handling
+          </a>
+          <a
+            href="#code-structure"
+            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">04</span>
+            Code Structure
+          </a>
+          <a
+            href="#ui"
+            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">05</span>
+            User Interface
+          </a>
+          <a
+            href="#challenges"
+            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">06</span>
+            Challenges & Solutions
+          </a>
+          <a
+            href="#testing"
+            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">07</span>
+            Testing
+          </a>
+          <a
+            href="#future"
+            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">08</span>
+            Future Enhancements
+          </a>
+          <a
+            href="#conclusion"
+            class="nav-link flex items-center px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <span class="w-6 mr-2 text-xs text-slate-600 opacity-50">09</span>
+            Conclusion
+          </a>
+        </nav>
+
+        <nav
+          id="nav-wiki"
+          class="px-4 space-y-1 font-mono text-sm flex-1 hidden"
+        >
+          <p
+            class="px-3 text-xs font-semibold text-accent-cyan uppercase tracking-wider mb-3"
+          >
+            Code Explorer
+          </p>
+          <button
+            onclick="scrollToTopic('wiki-main')"
+            class="w-full text-left px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <i class="fas fa-code mr-2 text-xs"></i> Main Loop
+          </button>
+          <button
+            onclick="scrollToTopic('wiki-firebase')"
+            class="w-full text-left px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <i class="fas fa-cloud mr-2 text-xs"></i> Firestore Logic
+          </button>
+          <button
+            onclick="scrollToTopic('wiki-threading')"
+            class="w-full text-left px-3 py-2 text-slate-400 hover:text-white rounded transition-colors"
+          >
+            <i class="fas fa-microchip mr-2 text-xs"></i> UI Threading
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Mobile Header -->
+      <header
+        class="lg:hidden bg-dark-900 border-b border-dark-700 p-4 flex items-center justify-between sticky top-0 z-40"
+      >
+        <div class="flex items-center gap-2">
+          <i class="fas fa-terminal text-accent-cyan"></i>
+          <span class="font-mono font-bold text-white">BANTER</span>
+        </div>
+        <button id="menu-toggle" class="text-slate-400 hover:text-white">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </header>
+
+      <!-- MAIN CONTENT -->
+      <main
+        class="flex-1 lg:ml-72 p-6 lg:p-12 max-w-6xl mx-auto w-full min-h-screen flex flex-col"
+      >
+        <!-- ============================================================== -->
+        <!-- VIEW 1: STANDARD DOCUMENTATION -->
+        <!-- ============================================================== -->
+        <div id="view-overview" class="view-section active-view flex-1">
+          <!-- Hero -->
+          <div class="mb-16 mt-4 animate-fade-in">
+            <div
+              class="inline-flex items-center px-3 py-1 rounded-full border border-accent-green/30 bg-accent-green/10 text-accent-green text-xs font-mono mb-4"
+            >
+              <span
+                class="w-2 h-2 rounded-full bg-accent-green mr-2 animate-pulse"
+              ></span>
+              System Online
+            </div>
+            <h1
+              class="text-4xl md:text-6xl font-bold font-mono mb-4 text-white tracking-tight"
+            >
+              <span class="gradient-text">Banter Documentation</span
+              ><span class="cursor-blink text-accent-cyan">_</span>
+            </h1>
+            <p class="text-slate-400 text-lg max-w-2xl leading-relaxed">
+              C# Console Application Project Documentation. A modern,
+              terminal-based chat application merging CLI nostalgia with
+              real-time cloud power.
+            </p>
+          </div>
+
+          <!-- 1. Project Overview -->
+          <section id="overview" class="mb-24 scroll-mt-24">
+            <h2
+              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
+            >
+              <span class="text-accent-cyan mr-3">01.</span> Project Overview
+            </h2>
+            <div class="grid gap-6">
+              <div class="glow-card bg-dark-800 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold text-white mb-3 font-mono">
+                  Purpose
+                </h3>
+                <p class="text-slate-400 leading-relaxed">
+                  The purpose of this project is to demonstrate a fully
+                  functional, real-time chat application running entirely within
+                  the console environment, utilizing advanced C# asynchronous
+                  programming.
+                </p>
+              </div>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="glow-card bg-dark-800 p-6 rounded-lg">
+                  <h3
+                    class="text-lg font-semibold text-accent-green mb-3 font-mono"
+                  >
+                    <i class="fas fa-code-branch mr-2"></i>Features
+                  </h3>
+                  <ul class="space-y-2 text-slate-400 text-sm">
+                    <li class="flex items-start">
+                      <span class="text-accent-green mr-2">>></span> Real-time
+                      Messaging (Firestore)
+                    </li>
+                    <li class="flex items-start">
+                      <span class="text-accent-green mr-2">>></span> User
+                      Authentication & Profanity Filter
+                    </li>
+                    <li class="flex items-start">
+                      <span class="text-accent-green mr-2">>></span> Chatroom
+                      Management (Create, Join, Pin)
+                    </li>
+                    <li class="flex items-start">
+                      <span class="text-accent-green mr-2">>></span> Local
+                      Caching (LiteDB)
+                    </li>
+                  </ul>
+                </div>
+                <div class="glow-card bg-dark-800 p-6 rounded-lg">
+                  <h3
+                    class="text-lg font-semibold text-accent-purple mb-3 font-mono"
+                  >
+                    <i class="fas fa-users mr-2"></i>Target Audience
+                  </h3>
+                  <p class="text-slate-400 text-sm leading-relaxed">
+                    Developers, CLI enthusiasts, and users who prefer efficient,
+                    text-based interfaces over heavy graphical GUIs.
+                  </p>
+                </div>
+              </div>
+              <div
+                class="border border-dark-700 rounded-lg p-5 bg-black/40 font-mono text-sm relative overflow-hidden group"
+              >
+                <div
+                  class="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <i class="fab fa-js text-slate-600"></i>
+                </div>
+                <span class="text-slate-500">// Technology Stack</span><br />
+                <span class="text-accent-cyan">const</span>
+                <span class="text-accent-pink">BanterStack</span> = {<br />
+                &nbsp;&nbsp;language:
+                <span class="text-accent-green">"C# (.NET 8.0/10.0)"</span
+                >,<br />
+                &nbsp;&nbsp;ui_framework:
+                <span class="text-accent-green">"Terminal.Gui"</span>,<br />
+                &nbsp;&nbsp;cloud_db:
+                <span class="text-accent-green">"Google Cloud Firestore"</span
+                >,<br />
+                &nbsp;&nbsp;local_cache:
+                <span class="text-accent-green">"LiteDB"</span>,<br />
+                &nbsp;&nbsp;format:
+                <span class="text-accent-green">"Console Application"</span
+                ><br />
+                };
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. Requirements -->
+          <section id="requirements" class="mb-24 scroll-mt-24">
+            <h2
+              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
+            >
+              <span class="text-accent-cyan mr-3">02.</span> Requirements
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+              <div class="glow-card bg-dark-800 p-6 rounded-lg">
+                <i
+                  class="fas fa-laptop-code text-accent-purple text-3xl mb-4"
+                ></i>
+                <h3 class="text-lg font-bold text-white mb-2">Prerequisites</h3>
+                <ul class="text-slate-400 text-sm space-y-1">
+                  <li>- .NET SDK 10.0 (or 8.0+)</li>
+                  <li>- Google Cloud Project</li>
+                  <li>- Visual Studio / VS Code</li>
+                  <li>- Git Version Control</li>
+                </ul>
+              </div>
+
+              <div class="glow-card bg-dark-800 p-6 rounded-lg">
+                <i class="fas fa-server text-accent-cyan text-3xl mb-4"></i>
+                <h3 class="text-lg font-bold text-white mb-2">
+                  System Requirements
+                </h3>
+                <ul class="text-slate-400 text-sm space-y-1">
+                  <li>- Windows 10/11 / Linux / MacOS</li>
+                  <li>- 4GB RAM Minimum</li>
+                  <li>- Stable Internet Connection</li>
+                  <li>- Terminal with Color Support</li>
+                </ul>
+              </div>
+
+              <div class="glow-card bg-dark-800 p-6 rounded-lg">
+                <i class="fas fa-download text-accent-green text-3xl mb-4"></i>
+                <h3 class="text-lg font-bold text-white mb-2">
+                  Installation Steps
+                </h3>
+                <p class="text-slate-400 text-sm font-mono">
+                  1. git clone [repo]<br />
+                  2. dotnet restore<br />
+                  3. dotnet build<br />
+                  4. dotnet run
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 3. File Handling -->
+          <section id="file-handling" class="mb-24 scroll-mt-24">
+            <h2
+              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
+            >
+              <span class="text-accent-cyan mr-3">03.</span> Data & File
+              Handling
+            </h2>
+
+            <div
+              class="bg-dark-800 rounded-lg border border-dark-700 overflow-hidden mb-6 shadow-lg"
+            >
+              <div
+                class="bg-black/40 px-4 py-2 border-b border-dark-700 flex items-center gap-2"
+              >
+                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                <span class="ml-2 font-mono text-xs text-slate-500"
+                  >StorageArchitecture</span
+                >
+              </div>
+              <div class="p-6">
+                <h3 class="text-lg font-bold text-white mb-2 font-mono">
+                  Hybrid Storage Approach
+                </h3>
+                <p class="text-slate-400 mb-6 text-sm leading-relaxed">
+                  Banter primarily uses .json files for Google Cloud credentials
+                  and .db (LiteDB) for local caching of user data. It also reads
+                  .txt files for ASCII art assets.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div
+                    class="p-4 bg-dark-900 rounded border border-dark-700 hover:border-accent-cyan transition-colors"
+                  >
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-accent-cyan font-bold"
+                        >Firestore (Cloud)</span
+                      >
+                      <i class="fas fa-cloud text-slate-600"></i>
+                    </div>
+                    <p class="text-slate-500 text-xs">
+                      Stores Users, Chatrooms, and Messages. Handles real-time
+                      synchronization using event listeners.
+                    </p>
+                  </div>
+                  <div
+                    class="p-4 bg-dark-900 rounded border border-dark-700 hover:border-accent-purple transition-colors"
+                  >
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-accent-purple font-bold"
+                        >LiteDB (Local)</span
+                      >
+                      <i class="fas fa-database text-slate-600"></i>
+                    </div>
+                    <p class="text-slate-500 text-xs">
+                      NoSQL file-based database used to cache user profiles,
+                      reducing API calls and improving speed.
+                    </p>
+                  </div>
+                  <div
+                    class="p-4 bg-dark-900 rounded border border-dark-700 hover:border-accent-green transition-colors"
+                  >
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-accent-green font-bold"
+                        >Assets (IO)</span
+                      >
+                      <i class="fas fa-file-alt text-slate-600"></i>
+                    </div>
+                    <p class="text-slate-500 text-xs">
+                      <code>StreamReader</code> is used to load
+                      <code>BanterLogo.txt</code> for the ASCII art branding.
+                      Credentials loaded via Embedded Resources.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4. Code Structure -->
+          <section id="code-structure" class="mb-24 scroll-mt-24">
+            <h2
+              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
+            >
+              <span class="text-accent-cyan mr-3">04.</span> Code Structure
+            </h2>
+            <div class="grid lg:grid-cols-2 gap-8">
+              <div class="sticky top-24">
+                <h3
+                  class="font-mono text-accent-purple mb-4 text-sm uppercase tracking-wider"
+                >
+                  Source Tree
+                </h3>
+                <ul class="space-y-3 font-mono text-sm text-slate-400">
+                  <li
+                    class="pl-4 border-l border-dark-700 hover:border-accent-cyan hover:text-white transition-colors cursor-pointer group"
+                  >
+                    <span class="group-hover:text-accent-cyan">Program.cs</span>
+                    <span class="block text-[10px] text-slate-600 mt-1"
+                      >Application Entry Point</span
+                    >
+                  </li>
+                  <li
+                    class="pl-4 border-l border-dark-700 hover:border-accent-cyan hover:text-white transition-colors cursor-pointer group"
+                  >
+                    <span class="group-hover:text-accent-cyan">Windows/</span>
+                    <span class="block text-[10px] text-slate-600 mt-1"
+                      >UI Screens (LogIn, Chat)</span
+                    >
+                  </li>
+                  <li
+                    class="pl-4 border-l border-dark-700 hover:border-accent-cyan hover:text-white transition-colors cursor-pointer group"
+                  >
+                    <span class="group-hover:text-accent-cyan">Utilities/</span>
+                    <span class="block text-[10px] text-slate-600 mt-1"
+                      >FirebaseHelper, ProfanityChecker</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h3
+                  class="font-mono text-accent-green mb-4 text-sm uppercase tracking-wider"
+                >
+                  Modularity & Reusability
+                </h3>
+                <p class="text-slate-400 text-sm mb-4">
+                  The code strictly adheres to Separation of Concerns. The
+                  <strong>UI Layer</strong> (Terminal.Gui windows) is completely
+                  decoupled from the
+                  <strong>Data Layer</strong> (FirebaseHelper). This allows
+                  methods like <code>GetUserId</code> to be reused across
+                  different windows without code duplication.
+                </p>
+                <button
+                  onclick="switchView('wiki')"
+                  class="text-accent-cyan hover:underline text-sm self-start"
+                >
+                  <i class="fas fa-arrow-right mr-1"></i> View Code Walkthrough
+                  in Wiki
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- 5. User Interface -->
+          <section id="ui" class="mb-24 scroll-mt-24">
+            <h2
+              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
+            >
+              <span class="text-accent-cyan mr-3">05.</span> User Interface
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 class="text-lg font-bold text-white mb-3">Terminal.Gui</h3>
+                <p class="text-slate-400 mb-4 text-sm leading-relaxed">
+                  Banter leverages the <code>Terminal.Gui</code> library to
+                  create a rich TUI. Unlike standard console apps, it supports
+                  <strong>mouse interaction</strong>, overlapping windows,
+                  menus, and dialog boxes.
+                </p>
+                <div
+                  class="glow-card bg-dark-800 p-4 rounded border border-dark-700"
+                >
+                  <h4 class="font-mono text-xs text-slate-500 mb-2 uppercase">
+                    Console Preview
+                  </h4>
+                  <div class="font-mono text-xs">
+                    <div
+                      class="text-white flex justify-between border-b border-slate-600 pb-1 mb-2"
+                    >
+                      <span>[ General Chat ]</span>
+                      <span>[X]</span>
+                    </div>
+                    <div class="text-slate-400">dreeyanzz: Hello world!</div>
+                    <div class="text-accent-cyan">user2: Is this terminal?</div>
+                    <div
+                      class="mt-2 border-t border-slate-600 pt-1 text-slate-500"
+                    >
+                      Type a message..._
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white mb-3">UX Philosophy</h3>
+                <ul class="space-y-3 text-slate-400 text-sm">
+                  <li class="flex items-center gap-2">
+                    <i class="fas fa-check text-accent-green"></i>
+                    <span
+                      ><strong>Cyberpunk Aesthetic:</strong> High contrast dark
+                      mode by default.</span
+                    >
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i class="fas fa-check text-accent-green"></i>
+                    <span
+                      ><strong>Navigation:</strong> Full support for Tab
+                      navigation and Keyboard shortcuts.</span
+                    >
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <i class="fas fa-check text-accent-green"></i>
+                    <span
+                      ><strong>Feedback:</strong> Pop-up dialogs for errors and
+                      notifications.</span
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- 6. Challenges -->
+          <section id="challenges" class="mb-24 scroll-mt-24">
+            <h2
+              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
+            >
+              <span class="text-accent-cyan mr-3">06.</span> Challenges &
+              Solutions
+            </h2>
+
+            <div class="space-y-4">
+              <!-- Challenge 1 -->
+              <div
+                class="glow-card bg-dark-800 p-6 rounded-lg border-l-4 border-l-red-500"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="font-bold text-white">Challenge: UI Threading</h3>
+                  <span
+                    class="text-xs font-mono bg-red-500/10 text-red-400 px-2 py-1 rounded"
+                    >Critical</span
+                  >
+                </div>
+                <p class="text-slate-400 text-sm mb-4">
+                  Firestore event listeners run on background threads. Updating
+                  the TUI directly from these threads caused race conditions and
+                  visual artifacts (crashing the UI loop).
+                </p>
+                <div
+                  class="flex items-start gap-2 text-sm bg-dark-900 p-2 rounded"
+                >
+                  <i
+                    class="fas fa-lightbulb text-accent-green shrink-0 mt-0.5"
+                  ></i>
+
+                  <div class="min-w-0 flex-1 break-words">
+                    <span class="text-white font-semibold">Solution:</span>
+                    <span class="text-slate-400">
+                      Used <code>Application.MainLoop.Invoke()</code> to marshal
+                      updates back to the main UI thread.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Challenge 2 -->
+              <div
+                class="glow-card bg-dark-800 p-6 rounded-lg border-l-4 border-l-yellow-500"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="font-bold text-white">
+                    Challenge: Firestore Quotas
+                  </h3>
+                  <span
+                    class="text-xs font-mono bg-yellow-500/10 text-yellow-400 px-2 py-1 rounded"
+                    >Performance</span
+                  >
+                </div>
+                <p class="text-slate-400 text-sm mb-4">
+                  Fetching user details for every message in a chatroom rapidly
+                  consumed Firestore read quotas.
+                </p>
+                <div
+                  class="flex items-center gap-2 text-sm bg-dark-900 p-2 rounded"
+                >
+                  <i class="fas fa-lightbulb text-accent-green"></i>
+                  <span class="text-white font-semibold">Solution:</span>
+                  <span class="text-slate-400"
+                    >Implemented <strong>LiteDB</strong> to cache user profiles
+                    locally.</span
+                  >
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 7. Testing -->
+          <section id="testing" class="mb-24 scroll-mt-24">
+            <h2
+              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
+            >
+              <span class="text-accent-cyan mr-3">07.</span> Testing
+            </h2>
+
+            <div class="overflow-x-auto border border-dark-700 rounded-lg">
+              <table class="w-full text-left text-sm">
+                <thead
+                  class="bg-dark-800 text-slate-400 font-mono uppercase text-xs"
+                >
+                  <tr>
+                    <th class="p-4">Test Case</th>
+                    <th class="p-4">Input</th>
+                    <th class="p-4">Expected</th>
+                    <th class="p-4">Result</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-dark-700 text-slate-300">
+                  <tr class="hover:bg-dark-800/50 transition-colors">
+                    <td class="p-4">User Login</td>
+                    <td class="p-4 font-mono text-xs text-slate-500">
+                      Valid Credentials
+                    </td>
+                    <td class="p-4">Transition to Chat Window</td>
+                    <td class="p-4 text-accent-green font-bold">
+                      <i class="fas fa-check-circle mr-1"></i> PASS
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-dark-800/50 transition-colors">
+                    <td class="p-4">Profanity Filter</td>
+                    <td class="p-4 font-mono text-xs text-slate-500">
+                      "badword"
+                    </td>
+                    <td class="p-4">Replaces with "****"</td>
+                    <td class="p-4 text-accent-green font-bold">
+                      <i class="fas fa-check-circle mr-1"></i> PASS
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-dark-800/50 transition-colors">
+                    <td class="p-4">Offline Mode</td>
+                    <td class="p-4 font-mono text-xs text-slate-500">
+                      Disconnect Network
+                    </td>
+                    <td class="p-4">Show "Reconnecting..." Dialog</td>
+                    <td class="p-4 text-accent-green font-bold">
+                      <i class="fas fa-check-circle mr-1"></i> PASS
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="text-slate-400 text-sm">
+              <strong>Limitations:</strong> No end-to-end encryption in current
+              build. Requires internet.
+            </p>
+          </section>
+
+          <!-- 8. Future Enhancements -->
+          <section id="future" class="mb-24 scroll-mt-24">
+            <h2
+              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
+            >
+              <span class="text-accent-cyan mr-3">08.</span> Future Enhancements
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h3 class="text-lg font-semibold text-white mb-2">
+                  Planned Features (AI Integration)
+                  <span
+                    class="text-[10px] bg-accent-gold/20 text-accent-gold px-2 rounded"
+                    >PROPOSED</span
+                  >
+                </h3>
+                <ul class="space-y-2 text-slate-400 text-sm">
+                  <li>
+                    - <strong>Spark Summary:</strong> Summarize chat history via
+                    Gemini API.
+                  </li>
+                  <li>
+                    - <strong>Auto-Translate:</strong> Real-time message
+                    translation.
+                  </li>
+                  <li>- <strong>BanterBot:</strong> AI NPC for moderation.</li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-white mb-2">
+                  Performance Improvements
+                </h3>
+                <p class="text-slate-400 text-sm">
+                  Future versions could optimize the search algorithm (using
+                  Binary Search for locally cached users) and implement lazy
+                  loading for message history to reduce memory usage.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 9. Conclusion -->
+          <section id="conclusion" class="mb-12 scroll-mt-24">
+            <h2
+              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
+            >
+              <span class="text-accent-cyan mr-3">09.</span> Conclusion
+            </h2>
+            <h3 class="text-lg font-bold text-white mb-2">Reflection</h3>
+            <p class="text-slate-400 text-sm mb-4 leading-relaxed">
+              This project was instrumental in bridging the gap between
+              theoretical C# knowledge and practical application development.
+              Dealing with asynchronous streams and event-driven architectures
+              provided a steep but rewarding learning curve.
+            </p>
+
+            <h3 class="text-lg font-bold text-white mb-2">Takeaways</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              Key skills developed include: managing file I/O safely,
+              structuring scalable applications, and handling concurrency in a
+              UI environment.
+            </p>
+          </section>
+
+          <!-- 10. Appendix -->
+          <section id="appendix" class="mb-24">
+            <h2
+              class="text-2xl font-mono font-bold text-white mb-6 flex items-center"
+            >
+              <span class="text-slate-500 mr-3">--</span> Appendix
+            </h2>
+            <p class="text-slate-400 text-sm mb-2">
+              <strong>References:</strong> Microsoft Docs, Google Cloud
+              Documentation.
+            </p>
+            <p class="text-slate-400 text-sm">
+              <strong>Source Code:</strong> See link below.
+            </p>
+          </section>
+
+          <!-- Main Footer with Socials -->
+          <div class="mt-auto py-12 border-t border-dark-700">
+            <div class="flex flex-col items-center justify-center gap-6">
+              <h3 class="text-xl font-mono font-bold text-white">
+                Connect with the Developer
+              </h3>
+              <div
+                class="flex flex-col md:flex-row justify-center gap-4 md:gap-6 w-full"
+              >
+                <a
+                  href="https://facebook.com/dreeyanzz"
+                  target="_blank"
+                  class="flex items-center justify-center gap-3 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-600/30 px-6 py-3 rounded-lg transition-all group w-full md:w-auto"
+                >
+                  <i
+                    class="fab fa-facebook text-blue-500 text-2xl group-hover:scale-110 transition-transform"
+                  ></i>
+                  <span class="text-blue-400 font-mono">/dreeyanzz</span>
+                </a>
+
+                <a
+                  href="https://github.com/dreeyanzz/Banter"
+                  target="_blank"
+                  class="flex items-center justify-center gap-3 bg-dark-800 hover:bg-dark-700 border border-dark-700 px-6 py-3 rounded-lg transition-all group w-full md:w-auto"
+                >
+                  <i
+                    class="fab fa-github text-white text-2xl group-hover:scale-110 transition-transform"
+                  ></i>
+                  <span class="text-slate-300 font-mono">dreeyanzz/Banter</span>
+                </a>
+              </div>
+              <p class="text-slate-600 text-xs mt-4">
+                &copy; 2025 Banter Project. All rights reserved.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- VIEW 2: WIKI / CODE EXPLORER (Interactive Deep Dive) -->
+        <!-- ============================================================== -->
+        <div id="view-wiki" class="view-section flex-1">
+          <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-mono font-bold text-white">
+              <span class="text-accent-cyan">dev</span>_wiki
+            </h1>
+            <div class="text-xs text-slate-500 font-mono">
+              interactive_mode: <span class="text-green-500">ACTIVE</span>
+            </div>
+          </div>
+
+          <p class="text-slate-400 mb-8 text-sm">
+            Welcome to the deep dive. Here you can see how Banter handles the
+            complexities of a TUI application, specifically threading and async
+            data fetching.
+          </p>
+
+          <!-- Topic 1: Main Loop -->
+          <div id="wiki-main" class="mb-16 scroll-mt-24">
+            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+              <i class="fas fa-code text-accent-purple mr-3"></i> The
+              Application Loop
+            </h3>
+            <p class="text-slate-400 text-sm mb-4">
+              Terminal.Gui requires a blocking main loop. We initialize our
+              <code>FirestoreManager</code> before this loop starts to ensure
+              credentials are loaded.
+            </p>
+
+            <!-- Code Sample -->
+            <div class="wiki-code rounded-lg">
+              <span class="keyword">public static void</span>
+              <span class="type">Main</span>(<span class="type">string</span>[]
+              args)<br />
+              {<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Application</span
+              >.Init();<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"
+                >// 1. Initialize Cloud Connection</span
+              ><br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">FirestoreManager</span
+              >.Initialize();<br /><br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"
+                >// 2. Start the Blocking UI Loop</span
+              ><br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Application</span
+              >.Run(<span class="keyword">new</span>
+              <span class="type">LogInWindow</span>());<br /><br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Application</span
+              >.Shutdown();<br />
+              }
+            </div>
+          </div>
+
+          <!-- Topic 2: Async Firestore -->
+          <div id="wiki-firebase" class="mb-16 scroll-mt-24">
+            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+              <i class="fas fa-cloud text-accent-cyan mr-3"></i> Async Data
+              Fetching
+            </h3>
+            <p class="text-slate-400 text-sm mb-4">
+              We cannot block the UI thread while waiting for Google Cloud. We
+              use <code>async/await</code> for login and fetching messages.
+            </p>
+
+            <div class="wiki-code rounded-lg">
+              <span class="keyword">public static async Task</span>&lt;<span
+                class="type"
+                >string</span
+              >?&gt; <span class="type">GetUserId</span>(<span class="type"
+                >string</span
+              >
+              username)<br />
+              {<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type"
+                >CollectionReference</span
+              >
+              usersRef = db.Collection(<span class="string">"Users"</span
+              >);<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Query</span> query =
+              usersRef.WhereEqualTo(<span class="string">"username"</span>,
+              username);<br />
+              <br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"
+                >// Await here prevents UI freeze</span
+              ><br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">QuerySnapshot</span>
+              snapshot =
+              <span class="keyword">await</span> query.GetSnapshotAsync();<br />
+              <br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>
+              (snapshot.Count > 0)
+              <span class="keyword">return</span> snapshot[0].Id;<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return null</span
+              >;<br />
+              }
+            </div>
+          </div>
+
+          <!-- Topic 3: Threading -->
+          <div id="wiki-threading" class="mb-16 scroll-mt-24">
+            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+              <i class="fas fa-microchip text-accent-red mr-3"></i> UI Thread
+              Marshalling
+            </h3>
+            <p class="text-slate-400 text-sm mb-4">
+              <strong>Crucial:</strong> Firestore events fire on a background
+              thread. You <em>cannot</em> update the UI directly from there. You
+              must marshal execution back to the Main Loop.
+            </p>
+
+            <div class="wiki-code rounded-lg border-accent-red">
+              <span class="keyword">private void</span>
+              <span class="type">OnMessageReceived</span>(<span class="type"
+                >QuerySnapshot</span
+              >
+              snap)<br />
+              {<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">foreach</span>
+              (<span class="keyword">var</span> change
+              <span class="keyword">in</span> snap.Changes)<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;{<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type"
+                >string</span
+              >
+              text = change.Document.GetValue&lt;<span class="type">string</span
+              >&gt;(<span class="string">"text"</span>);<br />
+              <br />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                class="comment"
+                >// CRITICAL: Marshal to UI Thread</span
+              ><br />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type"
+                >Application</span
+              >.MainLoop.Invoke(() => {<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                class="keyword"
+                >this</span
+              >.chatView.AddText(text);<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                class="keyword"
+                >this</span
+              >.chatView.ScrollToBottom();<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;}<br />
+              }
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // View Switching Logic
+      function switchView(viewName) {
+        // Transition Opacity
+        document.querySelectorAll(".view-section").forEach((el) => {
+          el.classList.remove("active-view");
+          setTimeout(() => {
+            if (!el.classList.contains("active-view"))
+              el.style.display = "none";
+          }, 400);
+        });
+
+        // Toggle Sidebar Buttons
+        const btnOverview = document.getElementById("btn-overview");
+        const btnWiki = document.getElementById("btn-wiki");
+        const navOverview = document.getElementById("nav-overview");
+        const navWiki = document.getElementById("nav-wiki");
+
+        if (viewName === "overview") {
+          btnOverview.className =
+            "flex-1 py-2 text-xs font-bold rounded transition-all bg-dark-800 text-white shadow";
+          btnWiki.className =
+            "flex-1 py-2 text-xs font-bold rounded transition-all text-slate-500 hover:text-white";
+          navOverview.classList.remove("hidden");
+          navWiki.classList.add("hidden");
+        } else {
+          btnWiki.className =
+            "flex-1 py-2 text-xs font-bold rounded transition-all bg-dark-800 text-white shadow";
+          btnOverview.className =
+            "flex-1 py-2 text-xs font-bold rounded transition-all text-slate-500 hover:text-white";
+          navWiki.classList.remove("hidden");
+          navOverview.classList.add("hidden");
+        }
+
+        // Display new view
+        const target = document.getElementById("view-" + viewName);
+        target.style.display = "block";
+        setTimeout(() => {
+          target.classList.add("active-view");
+        }, 10);
+
+        window.scrollTo(0, 0);
+      }
+
+      function scrollToTopic(id) {
+        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Mobile Menu
+      const menuToggle = document.getElementById("menu-toggle");
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.createElement("div");
+      overlay.className =
+        "fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity duration-300";
+      document.body.appendChild(overlay);
+
+      function toggleMenu() {
+        const isClosed = sidebar.classList.contains("-translate-x-full");
+        if (isClosed) {
+          sidebar.classList.remove("-translate-x-full");
+          overlay.classList.remove("hidden");
+          setTimeout(() => overlay.classList.add("opacity-100"), 10);
+        } else {
+          sidebar.classList.add("-translate-x-full");
+          overlay.classList.remove("opacity-100");
+          setTimeout(() => {
+            overlay.classList.add("hidden");
+          }, 300);
+        }
+      }
+
+      menuToggle.addEventListener("click", toggleMenu);
+      overlay.addEventListener("click", toggleMenu);
+
+      // Initial Fade In
+      document.addEventListener("DOMContentLoaded", () => {
+        const fadeElements = document.querySelectorAll(".animate-fade-in");
+        fadeElements.forEach((el) => {
+          el.style.opacity = 0;
+          setTimeout(() => {
+            el.style.transition = "opacity 1s ease";
+            el.style.opacity = 1;
+          }, 100);
+        });
+      });
+    </script>
+  </body>
+</html>
