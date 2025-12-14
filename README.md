@@ -20,28 +20,33 @@ Powered by **Google Cloud Firestore** for real-time synchronization and **Termin
 ## ✨ Key Features
 
 ### 💬 **Real-Time Communication**
+
 - **Instant Messaging**: Messages sync across all clients in real-time via Firestore
 - **Group & Individual Chats**: Create private conversations or group chatrooms
 - **Message Pinning**: Pin important messages for easy reference
 - **Search & Filter**: Search through chat history and chatrooms instantly
 
 ### 🖥️ **Rich Terminal Interface**
+
 - **Full Windowing System**: Multiple resizable windows with mouse support
 - **Keyboard Navigation**: Efficient hotkey system for power users
 - **Responsive Design**: Adaptive layouts that work in various terminal sizes
 - **Custom Color Schemes**: Eye-friendly color schemes optimized for extended use
 
 ### 🛡️ **Smart Moderation**
+
 - **Profanity Filter**: Built-in content filtering with robust leetspeak detection
 - **Admin Controls**: Chatroom admins can manage messages and participants
 - **Content Censorship**: Automatically censors inappropriate language
 
 ### 👥 **User Management**
+
 - **Secure Authentication**: Login and registration system with validation
 - **User Profiles**: Display names and usernames
 - **Session Management**: Persistent sessions with automatic cleanup
 
 ### 🎛️ **Chatroom Management**
+
 - **Create Chatrooms**: Invite multiple users to group conversations
 - **Admin Privileges**: Designated admins can rename, delete, or clear chatrooms
 - **Leave/Remove**: Users can leave chatrooms; admins can remove participants
@@ -55,39 +60,40 @@ Banter follows a clean, event-driven architecture with clear separation of conce
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Terminal.Gui (View Layer)                │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │ Window1  │  │ Window2  │  │ Window3  │  │  Other   │   │
-│  │(Chatroom)│  │  (Chat)  │  │  (Info)  │  │ Windows  │   │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+│                     Terminal.Gui (View Layer)               │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
+│  │ Window1  │  │ Window2  │  │ Window3  │  │  Other   │     │
+│  │(Chatroom)│  │  (Chat)  │  │  (Info)  │  │ Windows  │     │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘     │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    SessionHandler (State)                    │
+│                    SessionHandler (State)                   │
 │  • Event-driven state management                            │
 │  • Real-time Firestore listeners                            │
-│  • User session tracking                                     │
+│  • User session tracking                                    │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                  Utilities (Business Logic)                  │
-│  ┌──────────────────┐  ┌──────────────────┐                │
-│  │ FirebaseHelper   │  │ ProfanityChecker │                │
-│  │ • CRUD operations│  │ • Content filter │                │
-│  │ • Real-time sync │  │ • Leetspeak det. │                │
-│  └──────────────────┘  └──────────────────┘                │
+│                  Utilities (Business Logic)                 │
+│  ┌──────────────────┐  ┌──────────────────┐                 │
+│  │ FirebaseHelper   │  │ ProfanityChecker │                 │
+│  │ • CRUD operations│  │ • Content filter │                 │
+│  │ • Real-time sync │  │ • Leetspeak det. │                 │
+│  └──────────────────┘  └──────────────────┘                 │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                  Google Cloud Firestore                      │
+│                  Google Cloud Firestore                     │
 │  • NoSQL Database • Real-time Updates • Scalable            │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### Design Patterns
+
 - **Singleton Pattern**: All windows and managers use thread-safe lazy singletons
 - **Observer Pattern**: Event-driven updates via `SessionHandler` events
 - **Repository Pattern**: `FirebaseHelper` abstracts all database operations
@@ -96,13 +102,13 @@ Banter follows a clean, event-driven architecture with clear separation of conce
 
 ## 🛠️ Tech Stack
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Language** | C# / .NET 10.0 | Core application logic |
-| **UI Framework** | [Terminal.Gui](https://github.com/gui-cs/Terminal.Gui) | Terminal windowing toolkit |
-| **Backend** | Google Cloud Firestore | Real-time NoSQL database |
-| **Local Cache** | LiteDB | Embedded database for sessions |
-| **Authentication** | Firebase Admin SDK | Secure credential management |
+| Component          | Technology                                             | Purpose                        |
+| ------------------ | ------------------------------------------------------ | ------------------------------ |
+| **Language**       | C# / .NET 10.0                                         | Core application logic         |
+| **UI Framework**   | [Terminal.Gui](https://github.com/gui-cs/Terminal.Gui) | Terminal windowing toolkit     |
+| **Backend**        | Google Cloud Firestore                                 | Real-time NoSQL database       |
+| **Local Cache**    | LiteDB                                                 | Embedded database for sessions |
+| **Authentication** | Firebase Admin SDK                                     | Secure credential management   |
 
 ---
 
@@ -157,15 +163,16 @@ Banter/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/dreeyanzz/Banter.git
    cd Banter
    ```
 
 2. **Configure Firebase Credentials**
-   
+
    The project uses an embedded Firebase Admin SDK key. To set up your own:
-   
+
    - Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
    - Enable Firestore Database
    - Generate a service account key (JSON)
@@ -177,11 +184,13 @@ Banter/
    - Add the JSON file to the project and set its **Build Action** to `Embedded Resource`
 
 3. **Restore Dependencies**
+
    ```bash
    dotnet restore
    ```
 
 4. **Build the Project**
+
    ```bash
    dotnet build
    ```
@@ -251,6 +260,7 @@ Once logged in, you'll see three main windows:
 ### Admin Features (Group Chats Only)
 
 If you're an admin of a group chatroom, Window3 will show:
+
 - **Change chatroom name**: Rename the chatroom
 - **Clear Messages**: Delete all messages (for everyone)
 - **Delete Chatroom**: Permanently remove the chatroom
@@ -265,10 +275,10 @@ If you're an admin of a group chatroom, Window3 will show:
 1. **Passwords are stored in plaintext** in the current implementation
    - This is **NOT production-ready**
    - Implement proper password hashing (bcrypt, Argon2) before deployment
-   
 2. **No input sanitization for SQL injection** (Firestore is NoSQL, but still validate inputs)
 
 3. **Firebase credentials are embedded** in the application
+
    - Use environment variables or secure vaults in production
    - Never commit credentials to public repositories
 
@@ -327,6 +337,7 @@ Contributions are welcome! Whether you want to add new features, fix bugs, or im
 ### Collections
 
 **Users**
+
 ```
 {
   "username": string,
@@ -338,6 +349,7 @@ Contributions are welcome! Whether you want to add new features, fix bugs, or im
 ```
 
 **Chatrooms**
+
 ```
 {
   "chatroom_name": string,
@@ -350,6 +362,7 @@ Contributions are welcome! Whether you want to add new features, fix bugs, or im
 ```
 
 **Messages** (subcollection of Chatrooms)
+
 ```
 {
   "sender_id": string,
@@ -409,6 +422,6 @@ If you find Banter useful, please consider giving it a star ⭐ on GitHub!
 
 **Made with ❤️ and ☕ by dreeyanzz**
 
-*Where modernity embraces tradition*
+_Where modernity embraces tradition_
 
 </div>
