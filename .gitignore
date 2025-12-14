@@ -1,4 +1,5 @@
 .vs/
+.config/
 bin/
 obj/
 
@@ -6,5 +7,9 @@ Firebase Firestore Visualizer/
 
 firebase-service-account.json
 
+documentation/*
+!documentation/documentation.pdf
+!documentation/documentation.tex
+!documentation/banter_screenshot.png
 
 .fake

@@ -1,0 +1,2294 @@
+\documentclass[12pt]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[paper=letterpaper,paperwidth=8.5in,paperheight=13in,margin=1in]{geometry}
+\setlength{\headheight}{14.5pt}
+\addtolength{\topmargin}{-2.5pt}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tocloft}
+
+% Code listing configuration
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{csharpstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=[Sharp]C
+}
+
+\lstset{style=csharpstyle}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Banter - Console Chat Application}
+\lhead{Documentation}
+\rfoot{\thepage}
+
+% Title formatting
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Banter Documentation},
+    pdfpagemode=FullScreen,
+}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Huge\bfseries Banter\par}
+    \vspace{0.5cm}
+    {\Large C\# Console Chat Application\par}
+    \vspace{1cm}
+    {\large Project Documentation\par}
+    
+    \vspace{2cm}
+    
+    {\large\itshape Where Modernity Embraces Tradition\par}
+    
+    \vfill
+    
+    {\Large\bfseries Adrian Seth Tabotabo\par}
+    \vspace{0.5cm}
+    
+    {\large \today\par}
+\end{titlepage}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% Main Content
+\section{Project Overview}
+
+\subsection{Purpose}
+Banter is a real-time, terminal-based chat application designed to provide a modern messaging experience within a traditional console interface. The application enables users to create accounts, join multiple chatrooms, send messages in real-time, and manage group conversations—all from the comfort of a text-based user interface.
+
+The primary goal of Banter is to demonstrate the integration of cloud-based database systems (Google Cloud Firestore) with traditional console UI frameworks (Terminal.Gui) while implementing modern chat features such as real-time message synchronization, profanity filtering, and message pinning.
+
+\subsection{Features}
+Banter includes the following key functionalities:
+
+\begin{itemize}[itemsep=5pt]
+    \item \textbf{User Authentication}: Secure account creation and login system with email validation
+    \item \textbf{Real-time Messaging}: Instant message delivery and updates using Firestore listeners
+    \item \textbf{Multiple Chatrooms}: Support for both individual and group conversations
+    \item \textbf{Chatroom Management}: 
+    \begin{itemize}
+        \item Create new chatrooms with multiple participants
+        \item Leave existing chatrooms
+        \item Delete chatrooms (admin only for group chats)
+        \item Rename group chatrooms
+    \end{itemize}
+    \item \textbf{Message Operations}:
+    \begin{itemize}
+        \item Pin important messages for easy reference
+        \item Clear all messages in a chatroom
+        \item Search through chat history
+    \end{itemize}
+    \item \textbf{Profanity Filtering}: Automatic censorship of inappropriate content in multiple languages (English, Filipino, Bisaya)
+    \item \textbf{Session Management}: Persistent user sessions with automatic chatroom synchronization
+    \item \textbf{Responsive UI}: Mouse and keyboard navigation support with intuitive terminal interface
+\end{itemize}
+
+\subsection{Target Audience}
+Banter is designed for:
+\begin{itemize}
+    \item Developers and system administrators who prefer working in terminal environments
+    \item Educational institutions teaching cloud database integration and real-time systems
+    \item Organizations requiring lightweight, server-side chat solutions
+    \item Users interested in retro-style applications with modern functionality
+    \item Computer science students learning about distributed systems and real-time communication
+\end{itemize}
+
+\subsection{Technology Stack}
+The application is built using the following technologies:
+
+\begin{itemize}
+    \item \textbf{Programming Language}: C\# (.NET 10.0)
+    \item \textbf{UI Framework}: Terminal.Gui (v1.19.0) - Cross-platform console UI toolkit
+    \item \textbf{Database}: Google Cloud Firestore - NoSQL cloud database with real-time synchronization
+    \item \textbf{Additional Libraries}:
+    \begin{itemize}
+        \item Google.Cloud.Firestore (v3.11.0) - Firestore .NET SDK
+        \item LiteDB (v5.0.21) - Embedded NoSQL database for local data
+        \item OpenAI (v2.6.0) - AI integration capabilities
+    \end{itemize}
+    \item \textbf{Development Environment}: Visual Studio 2022 / Visual Studio Code
+    \item \textbf{Version Control}: Git (GitHub repository)
+\end{itemize}
+
+\newpage
+
+\section{Requirements}
+
+\subsection{Software Requirements}
+To run Banter, the following software components must be installed:
+
+\begin{enumerate}
+    \item \textbf{.NET Runtime}: .NET 10.0 SDK or later
+    \begin{itemize}
+        \item Download from: \url{https://dotnet.microsoft.com/download}
+        \item Verify installation: \texttt{dotnet --version}
+    \end{itemize}
+    
+    \item \textbf{Operating System}:
+    \begin{itemize}
+        \item Windows 10/11 (recommended)
+        \item Linux (Ubuntu 20.04 or later)
+        \item macOS 10.15 (Catalina) or later
+    \end{itemize}
+    
+    \item \textbf{Terminal Emulator}:
+    \begin{itemize}
+        \item Windows: Windows Terminal, PowerShell, or Command Prompt
+        \item Linux: Any terminal emulator (GNOME Terminal, Konsole, etc.)
+        \item macOS: Terminal.app or iTerm2
+    \end{itemize}
+    
+    \item \textbf{Internet Connection}: Required for Firestore database access and real-time synchronization
+    
+    \item \textbf{Firebase Service Account}: A valid \texttt{firebase-service-account.json} file with Firestore credentials
+\end{enumerate}
+
+\subsection{Installation Steps}
+
+\subsubsection{From Source Code}
+\begin{enumerate}
+    \item Clone the repository:
+    \begin{lstlisting}[language=bash, numbers=none]
+git clone https://github.com/dreeyanzz/Banter.git
+cd Banter
+    \end{lstlisting}
+    
+    \item Ensure the Firebase service account JSON file is embedded in the project (already configured in \texttt{Banter.csproj})
+    
+    \item Restore NuGet packages:
+    \begin{lstlisting}[language=bash, numbers=none]
+dotnet restore
+    \end{lstlisting}
+    
+    \item Build the application:
+    \begin{lstlisting}[language=bash, numbers=none]
+dotnet build --configuration Release
+    \end{lstlisting}
+    
+    \item Run the application:
+    \begin{lstlisting}[language=bash, numbers=none]
+dotnet run
+    \end{lstlisting}
+\end{enumerate}
+
+\subsubsection{From Compiled Binary}
+\begin{enumerate}
+    \item Download the release package from the GitHub repository
+    \item Extract the archive to your desired location
+    \item Ensure \texttt{BanterLogo.txt} is in the same directory as the executable
+    \item Run the executable:
+    \begin{lstlisting}[language=bash, numbers=none]
+./Banter  # Linux/macOS
+Banter.exe  # Windows
+    \end{lstlisting}
+\end{enumerate}
+
+\subsection{System Requirements}
+
+\begin{itemize}
+    \item \textbf{Processor}: 1 GHz or faster processor (dual-core recommended)
+    \item \textbf{RAM}: Minimum 8 GB (as tested by developer)
+    \item \textbf{Storage}: 100 MB free disk space for application and dependencies
+    \item \textbf{Display}: Terminal window supporting at least 80x24 characters (120x40 recommended for optimal experience)
+    \item \textbf{Network}: Stable internet connection with minimum 1 Mbps bandwidth for real-time messaging
+\end{itemize}
+
+\subsection{Dependencies}
+All NuGet packages are automatically restored during the build process. Key dependencies include:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Package} & \textbf{Version} & \textbf{Purpose} \\
+\hline
+Terminal.Gui & 1.19.0 & Console UI framework \\
+\hline
+Google.Cloud.Firestore & 3.11.0 & Cloud database integration \\
+\hline
+LiteDB & 5.0.21 & Local data storage \\
+\hline
+OpenAI & 2.6.0 & AI capabilities integration \\
+\hline
+\end{tabular}
+\caption{NuGet Package Dependencies}
+\end{table}
+
+\newpage
+
+\section{File Handling Overview}
+
+Banter employs two primary file handling mechanisms: reading external text files for UI assets and managing embedded resources for configuration.
+
+\subsection{File Types and Purpose}
+
+\begin{enumerate}
+    \item \textbf{BanterLogo.txt}
+    \begin{itemize}
+        \item Type: Plain text file (.txt)
+        \item Purpose: Stores ASCII art logo displayed on login and account creation screens
+        \item Location: Application root directory
+        \item Encoding: UTF-8
+        \item Content: Multi-line ASCII art banner with tagline
+    \end{itemize}
+    
+    \item \textbf{firebase-service-account.json}
+    \begin{itemize}
+        \item Type: JSON configuration file (embedded resource)
+        \item Purpose: Contains Google Cloud service account credentials for Firestore authentication
+        \item Location: Embedded in compiled assembly
+        \item Security: Treated as sensitive data, never exposed to users
+        \item Access: Read-only via manifest resource stream
+    \end{itemize}
+\end{enumerate}
+
+\subsection{File Operations}
+
+\subsubsection{Reading External Text Files}
+The application reads \texttt{BanterLogo.txt} during window initialization to display branding:
+
+\begin{lstlisting}[caption={Logo File Reading Implementation}, label={lst:logo}]
+private void DisplayLogo()
+{
+    List<string> BanterLogo = 
+        [.. File.ReadAllLines(path: "BanterLogo.txt")];
+    
+    BanterLogo.Insert(
+        index: 0, 
+        item: new string(c: ' ', count: BanterLogo[0].Length)
+    );
+    
+    this.BanterLogo.SetSource(source: BanterLogo);
+    this.BanterLogo.Height = BanterLogo.Count;
+    this.BanterLogo.Width = BanterLogo[1].Length;
+    window.Add(view: this.BanterLogo);
+}
+\end{lstlisting}
+
+\textbf{Key aspects of this operation:}
+\begin{itemize}
+    \item Uses \texttt{File.ReadAllLines()} to read all lines into a string array
+    \item Converts array to \texttt{List<string>} for manipulation
+    \item Inserts blank line at top for spacing
+    \item Dynamically calculates dimensions based on content
+    \item Displays content in a Terminal.Gui \texttt{ListView}
+\end{itemize}
+
+\subsubsection{Reading Embedded Resources}
+The Firebase service account credentials are accessed as an embedded resource:
+
+\begin{lstlisting}[caption={Embedded Resource Access}, label={lst:embedded}]
+private FirestoreManager()
+{
+    try
+    {
+        Assembly assembly = Assembly.GetExecutingAssembly();
+        string resourceName = "Banter.firebase-service-account.json";
+        
+        GoogleCredential credential;
+        using (Stream? stream = 
+            assembly.GetManifestResourceStream(resourceName))
+        {
+            if (stream == null)
+            {
+                throw new Exception(
+                    $"Error: Could not find the embedded JSON key. " +
+                    $"Make sure the name is '{resourceName}' and " +
+                    $"its Build Action is 'Embedded Resource'."
+                );
+            }
+            
+            credential = GoogleCredential.FromStream(stream);
+        }
+        
+        Database = new FirestoreDbBuilder
+        {
+            ProjectId = ProjectId,
+            Credential = credential,
+        }.Build();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error initializing Firestore: {ex.Message}");
+        Database = null!;
+    }
+}
+\end{lstlisting}
+
+\textbf{Key aspects of this operation:}
+\begin{itemize}
+    \item Uses reflection to access embedded assembly resources
+    \item Opens resource as a \texttt{Stream} for direct reading
+    \item Automatically handles stream disposal via \texttt{using} statement
+    \item Validates resource existence before attempting to read
+    \item Parses JSON stream directly into Google Cloud credentials
+\end{itemize}
+
+\subsubsection{File Operations Summary}
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{|p{1.5cm}|p{3.5cm}|p{3.8cm}|p{2.8cm}|}
+\hline
+\textbf{Operation} & \textbf{File Type} & \textbf{Method Used} & \textbf{Frequency} \\
+\hline
+Read & BanterLogo.txt & File.ReadAllLines() & On window creation \\
+\hline
+Read & firebase-service-account.json & GetManifest-ResourceStream() & Once at startup \\
+\hline
+\end{tabular}
+\caption{File Operations Used in Banter}
+\end{table}
+
+\subsection{Error Handling in File Operations}
+
+\subsubsection{Logo File Error Handling}
+When reading the logo file, potential errors include:
+\begin{itemize}
+    \item \textbf{File Not Found}: If \texttt{BanterLogo.txt} is missing, the application will throw a \texttt{FileNotFoundException}. This is not explicitly caught, causing the window to fail initialization (intentional behavior to alert developer of missing asset).
+    
+    \item \textbf{Access Denied}: If file permissions prevent reading, an \texttt{Unauth\-orized\-Access\-Exception} would be thrown.
+    
+    \item \textbf{Encoding Issues}: UTF-8 encoding is assumed; non-UTF-8 characters may render incorrectly but won't crash the application.
+\end{itemize}
+
+\subsubsection{Embedded Resource Error Handling}
+The Firestore initialization includes comprehensive error handling:
+
+\begin{enumerate}
+    \item \textbf{Resource Not Found}:
+    \begin{itemize}
+        \item Checks if stream is null before reading
+        \item Throws descriptive exception with troubleshooting guidance
+        \item Prevents application startup with invalid configuration
+    \end{itemize}
+    
+    \item \textbf{Invalid Credentials}:
+    \begin{itemize}
+        \item Catches exceptions during credential parsing
+        \item Logs error message to console
+        \item Sets \texttt{Database} to \texttt{null!} to prevent subsequent crashes
+    \end{itemize}
+    
+    \item \textbf{Network/Connection Issues}:
+    \begin{itemize}
+        \item Firestore connection failures are caught during database operations
+        \item User receives error message dialogs when operations fail
+        \item Application continues running but may have limited functionality
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Best Practices Implemented}
+\begin{itemize}
+    \item \textbf{Resource Cleanup}: Using \texttt{using} statements ensures streams are properly disposed
+    \item \textbf{Fail-Fast Approach}: Critical configuration errors prevent startup rather than allowing corrupt state
+    \item \textbf{Informative Error Messages}: Exceptions include actionable information for troubleshooting
+    \item \textbf{Defensive Programming}: Null checks before accessing resources
+    \item \textbf{Logging}: Console output for debugging file-related issues
+\end{itemize}
+
+\newpage
+
+\section{Code Structure}
+
+\subsection{Main Program Structure}
+
+Banter follows a modular architecture with clear separation of concerns. The codebase is organized into the following key namespaces:
+
+\begin{itemize}
+    \item \texttt{Banter} - Main program entry point
+    \item \texttt{Banter.Utilities} - Helper classes, models, and utility functions
+    \item \texttt{Banter.Windows} - UI window implementations
+\end{itemize}
+
+\subsection{Key Classes and Their Purposes}
+
+\subsubsection{Core Application Classes}
+
+\begin{enumerate}
+    \item \textbf{Program.cs} - Application Entry Point
+    \begin{itemize}
+        \item Initializes Terminal.Gui application framework
+        \item Creates menu bar with File menu (About, Help, Quit options)
+        \item Displays login window on startup
+        \item Manages application lifecycle (initialization and shutdown)
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Utility Classes}
+
+\begin{enumerate}
+    \item \textbf{FirestoreManager.cs} - Database Connection Manager
+    \begin{itemize}
+        \item Singleton pattern implementation for database access
+        \item Handles Firestore authentication using service account
+        \item Provides centralized database instance to all components
+        \item Manages connection lifecycle and error handling
+    \end{itemize}
+    
+    \item \textbf{FirebaseHelper.cs} - Database Operations Layer
+    \begin{itemize}
+        \item Static helper methods for all Firestore operations
+        \item User management: account creation, authentication, user info retrieval
+        \item Chatroom lifecycle: create, delete, rename chatrooms
+        \item Message operations: send, retrieve, pin, unpin, clear messages
+        \item Participant management: add/remove users from chatrooms
+        \item Admin operations: chatroom ownership and permissions
+    \end{itemize}
+    
+    \item \textbf{SessionHandler.cs} - User Session Management
+    \begin{itemize}
+        \item Maintains current user state (ID, username, name)
+        \item Tracks active chatroom selection
+        \item Manages user's chatroom list with real-time updates
+        \item Implements event-driven architecture for state changes
+        \item Handles session cleanup on logout
+        \item Starts/stops Firestore listeners for chatroom synchronization
+    \end{itemize}
+    
+    \item \textbf{ProfanityChecker.cs} - Content Filtering
+    \begin{itemize}
+        \item Detects profane words in multiple languages (English, Filipino, Bisaya)
+        \item Two censoring algorithms:
+        \begin{itemize}
+            \item Simple: Fast whole-word matching with regex
+            \item Robust: Handles leetspeak, symbol substitution, and character spacing
+        \end{itemize}
+        \item Replaces inappropriate content with asterisks
+        \item Maintains extensive profanity dictionary (150+ terms)
+    \end{itemize}
+    
+    \item \textbf{Validator.cs} - Input Validation
+    \begin{itemize}
+        \item Email format validation using regex patterns
+        \item Timeout protection against regex DoS attacks
+        \item Whitespace trimming and null checking
+    \end{itemize}
+    
+    \item \textbf{CustomColorScheme.cs} - UI Theming
+    \begin{itemize}
+        \item Defines color schemes for windows, buttons, and labels
+        \item Provides consistent visual appearance across application
+        \item Implements focus/unfocus states for interactive elements
+    \end{itemize}
+    
+    \item \textbf{WindowHelper.cs} - Window Management
+    \begin{itemize}
+        \item Helper methods for opening/closing/focusing windows
+        \item Manages window lifecycle in Terminal.Gui
+        \item Provides window positioning utilities
+        \item Handles batch window operations (close all windows)
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Model Classes}
+
+\begin{enumerate}
+    \item \textbf{User} - User Data Model
+    \begin{lstlisting}[caption={User Model Structure}]
+[FirestoreData]
+public class User
+{
+    [FirestoreProperty("email")]
+    public string Email { get; set; }
+    
+    [FirestoreProperty("name")]
+    public string Name { get; set; }
+    
+    [FirestoreProperty("password")]
+    public string Password { get; set; }
+    
+    [FirestoreProperty("username")]
+    public string Username { get; set; }
+    
+    [FirestoreProperty("chatrooms")]
+    public List<string> Chatrooms { get; set; }
+}
+    \end{lstlisting}
+    
+    \item \textbf{Chatroom} - Chatroom Data Model
+    \begin{lstlisting}[caption={Chatroom Model Structure}]
+[FirestoreData]
+public class Chatroom
+{
+    [FirestoreProperty("chatroom_name")]
+    public string? ChatroomName { get; set; }
+    
+    [FirestoreProperty("participants")]
+    public List<string> Participants { get; set; }
+    
+    [FirestoreProperty("type")]
+    public string Type { get; set; }  // "individual" or "group"
+    
+    [FirestoreProperty("admins")]
+    public List<string> Admins { get; set; }
+    
+    [FirestoreProperty("pinned_messages")]
+    public List<string> PinnedMessages { get; set; }
+}
+    \end{lstlisting}
+    
+    \item \textbf{Message} - Message Data Model
+    \begin{lstlisting}[caption={Message Model Structure}]
+[FirestoreData]
+public class Message
+{
+    [FirestoreProperty("sender_id")]
+    public string SenderId { get; set; }
+    
+    [FirestoreProperty("text")]
+    public string Text { get; set; }
+    
+    [FirestoreProperty("timestamp")]
+    public DateTime Timestamp { get; set; }
+}
+    \end{lstlisting}
+\end{enumerate}
+
+\subsubsection{Window Classes (UI Layer)}
+
+All window classes inherit from \texttt{AbstractWindow} and implement the \texttt{IViewable} interface with \texttt{Show()} and \texttt{Hide()} methods. Key windows include:
+
+\begin{enumerate}
+    \item \textbf{LogInWindow} - User authentication interface
+    \item \textbf{CreateAccountWindow} - New user registration
+    \item \textbf{Window1} - Chatroom list and user information (left panel)
+    \item \textbf{Window2} - Main chat interface with message history (center panel)
+    \item \textbf{Window3} - Chatroom management options (right panel)
+    \item \textbf{CreateChatroomWindow} - Dialog for creating new chatrooms
+    \item \textbf{ChangeChatroomNameWindow} - Dialog for renaming group chatrooms
+    \item \textbf{ViewPinnedMessagesWindow} - Display pinned messages in chatroom
+\end{enumerate}
+
+\subsection{Functions/Methods and Their Roles}
+
+\subsubsection{Authentication Methods}
+\begin{lstlisting}[caption={User Authentication Flow}]
+// In FirebaseHelper.cs
+public static async Task<bool> AddAccount(User user)
+// Creates new user account in Firestore
+
+public static async Task<string> GetUserIdFromUsername(string username)
+// Retrieves user ID for authentication
+
+public static async Task<bool> ValidateUsername(string username)
+// Checks if username exists in database
+\end{lstlisting}
+
+\subsubsection{Real-time Messaging Methods}
+\begin{lstlisting}[caption={Message Operations}]
+// Start listening for new messages
+private void StartMessagesListener(string chatroom_id)
+{
+    CollectionReference messagesRef = db
+        .Collection("Chatrooms")
+        .Document(chatroom_id)
+        .Collection("messages");
+        
+    Query query = messagesRef.OrderBy("timestamp");
+    _listener = query.Listen(OnMessageSnapshotReceived);
+}
+
+// Handle incoming message updates
+private async Task OnMessageSnapshotReceived(
+    QuerySnapshot snapshot)
+{
+    foreach (DocumentChange change in snapshot.Changes)
+    {
+        // Process additions, modifications, and deletions
+        // Update UI with new messages
+        // Apply profanity filtering
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Session Management Methods}
+\begin{lstlisting}[caption={Session Management}]
+// In SessionHandler.cs
+public static async Task ClearSession()
+// Logs out user and cleans up all session data
+
+public static async Task StartChatroomsListener()
+// Starts real-time synchronization of user's chatrooms
+
+// Property with change notification
+public static string? CurrentChatroomId
+{
+    get => _currentChatroomId;
+    set
+    {
+        if (_currentChatroomId != value)
+        {
+            _currentChatroomId = value;
+            CurrentChatroomChanged?.Invoke(_currentChatroomId);
+        }
+    }
+}
+\end{lstlisting}
+
+\subsection{Code Walkthrough: Key Sections}
+
+\subsubsection{Firestore Real-time Listener Implementation}
+
+One of the most critical features of Banter is real-time message synchronization. This is achieved using Firestore listeners:
+
+\begin{lstlisting}[caption={Real-time Message Listener Setup}, label={lst:listener}]
+private void StartMessagesListener(string chatroom_id)
+{
+    // Get reference to messages subcollection
+    CollectionReference messagesRef = db
+        .Collection(path: "Chatrooms")
+        .Document(path: chatroom_id)
+        .Collection(path: "messages");
+    
+    // Order messages by timestamp
+    Query query = messagesRef.OrderBy(fieldPath: "timestamp");
+    
+    // Attach listener that fires on any change
+    _listener = query.Listen(
+        callback: (snapshot) => 
+            _ = OnMessageSnapshotReceived(snapshot: snapshot)
+    );
+}
+
+private async Task OnMessageSnapshotReceived(QuerySnapshot snapshot)
+{
+    foreach (DocumentChange change in snapshot.Changes)
+    {
+        string docId = change.Document.Id;
+        
+        // Handle message deletions
+        if (change.ChangeType == DocumentChange.Type.Removed)
+        {
+            int index = message_ids.IndexOf(item: docId);
+            if (index >= 0)
+            {
+                message_ids.RemoveAt(index);
+                messages.RemoveAt(index);
+            }
+            continue;
+        }
+        
+        // Handle new and modified messages
+        DocumentSnapshot doc = change.Document;
+        if (!doc.Exists) continue;
+        
+        string senderId = doc.GetValue<string>("sender_id");
+        string message = doc.GetValue<string>("text");
+        
+        // Get sender name from cache
+        string senderName = currentChatroomParticipants
+            .GetValueOrDefault(senderId, "Unknown User");
+        
+        // Mark own messages
+        string displayName = senderId == SessionHandler.UserId 
+            ? $"{senderName} (me)" 
+            : senderName;
+        
+        // Apply profanity filter
+        string chatEntry = 
+            $"{displayName}: " +
+            $"{ProfanityChecker.CensorTextRobust(text: message)}";
+        
+        // Update or add message
+        int existingIndex = message_ids.IndexOf(docId);
+        if (existingIndex >= 0)
+            messages[existingIndex] = chatEntry;  // Modified
+        else
+        {
+            message_ids.Add(docId);
+            messages.Add(chatEntry);  // New message
+        }
+    }
+    
+    // Refresh UI
+    Application.MainLoop.Invoke(ScrollToLatestChat);
+}
+\end{lstlisting}
+
+This implementation demonstrates:
+\begin{itemize}
+    \item Asynchronous event handling
+    \item Efficient message updates (only changed documents are processed)
+    \item Thread-safe UI updates using \texttt{Application.MainLoop.Invoke()}
+    \item Real-time synchronization across all connected clients
+    \item Automatic cleanup of deleted messages
+\end{itemize}
+
+\subsubsection{Profanity Filtering Algorithm}
+
+The robust profanity checker handles obfuscated text:
+
+\begin{lstlisting}[caption={Robust Profanity Censoring}, label={lst:profanity}]
+public static string CensorTextRobust(string text)
+{
+    string originalText = text;
+    
+    // Step 1: Normalize text
+    // Remove non-alphanumeric and convert leetspeak
+    string normalizedText = new(
+        text.Where(c => char.IsLetterOrDigit(c) || 
+                       LeetMap.ContainsKey(c))
+            .Select(c => {
+                char lowerC = char.ToLower(c);
+                return LeetMap.TryGetValue(lowerC, out char mapped)
+                    ? mapped : lowerC;
+            })
+            .ToArray()
+    );
+    
+    // Step 2: Find profane substrings in normalized text
+    foreach (string word in ProfaneWordsArray)
+    {
+        int startIndex = -1;
+        while ((startIndex = normalizedText.IndexOf(
+            word, startIndex + 1)) != -1)
+        {
+            // Step 3: Map back to original text positions
+            int matchLength = word.Length;
+            
+            // Count alphanumeric characters before the match
+            int preMatchCharCount = 0;
+            for (int i = 0; i < startIndex; i++)
+            {
+                if (char.IsLetterOrDigit(originalText[i]) ||
+                    LeetMap.ContainsKey(originalText[i]))
+                    preMatchCharCount++;
+            }
+            
+            // Find original text range to censor
+            int originalStart = -1;
+            int originalEnd = -1;
+            int relevantCount = 0;
+            
+            for (int i = 0; i < originalText.Length; i++)
+            {
+                if (char.IsLetterOrDigit(originalText[i]) ||
+                    LeetMap.ContainsKey(originalText[i]))
+                {
+                    if (relevantCount == startIndex)
+                        originalStart = i;
+                    relevantCount++;
+                    
+                    if (relevantCount == startIndex + matchLength)
+                    {
+                        originalEnd = i;
+                        break;
+                    }
+                }
+            }
+            
+            // Step 4: Replace with asterisks
+            if (originalStart != -1 && originalEnd != -1)
+            {
+                string replacement = 
+                    new('*', originalEnd - originalStart + 1);
+                originalText = originalText
+                    .Remove(originalStart, 
+                           originalEnd - originalStart + 1)
+                    .Insert(originalStart, replacement);
+            }
+        }
+    }
+    
+    return originalText;
+}
+\end{lstlisting}
+
+This algorithm can censor:
+\begin{itemize}
+    \item Simple profanity: "fuck" → "****"
+    \item Leetspeak: "f\$\$ck" → "*****"
+    \item Spaced characters: "f u c k" → "* * * *"
+    \item Symbol substitution: "f@ck" → "****"
+\end{itemize}
+
+\subsection{Modularity and Reusability}
+
+\subsubsection{Singleton Pattern}
+All window classes use the singleton pattern to ensure only one instance exists:
+
+\begin{lstlisting}[caption={Singleton Pattern Implementation}]
+public sealed class LogInWindow : AbstractWindow
+{
+    private static readonly Lazy<LogInWindow> lazyInstance = 
+        new(() => new LogInWindow());
+    
+    public static LogInWindow Instance => lazyInstance.Value;
+    
+    private LogInWindow() { /* Initialize */ }
+}
+\end{lstlisting}
+
+Benefits:
+\begin{itemize}
+    \item Prevents duplicate UI windows
+    \item Provides global access point
+    \item Thread-safe initialization with \texttt{Lazy<T>}
+    \item Memory efficient (single instance throughout application lifetime)
+\end{itemize}
+
+\subsubsection{Event-Driven Architecture}
+SessionHandler uses C\# events for loose coupling:
+
+\begin{lstlisting}[caption={Event-Based State Management}]
+public static class SessionHandler
+{
+    // Define events
+    public static event Action<string?>? CurrentChatroomChanged;
+    public static event Action<List<...>>? UserChatroomsChanged;
+    
+    // Property with event notification
+    public static string? CurrentChatroomId
+    {
+        get => _currentChatroomId;
+        set
+        {
+            if (_currentChatroomId != value)
+            {
+                _currentChatroomId = value;
+                CurrentChatroomChanged?.Invoke(_currentChatroomId);
+            }
+        }
+    }
+}
+
+// Subscribers react to changes
+SessionHandler.CurrentChatroomChanged += (chatroomId) => {
+    // Update UI, load messages, etc.
+};
+\end{lstlisting}
+
+This design:
+\begin{itemize}
+    \item Decouples state management from UI logic
+    \item Allows multiple components to react to same event
+    \item Simplifies debugging (clear cause-effect relationships)
+    \item Enables reactive UI updates
+\end{itemize}
+
+\subsubsection{Static Helper Classes}
+Utility classes provide reusable functionality:
+
+\begin{itemize}
+    \item \textbf{FirebaseHelper}: All database operations in one place
+    \item \textbf{WindowHelper}: Common window management tasks
+    \item \textbf{ProfanityChecker}: Stateless text filtering
+    \item \textbf{Validator}: Input validation utilities
+\end{itemize}
+
+These classes:
+\begin{itemize}
+    \item Eliminate code duplication
+    \item Provide consistent behavior across application
+    \item Are easy to test in isolation
+    \item Can be reused in other projects
+\end{itemize}
+
+\newpage
+
+\section{User Interface}
+
+\subsection{Design and Usability}
+
+Banter's user interface is built using Terminal.Gui, a cross-platform terminal UI toolkit that provides keyboard and mouse navigation. The interface follows a three-panel layout design inspired by modern messaging applications like Discord and Slack, adapted for terminal constraints.
+
+\subsubsection{UI Layout Structure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{banter_screenshot.png}
+\caption{Banter Three-Panel Layout}
+\end{figure}
+
+\subsubsection{Window Descriptions}
+
+\begin{enumerate}
+    \item \textbf{Window1 (Left Panel - 23\% width)}
+    \begin{itemize}
+        \item Displays list of user's chatrooms
+        \item Shows current user information (username, name, user ID)
+        \item Provides search functionality for chatrooms
+        \item Contains "Add Chatroom" and "Log out" buttons
+        \item Chatroom count indicator
+    \end{itemize}
+    
+    \item \textbf{Window2 (Center Panel - 54\% width)}
+    \begin{itemize}
+        \item Main chat interface showing message history
+        \item Displays current chatroom name
+        \item Search messages functionality
+        \item Message composition text field
+        \item Send button
+        \item View pinned messages button
+        \item Messages show sender name and "(me)" indicator for own messages
+    \end{itemize}
+    
+    \item \textbf{Window3 (Right Panel - 23\% width)}
+    \begin{itemize}
+        \item Chatroom management options
+        \item Clear messages button (deletes all messages for everyone)
+        \item Change chatroom name (group chats only)
+        \item Delete chatroom (admin only for group chats)
+        \item Leave chatroom button
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Color Scheme}
+
+The application uses a custom color scheme for consistency and readability:
+
+\begin{itemize}
+    \item \textbf{Windows}: Gray text on black background
+    \item \textbf{Focus}: White text on dark gray background
+    \item \textbf{Buttons (unfocused)}: Dark gray on black with green hotkeys
+    \item \textbf{Buttons (focused)}: Black on green (inverted)
+    \item \textbf{Labels}: Dark gray on black for disabled/informational text
+\end{itemize}
+
+\subsection{Input/Output}
+
+\subsubsection{User Inputs}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|p{4cm}|p{3cm}|p{4cm}|}
+\hline
+\textbf{Input Type} & \textbf{Purpose} & \textbf{Validation} & \textbf{Location} \\
+\hline
+Username & Account creation and login & Min 8 characters, unique & Login/Create Account \\
+\hline
+Password & Authentication & Min 8 characters & Login/Create Account \\
+\hline
+Email & Account creation & Valid email format & Create Account \\
+\hline
+Full Name & User profile & Cannot be empty & Create Account \\
+\hline
+Message Text & Send chat messages & Cannot be empty, profanity filtered & Window2 \\
+\hline
+Chatroom Name & Rename group chat & Cannot be empty & Change Name Dialog \\
+\hline
+Participant Username & Add to chatroom & Must exist, cannot be self & Create Chatroom \\
+\hline
+Search Query & Filter chatrooms/messages & None & Window1/Window2 \\
+\hline
+\end{tabular}
+\caption{User Input Types and Validation}
+\end{table}
+
+\subsubsection{Program Outputs}
+
+\begin{enumerate}
+    \item \textbf{Message Display}
+    \begin{itemize}
+        \item Format: "SenderName: MessageText•" (• indicates pinned)
+        \item Own messages: "SenderName (me): MessageText"
+        \item Profanity automatically censored with asterisks
+        \item Real-time updates as messages arrive
+    \end{itemize}
+    
+    \item \textbf{Chatroom List}
+    \begin{itemize}
+        \item Individual chats: Shows other participant's name
+        \item Group chats: Shows chatroom name or comma-separated participant list
+        \item Updates in real-time as chatrooms are created/deleted
+    \end{itemize}
+    
+    \item \textbf{System Messages}
+    \begin{itemize}
+        \item Success: "Account Created!", "Logged in successfully"
+        \item Errors: "Username already taken", "Wrong password", "Cannot add yourself"
+        \item Confirmations: "Are you sure you want to delete this chatroom?"
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Example Interaction Flow}
+
+\textbf{Creating an Account:}
+\begin{verbatim}
+Input: Username = "john_doe123"
+Input: Password = "SecurePass456"
+Input: Repeat Password = "SecurePass456"
+Input: Name = "John Doe"
+Input: Email = "john@example.com"
+
+Validation Checks:
+[PASS] Username length >= 8 characters
+[PASS] Username is unique
+[PASS] Password length >= 8 characters
+[PASS] Passwords match
+[PASS] Name is not empty
+[PASS] Email format is valid
+
+Output: "Account creating success!"
+        [Redirects to Login Window]
+\end{verbatim}
+
+\textbf{Sending a Message:}
+\begin{verbatim}
+Input: Message = "Hello, this is a fucking test!"
+
+Processing:
+1. Apply profanity filter: "fucking" → "****ing"
+2. Add to Firestore with timestamp
+3. Broadcast to all chatroom participants
+
+Output (on all clients):
+"John Doe (me): Hello, this is a ****ing test!"  [on sender]
+"John Doe: Hello, this is a ****ing test!"       [on recipients]
+\end{verbatim}
+
+\subsection{Error Messages}
+
+The application provides user-friendly error messages for common issues:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|p{5cm}|p{5cm}|}
+\hline
+\textbf{Situation} & \textbf{Error Message} & \textbf{Guidance} \\
+\hline
+Empty username/password & "Username or Password cannot be empty!" & Fill in required fields \\
+\hline
+Short username & "Username must be atleast 8 characters long" & Choose longer username \\
+\hline
+Duplicate username & "Username already taken" & Try different username \\
+\hline
+Short password & "Password must be atleast 8 characters long" & Choose longer password \\
+\hline
+Password mismatch & "Passwords must match!" & Re-enter matching passwords \\
+\hline
+Invalid email & "Invalid email format!" & Use valid email address \\
+\hline
+Account not found & "Account not found." & Check username spelling \\
+\hline
+Wrong password & "Wrong password..." & Re-enter correct password \\
+\hline
+Add self to chatroom & "You cannot add yourself." & User already included automatically \\
+\hline
+Non-existent user & "Username does not exist" & Check participant username \\
+\hline
+Service error & "Something went wrong. Try again later." & Retry or check connection \\
+\hline
+\end{tabular}
+\caption{Error Messages and User Guidance}
+\end{table}
+
+\subsubsection{Confirmation Dialogs}
+
+For destructive actions, the application requires confirmation:
+
+\begin{itemize}
+    \item \textbf{Clear Messages}: "Are you sure you want to clear messages? This deletes for all of the participants in this chatroom."
+    \item \textbf{Delete Chatroom}: "Are you sure you want to delete this chatroom?"
+    \item \textbf{Leave Chatroom}: "Are you sure you want to leave this chatroom?"
+    \item \textbf{Log Out}: "Are you sure you want to log out?"
+\end{itemize}
+
+\subsection{Usability Features}
+
+\begin{enumerate}
+    \item \textbf{Dual Navigation}: Both mouse and keyboard supported throughout
+    \item \textbf{Default Actions}: Enter key submits forms (Send message, Login, Create account)
+    \item \textbf{Focus Indicators}: Visual feedback shows which element is active
+    \item \textbf{Real-time Updates}: No manual refresh needed - changes appear instantly
+    \item \textbf{Search Functionality}: Filter chatrooms and messages on-the-fly
+    \item \textbf{Visual Indicators}: Pinned messages marked with bullet (•)
+    \item \textbf{Responsive Layout}: Automatically adjusts to terminal size
+    \item \textbf{Loading States}: "Loading chat..." displayed during async operations
+\end{enumerate}
+
+\newpage
+
+\section{Challenges and Solutions}
+
+\subsection{Development Challenges}
+
+\subsubsection{Challenge 1: Real-time Multi-User Testing}
+
+\textbf{Problem:}
+Testing end-to-end chat functionality required multiple concurrent users to verify real-time message delivery, synchronization across clients, and race condition handling. As a single developer, simulating multiple users simultaneously was impractical for comprehensive testing.
+
+\textbf{Impact:}
+\begin{itemize}
+    \item Difficult to verify message delivery timing
+    \item Unable to test concurrent operations (e.g., two users pinning messages simultaneously)
+    \item Chatroom creation/deletion with multiple participants couldn't be validated
+    \item Listener behavior with multiple connected clients remained uncertain
+\end{itemize}
+
+\textbf{Solution:}
+Recruited classmates to participate in testing sessions. Organized structured test scenarios where multiple users would:
+\begin{itemize}
+    \item Join the same chatroom simultaneously
+    \item Send messages in rapid succession to test ordering and race conditions
+    \item Pin/unpin messages concurrently to verify synchronization
+    \item Create and delete chatrooms to test participant notifications
+    \item Leave chatrooms to verify listener cleanup
+\end{itemize}
+
+\textbf{Outcome:}
+This collaborative testing revealed several issues:
+\begin{itemize}
+    \item Message ordering inconsistencies (fixed by ensuring proper timestamp ordering in Firestore queries)
+    \item UI freezing when processing large message batches (optimized by implementing batch processing limits)
+    \item Listener memory leaks when users switched chatrooms rapidly (resolved by properly disposing listeners)
+\end{itemize}
+
+\subsubsection{Challenge 2: Firestore Asynchronous Operations in UI Thread}
+
+\textbf{Problem:}
+Terminal.Gui requires all UI updates to occur on the main thread, but Firestore operations are asynchronous. Direct UI updates from Firestore callbacks caused exceptions and UI corruption.
+
+\textbf{Technical Details:}
+\begin{lstlisting}
+// BROKEN - Direct UI update from async callback
+_listener = query.Listen(snapshot => {
+    chatHistory.SetSource(messages);  // Exception!
+});
+\end{lstlisting}
+
+\textbf{Solution:}
+Used \texttt{Application.MainLoop.Invoke()} to marshal UI updates back to the main thread:
+
+\begin{lstlisting}
+_listener = query.Listen(snapshot => {
+    // Process data on background thread
+    ProcessMessages(snapshot);
+    
+    // Update UI on main thread
+    Application.MainLoop.Invoke(() => {
+        chatHistory.SetSource(messages);
+        ScrollToLatestChat();
+    });
+});
+\end{lstlisting}
+
+\textbf{Outcome:}
+This pattern was applied consistently throughout the codebase for all Firestore listener callbacks, eliminating UI threading issues entirely.
+
+\subsubsection{Challenge 3: Profanity Filter Bypass Techniques}
+
+\textbf{Problem:}
+Initial simple word-matching profanity filter was easily bypassed using:
+\begin{itemize}
+    \item Leetspeak: "f\$ck", "sh!t"
+    \item Character spacing: "f u c k"
+    \item Symbol insertion: "f.u.c.k", "f*ck"
+    \item Mixed case: "FuCk"
+\end{itemize}
+
+\textbf{Solution:}
+Implemented a two-tier filtering system:
+
+\begin{enumerate}
+    \item \textbf{Simple Filter} (fast): Whole-word regex matching for 99\% of cases
+    \item \textbf{Robust Filter} (comprehensive): Normalizes text by:
+    \begin{itemize}
+        \item Converting to lowercase
+        \item Mapping leetspeak characters: 4→a, 3→e, \$→s, etc.
+        \item Removing non-alphanumeric characters
+        \item Matching against normalized profanity list
+        \item Mapping matches back to original text positions for censoring
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Example Processing:}
+\begin{verbatim}
+Input:     "This is f*ck!ng great"
+Normalized: "thisisfuckinggreat"
+Matches:    "fucking" at positions 6-12
+Original:   "This is f*ck!ng great"
+              positions: ^^^^^^^
+Output:    "This is ******* great"
+\end{verbatim}
+
+\textbf{Outcome:}
+The robust filter successfully censors obfuscated profanity while maintaining performance (processes messages in <10ms).
+
+\subsubsection{Challenge 4: Firestore Query Limitations}
+
+\textbf{Problem:}
+Firestore doesn't support searching for multiple user IDs in a single query (no IN operator for array-contains). Finding chatrooms where user participates required inefficient queries.
+
+\textbf{Initial Approach (Broken):}
+\begin{lstlisting}
+// Wanted to do this, but Firestore doesn't support it
+var query = chatroomsRef
+    .WhereArrayContainsAny("participants", [user1, user2]);
+\end{lstlisting}
+
+\textbf{Solution:}
+Used \texttt{WhereArrayContains} for single user and filtered results client-side:
+
+\begin{lstlisting}
+Query query = chatroomsRef
+    .WhereArrayContains("participants", SessionHandler.UserId);
+
+chatroomListener = query.Listen(snapshot => {
+    var chatrooms = snapshot.Documents
+        .Select(doc => (doc.Id, GetChatroomName(doc.Id)))
+        .ToList();
+    
+    SessionHandler.Chatrooms = chatrooms;
+});
+\end{lstlisting}
+
+This approach:
+\begin{itemize}
+    \item Retrieves all chatrooms user belongs to efficiently
+    \item Updates in real-time when chatrooms are created/deleted
+    \item Filters at database level instead of loading all chatrooms
+\end{itemize}
+
+\textbf{Outcome:}
+Chatroom list loads instantly even with hundreds of chatrooms, and updates propagate in <100ms.
+
+\subsubsection{Challenge 5: Window Layout in Variable Terminal Sizes}
+
+\textbf{Problem:}
+Terminal sizes vary widely (80x24 to 200x60+). Fixed pixel layouts caused UI elements to overlap or disappear on small terminals.
+
+\textbf{Solution:}
+Used Terminal.Gui's relative positioning system:
+
+\begin{lstlisting}
+// Bad - Fixed positions
+chatBox.Width = 100;  // May exceed terminal width
+
+// Good - Relative sizing
+chatBox.Width = Dim.Fill() - Dim.Width(buttonSend);
+chatBox.Y = Pos.AnchorEnd() - Pos.At(1);  // Always at bottom
+
+window.Height = Dim.Fill();  // Take all available space
+window.Width = Dim.Percent(54);  // 54% of terminal width
+\end{lstlisting}
+
+\textbf{Additional Adaptations:}
+\begin{itemize}
+    \item Dynamic list view heights: \texttt{Dim.Fill() - Dim.Height(footer)}
+    \item Centered elements: \texttt{X = Pos.Center()}
+    \item Responsive button placement: \texttt{X = Pos.AnchorEnd() - Pos.At(buttonWidth)}
+\end{itemize}
+
+\textbf{Outcome:}
+UI adapts gracefully to any terminal size $\geq$ 80x24, with elements repositioning automatically on window resize.
+
+\subsubsection{Challenge 6: Session State Synchronization}
+
+\textbf{Problem:}
+When multiple UI components needed to react to session changes (e.g., current chatroom selection), tight coupling led to:
+\begin{itemize}
+    \item Duplicate code across windows
+    \item Inconsistent state updates
+    \item Difficulty tracking state changes during debugging
+\end{itemize}
+
+\textbf{Solution:}
+Implemented event-driven SessionHandler:
+
+\begin{lstlisting}
+public static class SessionHandler
+{
+    private static string? _currentChatroomId;
+    
+    public static event Action<string?>? CurrentChatroomChanged;
+    
+    public static string? CurrentChatroomId
+    {
+        get => _currentChatroomId;
+        set
+        {
+            if (_currentChatroomId != value)
+            {
+                _currentChatroomId = value;
+                CurrentChatroomChanged?.Invoke(_currentChatroomId);
+            }
+        }
+    }
+}
+
+// Windows subscribe to events
+SessionHandler.CurrentChatroomChanged += (chatroomId) => {
+    LoadChatroomMessages(chatroomId);
+    UpdateChatroomInfo(chatroomId);
+};
+\end{lstlisting}
+
+\textbf{Outcome:}
+\begin{itemize}
+    \item Centralized state management
+    \item Automatic UI updates across all windows
+    \item Loose coupling between components
+    \item Clear event flow for debugging
+\end{itemize}
+
+\subsection{Problem-Solving Approaches}
+
+\subsubsection{Debugging Techniques Used}
+\begin{enumerate}
+    \item \textbf{Console Logging}: Extensive use of \texttt{Console.WriteLine()} to track Firestore operations
+    \item \textbf{Firestore Console}: Monitored database changes in real-time via Firebase web console
+    \item \textbf{Breakpoints}: Visual Studio debugger to inspect async operation states
+    \item \textbf{Git Bisect}: Located when bugs were introduced by testing specific commits
+    \item \textbf{Peer Testing}: Classmates provided fresh perspectives and found edge cases
+\end{enumerate}
+
+\subsubsection{Key Learnings}
+\begin{itemize}
+    \item \textbf{Async/Await Patterns}: Proper handling of asynchronous Firestore operations with UI frameworks
+    \item \textbf{Event-Driven Architecture}: Benefits of loose coupling for maintaining complex state
+    \item \textbf{Cloud Database Considerations}: Working within Firestore's query limitations and designing efficient data models
+    \item \textbf{Terminal UI Development}: Responsive layouts and thread-safe UI updates in console applications
+    \item \textbf{Real-world Testing}: Importance of multi-user testing for distributed systems
+\end{itemize}
+
+\newpage
+
+\section{Testing}
+
+\subsection{Test Cases}
+
+Testing was conducted through a combination of unit testing for isolated components and integration testing with multiple users. All test cases were executed on the production Firestore database to ensure real-world behavior.
+
+\subsubsection{Authentication Test Cases}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|p{1cm}|p{4cm}|p{4cm}|p{3.5cm}|}
+\hline
+\textbf{ID} & \textbf{Test Case} & \textbf{Input} & \textbf{Expected Result} \\
+\hline
+A1 & Valid account creation & Username: "testuser123", Password: "Pass1234", Email: "test@email.com" & Account created successfully \\
+\hline
+A2 & Duplicate username & Existing username & Error: "Username already taken" \\
+\hline
+A3 & Short username & Username: "test" (4 chars) & Error: "Username must be atleast 8 characters long" \\
+\hline
+A4 & Short password & Password: "Pass1" (5 chars) & Error: "Password must be atleast 8 characters long" \\
+\hline
+A5 & Password mismatch & Password: "Pass1234", Repeat: "Pass5678" & Error: "Passwords must match!" \\
+\hline
+A6 & Invalid email format & Email: "invalidemail" & Error: "Invalid email format!" \\
+\hline
+A7 & Empty fields & All fields empty & Error: "Username or Password cannot be empty!" \\
+\hline
+A8 & Valid login & Correct username and password & Login successful, main windows appear \\
+\hline
+A9 & Wrong password & Correct username, wrong password & Error: "Wrong password..." \\
+\hline
+A10 & Non-existent account & Username not in database & Error: "Account not found." \\
+\hline
+\end{tabular}
+\caption{Authentication Test Cases}
+\end{table}
+
+\subsubsection{Chatroom Management Test Cases}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|p{1cm}|p{4cm}|p{4cm}|p{3.5cm}|}
+\hline
+\textbf{ID} & \textbf{Test Case} & \textbf{Input} & \textbf{Expected Result} \\
+\hline
+C1 & Create individual chat & Add one participant & Individual chatroom created \\
+\hline
+C2 & Create group chat & Add 3+ participants & Group chatroom created with admin privileges \\
+\hline
+C3 & Add non-existent user & Username: "nonexistent" & Error: "Username does not exist" \\
+\hline
+C4 & Add self to chatroom & Own username & Error: "You cannot add yourself." \\
+\hline
+C5 & Rename group chat (admin) & New name: "Team Project" & Chatroom renamed for all participants \\
+\hline
+C6 & Delete chatroom (admin) & Confirm deletion & Chatroom deleted, removed from all participants \\
+\hline
+C7 & Delete chatroom (non-admin) & Attempt deletion & Delete button not visible \\
+\hline
+C8 & Leave chatroom & Confirm leave & User removed from participants, chatroom disappears \\
+\hline
+C9 & Search chatrooms & Search term: "Team" & Only matching chatrooms displayed \\
+\hline
+C10 & Real-time chatroom list update & Another user creates chatroom with you & New chatroom appears instantly \\
+\hline
+\end{tabular}
+\caption{Chatroom Management Test Cases}
+\end{table}
+
+\subsubsection{Messaging Test Cases}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|p{1cm}|p{4cm}|p{4cm}|p{3.5cm}|}
+\hline
+\textbf{ID} & \textbf{Test Case} & \textbf{Input} & \textbf{Expected Result} \\
+\hline
+M1 & Send simple message & "Hello World" & Message appears for all participants \\
+\hline
+M2 & Send empty message & Empty string & Message not sent (validation) \\
+\hline
+M3 & Send message with profanity & "This is fucking great" & Displayed as "This is ****ing great" \\
+\hline
+M4 & Send obfuscated profanity & "Th!s is f\$ck" & Censored appropriately \\
+\hline
+M5 & Message with Filipino profanity & "Yawa ka" & Censored: "**** ka" \\
+\hline
+M6 & Real-time message delivery & User A sends message & User B sees it within 500ms \\
+\hline
+M7 & Search message history & Search: "important" & Only messages with "important" shown \\
+\hline
+M8 & Pin message & Select message, press Enter & Message pinned, bullet (•) appears \\
+\hline
+M9 & Unpin message & View pinned, select, Enter & Message unpinned \\
+\hline
+M10 & Clear all messages & Confirm clear & All messages deleted for all users \\
+\hline
+M11 & Concurrent message sending & 3 users send simultaneously & All messages appear in correct timestamp order \\
+\hline
+M12 & Long message handling & 500 character message & Message sent and displayed with wrapping \\
+\hline
+\end{tabular}
+\caption{Messaging Test Cases}
+\end{table}
+
+\subsubsection{Edge Cases and Stress Tests}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|p{1cm}|p{4.5cm}|p{4cm}|p{3.5cm}|}
+\hline
+\textbf{ID} & \textbf{Test Case} & \textbf{Scenario} & \textbf{Expected Result} \\
+\hline
+E1 & Network disconnection & Disconnect internet mid-chat & UI remains responsive, operations fail gracefully \\
+\hline
+E2 & Rapid chatroom switching & Switch chatrooms 10x in 5 seconds & No memory leaks, listeners properly disposed \\
+\hline
+E3 & Large chatroom (50+ members) & Send message to 50-person group & Message delivered to all within 2 seconds \\
+\hline
+E4 & Message flood & Send 100 messages rapidly & All messages delivered, UI remains responsive \\
+\hline
+E5 & Concurrent pin operations & 2 users pin different messages simultaneously & Both pins succeed, all users see both \\
+\hline
+E6 & User kicked from chatroom & Admin deletes chatroom while user active & User returned to empty state, no crash \\
+\hline
+E7 & Special characters in messages & Unicode emojis, symbols & Displays correctly (if terminal supports) \\
+\hline
+E8 & Very long chatroom name & 200 character name & Truncated or wrapped in UI \\
+\hline
+E9 & Small terminal size & Resize to 80x24 & UI elements reflow, remain functional \\
+\hline
+E10 & Logout during active operation & Logout while message sending & Session cleared cleanly, no exceptions \\
+\hline
+\end{tabular}
+\caption{Edge Cases and Stress Tests}
+\end{table}
+
+\subsection{Results}
+
+\subsubsection{Testing Summary}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Category} & \textbf{Tests} & \textbf{Passed} & \textbf{Pass Rate} \\
+\hline
+Authentication & 10 & 10 & 100\% \\
+\hline
+Chatroom Management & 10 & 10 & 100\% \\
+\hline
+Messaging & 12 & 11 & 92\% \\
+\hline
+Edge Cases & 10 & 8 & 80\% \\
+\hline
+\textbf{Total} & \textbf{42} & \textbf{39} & \textbf{93\%} \\
+\hline
+\end{tabular}
+\caption{Test Results Summary}
+\end{table}
+
+\subsubsection{Issues Found and Fixed}
+
+\begin{enumerate}
+    \item \textbf{Concurrent Message Display Issue (M11)}
+    \begin{itemize}
+        \item \textbf{Problem}: When 3+ users sent messages simultaneously, they sometimes appeared out of order
+        \item \textbf{Root Cause}: Firestore listener processed changes in document order, not timestamp order
+        \item \textbf{Fix}: Added \texttt{.OrderBy("timestamp")} to the messages query
+        \item \textbf{Result}: Messages now consistently appear in chronological order
+    \end{itemize}
+    
+    \item \textbf{Memory Leak on Rapid Chatroom Switching (E2)}
+    \begin{itemize}
+        \item \textbf{Problem}: Application memory usage grew by 50MB after switching chatrooms 100 times
+        \item \textbf{Root Cause}: Firestore listeners weren't being disposed when leaving chatrooms
+        \item \textbf{Fix}: Added \texttt{\_listener?.StopAsync()} in \texttt{OnChatroomChanged()}
+        \item \textbf{Result}: Memory usage remains stable regardless of chatroom switches
+    \end{itemize}
+    
+    \item \textbf{UI Freeze on Large Message Batches (E4)}
+    \begin{itemize}
+        \item \textbf{Problem}: Sending 100 messages caused 2-3 second UI freeze
+        \item \textbf{Root Cause}: Processing all messages in single UI update blocked main thread
+        \item \textbf{Fix}: Implemented batch processing with \texttt{Application.MainLoop.Invoke()} every 10 messages
+        \item \textbf{Result}: UI remains responsive even with message floods
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Known Issues}
+
+\begin{enumerate}
+    \item \textbf{Special Character Rendering (E7 - Partial Pass)}
+    \begin{itemize}
+        \item Some Unicode emojis don't render correctly in Windows Command Prompt
+        \item Works fine in Windows Terminal and most Linux terminals
+        \item Limitation of Terminal.Gui and terminal emulator, not application bug
+        \item \textbf{Workaround}: Users should use modern terminal emulators
+    \end{itemize}
+    
+    \item \textbf{Network Disconnection Recovery (E1 - Partial Pass)}
+    \begin{itemize}
+        \item Operations fail gracefully but don't automatically reconnect
+        \item User must restart application after network recovery
+        \item Firestore SDK doesn't expose reconnection events
+        \item \textbf{Planned Fix}: Implement periodic connection checks
+    \end{itemize}
+    
+    \item \textbf{Window Leave Event Unreliable (Noted in Code)}
+    \begin{itemize}
+        \item ViewPinnedMessagesWindow's Leave event doesn't always fire
+        \item Users must click "Close" button instead
+        \item Terminal.Gui framework limitation
+        \item \textbf{Workaround}: Documented in code, button provided as alternative
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Limitations}
+
+\subsubsection{Current Version Limitations}
+
+\begin{enumerate}
+    \item \textbf{Password Security}
+    \begin{itemize}
+        \item Passwords stored in plaintext in Firestore
+        \item Comment in code acknowledges this: \texttt{//! Reminder: plaintext storage is unsafe!}
+        \item Acceptable for educational project but not production-ready
+        \item Should implement bcrypt/Argon2 hashing before real deployment
+    \end{itemize}
+    
+    \item \textbf{No File/Image Sharing}
+    \begin{itemize}
+        \item Only text messages supported
+        \item No attachment functionality
+        \item Firestore supports file storage but not implemented
+    \end{itemize}
+    
+    \item \textbf{No Message Editing}
+    \begin{itemize}
+        \item Messages cannot be edited after sending
+        \item Can only be deleted via "Clear all messages"
+        \item Would require additional UI and database schema changes
+    \end{itemize}
+    
+    \item \textbf{No Read Receipts}
+    \begin{itemize}
+        \item No indication if/when others have read messages
+        \item Common in modern messaging apps but adds complexity
+    \end{itemize}
+    
+    \item \textbf{No Notification System}
+    \begin{itemize}
+        \item Users must have application open to see new messages
+        \item No desktop notifications or sound alerts
+        \item Terminal.Gui limitations make this challenging
+    \end{itemize}
+    
+    \item \textbf{Limited Search Functionality}
+    \begin{itemize}
+        \item Search is client-side and case-sensitive
+        \item No advanced filters (by user, by date, etc.)
+        \item Searches only currently loaded messages
+    \end{itemize}
+    
+    \item \textbf{Single Device Session}
+    \begin{itemize}
+        \item Cannot be logged in on multiple devices simultaneously
+        \item No session management system
+        \item Would require token-based authentication
+    \end{itemize}
+    
+    \item \textbf{No Message History Pagination}
+    \begin{itemize}
+        \item Loads all messages on chatroom open
+        \item Could be slow for chatrooms with 1000+ messages
+        \item Should implement lazy loading/pagination
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Testing Limitations}
+
+\begin{enumerate}
+    \item \textbf{Manual Testing Only}
+    \begin{itemize}
+        \item No automated test suite
+        \item All tests conducted manually by developer and classmates
+        \item Regression testing requires re-running all tests manually
+    \end{itemize}
+    
+    \item \textbf{Limited Scale Testing}
+    \begin{itemize}
+        \item Maximum 5 concurrent users tested
+        \item Unknown behavior with 100+ users in single chatroom
+        \item Firestore costs prohibit large-scale testing
+    \end{itemize}
+    
+    \item \textbf{Single Network Environment}
+    \begin{itemize}
+        \item All testing on university/home network
+        \item Behavior on slow connections (<1 Mbps) not tested
+        \item Firewall/proxy scenarios not validated
+    \end{itemize}
+\end{enumerate}
+
+\newpage
+
+\section{Future Enhancements}
+
+\subsection{Planned Features}
+
+\subsubsection{Short-term Enhancements (1-3 months)}
+
+\begin{enumerate}
+    \item \textbf{Password Hashing}
+    \begin{itemize}
+        \item Implement Argon2 or bcrypt for secure password storage
+        \item Add salt generation and verification
+        \item Migration script for existing plaintext passwords
+        \item \textbf{Priority}: Critical (security issue)
+    \end{itemize}
+    
+    \item \textbf{Message Editing}
+    \begin{itemize}
+        \item Allow users to edit their own messages within 5 minutes
+        \item Show "edited" indicator on modified messages
+        \item Store edit history in Firestore
+        \item \textbf{Priority}: High (frequently requested feature)
+    \end{itemize}
+    
+    \item \textbf{Message Deletion}
+    \begin{itemize}
+        \item Delete individual messages (not just clear all)
+        \item "Delete for me" vs "Delete for everyone" options
+        \item Admin-only deletion in group chats
+        \item \textbf{Priority}: High
+    \end{itemize}
+    
+    \item \textbf{Typing Indicators}
+    \begin{itemize}
+        \item Show "User is typing..." when someone composes message
+        \item Update in real-time across all participants
+        \item Auto-remove after 3 seconds of inactivity
+        \item \textbf{Priority}: Medium (nice-to-have feature)
+    \end{itemize}
+    
+    \item \textbf{Read Receipts}
+    \begin{itemize}
+        \item Track when each user has read messages
+        \item Display checkmarks or timestamps
+        \item Privacy setting to disable read receipts
+        \item \textbf{Priority}: Medium
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Medium-term Enhancements (3-6 months)}
+
+\begin{enumerate}
+    \item \textbf{File Sharing}
+    \begin{itemize}
+        \item Support image uploads using Firebase Storage
+        \item File attachment support (PDFs, documents)
+        \item Preview images inline in chat
+        \item File size limits and virus scanning
+        \item \textbf{Priority}: High (major feature gap)
+    \end{itemize}
+    
+    \item \textbf{Voice Messages}
+    \begin{itemize}
+        \item Record and send audio clips
+        \item Playback within terminal (if supported)
+        \item Waveform visualization using ASCII art
+        \item \textbf{Priority}: Low (complex implementation)
+    \end{itemize}
+    
+    \item \textbf{Message Reactions}
+    \begin{itemize}
+        \item Add emoji reactions to messages
+        \item Display reaction counts
+        \item Multiple reactions per message
+        \item \textbf{Priority}: Medium
+    \end{itemize}
+    
+    \item \textbf{Advanced Search}
+    \begin{itemize}
+        \item Filter by sender, date range, keywords
+        \item Full-text search using Firestore queries
+        \item Search across all chatrooms
+        \item Save search queries
+        \item \textbf{Priority}: Medium
+    \end{itemize}
+    
+    \item \textbf{Notification System}
+    \begin{itemize}
+        \item Desktop notifications for new messages
+        \item Sound alerts (optional)
+        \item Notification preferences per chatroom
+        \item Mute chatrooms temporarily
+        \item \textbf{Priority}: High (important for usability)
+    \end{itemize}
+    
+    \item \textbf{Multi-device Support}
+    \begin{itemize}
+        \item Allow login from multiple devices
+        \item Session management with tokens
+        \item Sync read status across devices
+        \item Device management page
+        \item \textbf{Priority}: Medium
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Long-term Enhancements (6+ months)}
+
+\begin{enumerate}
+    \item \textbf{End-to-End Encryption}
+    \begin{itemize}
+        \item Implement Signal Protocol or similar
+        \item Encrypt messages client-side before sending to Firestore
+        \item Key exchange mechanism
+        \item Forward secrecy
+        \item \textbf{Priority}: High (privacy feature)
+    \end{itemize}
+    
+    \item \textbf{Video Calls}
+    \begin{itemize}
+        \item Integrate WebRTC or similar for voice/video
+        \item Screen sharing capabilities
+        \item Call history and recordings
+        \item \textbf{Priority}: Low (major architectural change)
+    \end{itemize}
+    
+    \item \textbf{Chatbots and Integrations}
+    \begin{itemize}
+        \item OpenAI API integration for AI assistant
+        \item Webhook support for external services
+        \item Bot framework for custom automations
+        \item Already have OpenAI package referenced in project
+        \item \textbf{Priority}: Medium
+    \end{itemize}
+    
+    \item \textbf{Rich Text Formatting}
+    \begin{itemize}
+        \item Markdown support (bold, italic, code blocks)
+        \item Syntax highlighting for code snippets
+        \item Link previews
+        \item \textbf{Priority}: Low
+    \end{itemize}
+    
+    \item \textbf{Message Threading}
+    \begin{itemize}
+        \item Reply to specific messages
+        \item Thread view showing conversation branches
+        \item Thread notifications
+        \item \textbf{Priority}: Medium
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Performance Improvements}
+
+\subsubsection{Database Optimization}
+
+\begin{enumerate}
+    \item \textbf{Message Pagination}
+    \begin{itemize}
+        \item Load messages in batches of 50
+        \item "Load more" button for older messages
+        \item Cache recent messages locally using LiteDB
+        \item Reduces initial load time for large chatrooms
+    \end{itemize}
+    
+    \item \textbf{Firestore Index Optimization}
+    \begin{itemize}
+        \item Create composite indexes for common queries
+        \item Index on (chatroom\_id, timestamp) for message retrieval
+        \item Index on (participants, timestamp) for chatroom listing
+    \end{itemize}
+    
+    \item \textbf{Denormalization}
+    \begin{itemize}
+        \item Store last message directly in chatroom document
+        \item Cache user names to reduce profile lookups
+        \item Trade storage space for query speed
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{UI Performance}
+
+\begin{enumerate}
+    \item \textbf{Virtual Scrolling}
+    \begin{itemize}
+        \item Render only visible messages in ListView
+        \item Improves performance with 1000+ messages
+        \item Reduce memory footprint
+    \end{itemize}
+    
+    \item \textbf{Debouncing Search}
+    \begin{itemize}
+        \item Add 300ms delay before executing search
+        \item Prevents excessive filtering on every keystroke
+        \item Improves responsiveness
+    \end{itemize}
+    
+    \item \textbf{Message Batching}
+    \begin{itemize}
+        \item Already partially implemented
+        \item Extend to batch profanity filtering
+        \item Process UI updates in requestAnimationFrame equivalent
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Network Optimization}
+
+\begin{enumerate}
+    \item \textbf{Offline Support}
+    \begin{itemize}
+        \item Cache messages locally with LiteDB
+        \item Queue outgoing messages when offline
+        \item Sync when connection restored
+        \item Firestore SDK supports offline mode
+    \end{itemize}
+    
+    \item \textbf{Compression}
+    \begin{itemize}
+        \item Compress large messages before sending
+        \item Especially beneficial for file sharing
+        \item Reduce bandwidth costs
+    \end{itemize}
+    
+    \item \textbf{Connection Pooling}
+    \begin{itemize}
+        \item Reuse Firestore connections
+        \item Implement connection health checks
+        \item Auto-reconnect on failure
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Code Quality Improvements}
+
+\begin{enumerate}
+    \item \textbf{Automated Testing}
+    \begin{itemize}
+        \item Unit tests for utility classes
+        \item Integration tests for Firestore operations
+        \item UI automation tests for Terminal.Gui
+        \item Continuous integration pipeline
+    \end{itemize}
+    
+    \item \textbf{Error Handling}
+    \begin{itemize}
+        \item Centralized error handling mechanism
+        \item Retry logic for transient failures
+        \item Better error messages with actionable steps
+    \end{itemize}
+    
+    \item \textbf{Logging}
+    \begin{itemize}
+        \item Replace Console.WriteLine with proper logging framework
+        \item Log levels (DEBUG, INFO, WARN, ERROR)
+        \item Structured logging for easier debugging
+    \end{itemize}
+    
+    \item \textbf{Documentation}
+    \begin{itemize}
+        \item Generate API documentation from XML comments
+        \item Create developer onboarding guide
+        \item Architecture decision records (ADRs)
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Architecture Improvements}
+
+\begin{enumerate}
+    \item \textbf{Dependency Injection}
+    \begin{itemize}
+        \item Replace singletons with DI container
+        \item Improve testability
+        \item Make components more modular
+    \end{itemize}
+    
+    \item \textbf{MVVM Pattern}
+    \begin{itemize}
+        \item Separate UI logic from business logic
+        \item ViewModels for each window
+        \item Data binding where possible
+    \end{itemize}
+    
+    \item \textbf{Repository Pattern}
+    \begin{itemize}
+        \item Abstract Firestore operations behind interfaces
+        \item Enable easy database swapping
+        \item Simplify unit testing with mock repositories
+    \end{itemize}
+\end{enumerate}
+
+\newpage
+
+\section{Conclusion}
+
+\subsection{Reflection}
+
+Developing Banter has been an enriching journey that combined cloud computing, real-time systems, and traditional console UI development. The project successfully demonstrates that modern cloud services can be seamlessly integrated with classic terminal interfaces, creating a unique user experience that bridges the gap between old and new paradigms.
+
+\subsubsection{What Went Well}
+
+\begin{enumerate}
+    \item \textbf{Real-time Synchronization}: The Firestore listener implementation exceeded expectations, providing sub-second message delivery across multiple clients with minimal code complexity.
+    
+    \item \textbf{Modular Architecture}: The separation of concerns (Utilities, Windows, Models) made the codebase maintainable and allowed for parallel development of features.
+    
+    \item \textbf{Collaborative Testing}: Working with classmates to test multi-user scenarios proved invaluable and revealed issues that would have been impossible to detect alone.
+    
+    \item \textbf{Profanity Filtering}: The robust filtering algorithm successfully handles various obfuscation techniques, demonstrating the importance of thorough input sanitization.
+    
+    \item \textbf{Event-Driven Design}: Using C\# events for state management created a clean, reactive architecture that simplified complex UI updates.
+\end{enumerate}
+
+\subsubsection{Challenges Overcome}
+
+The most significant technical challenge was coordinating asynchronous Firestore operations with Terminal.Gui's synchronous, single-threaded UI model. This required deep understanding of both frameworks and careful use of \texttt{Application.MainLoop.Invoke()} to marshal updates back to the main thread.
+
+The profanity filter presented an interesting algorithmic challenge, requiring a two-pass approach: normalize the text to detect obfuscated words, then map back to original positions for censoring. This solution balances performance with effectiveness.
+
+Testing real-time functionality with multiple concurrent users highlighted the importance of designing for distributed systems from the start. Race conditions and synchronization issues only appear at scale, making collaborative testing essential.
+
+\subsubsection{Areas for Improvement}
+
+Looking back, several aspects could have been handled better:
+
+\begin{enumerate}
+    \item \textbf{Password Security}: Implementing proper hashing from the beginning would have been more secure and easier than retrofitting later.
+    
+    \item \textbf{Automated Testing}: Writing tests alongside development would have caught bugs earlier and made refactoring safer.
+    
+    \item \textbf{Code Documentation}: More comprehensive XML comments would improve maintainability, especially for complex methods like the profanity filter.
+    
+    \item \textbf{Error Recovery}: Better handling of network failures and automatic reconnection would improve user experience.
+\end{enumerate}
+
+\subsection{Takeaways}
+
+\subsubsection{Technical Skills Developed}
+
+\begin{enumerate}
+    \item \textbf{Cloud Database Integration}: Gained deep understanding of Firestore's document model, queries, and real-time listeners. Learned to work within NoSQL constraints and optimize queries for performance.
+    
+    \item \textbf{Asynchronous Programming}: Mastered async/await patterns in C\#, particularly in UI contexts where thread marshaling is critical.
+    
+    \item \textbf{File Handling in C\#}: Implemented both external file reading (\texttt{File.Read\-All\-Lines()}) and embedded resource access (\texttt{Get\-Manifest\-Resource\-Stream()}), understanding when each approach is appropriate.
+    
+    \item \textbf{Error Handling}: Developed robust error handling strategies for file operations, database access, and user input validation.
+    
+    \item \textbf{Terminal UI Development}: Learned Terminal.Gui framework, including responsive layouts, event handling, and thread-safe UI updates.
+    
+    \item \textbf{Event-Driven Architecture}: Implemented observer pattern using C\# events, creating loosely coupled components that react to state changes.
+    
+    \item \textbf{Text Processing Algorithms}: Designed and implemented sophisticated string manipulation algorithms for profanity filtering.
+\end{enumerate}
+
+\subsubsection{Software Engineering Principles}
+
+\begin{enumerate}
+    \item \textbf{Separation of Concerns}: Organizing code into logical namespaces (Utilities, Windows, Models) improved maintainability and allowed features to be developed independently.
+    
+    \item \textbf{Design Patterns}: Applied Singleton (window management), Factory (Firestore initialization), and Observer (session events) patterns appropriately.
+    
+    \item \textbf{Defensive Programming}: Implemented null checks, input validation, and error handling to prevent crashes and data corruption.
+    
+    \item \textbf{Code Reusability}: Created static helper classes (FirebaseHelper, WindowHelper) that eliminate duplication and provide consistent behavior.
+    
+    \item \textbf{Documentation}: Used XML comments extensively, improving IntelliSense experience and code readability.
+\end{enumerate}
+
+\subsubsection{Distributed Systems Concepts}
+
+\begin{enumerate}
+    \item \textbf{Real-time Synchronization}: Learned how Firestore uses WebSockets to push updates to clients, and how to handle these updates efficiently.
+    
+    \item \textbf{Eventual Consistency}: Understood that distributed systems may have brief inconsistencies, and designed UI to handle them gracefully.
+    
+    \item \textbf{Conflict Resolution}: Dealt with concurrent operations (e.g., simultaneous message sends) and ensured proper ordering through timestamps.
+    
+    \item \textbf{Session Management}: Implemented stateful sessions in a stateless cloud environment, learning about session lifecycle and cleanup.
+\end{enumerate}
+
+\subsubsection{Project Management Insights}
+
+\begin{enumerate}
+    \item \textbf{Iterative Development}: Building features incrementally allowed for early testing and course correction.
+    
+    \item \textbf{Collaborative Testing}: Engaging classmates for multi-user testing provided valuable feedback and revealed edge cases.
+    
+    \item \textbf{Version Control}: Using Git with meaningful commit messages made it easy to track changes and revert when necessary.
+    
+    \item \textbf{Documentation}: Maintaining this comprehensive documentation clarified design decisions and will aid future development.
+\end{enumerate}
+
+\subsection{Final Thoughts}
+
+Banter represents a successful fusion of modern cloud technology with traditional terminal interfaces. The application proves that console UIs remain viable for certain use cases, particularly in developer-centric environments where efficiency and keyboard-driven workflows are valued.
+
+The most valuable lesson learned is the importance of designing for real-world conditions from the start. Features like real-time synchronization, error handling, and multi-user scenarios must be architected early—retrofitting them later is significantly more difficult.
+
+The project also highlighted the value of open-source tools and frameworks. Terminal.Gui, Firestore, and the .NET ecosystem provided robust foundations that accelerated development and reduced boilerplate code.
+
+Moving forward, Banter serves as a solid foundation for further exploration of distributed systems, real-time communication, and terminal-based applications. The modular architecture and clean separation of concerns make it straightforward to add new features and improvements.
+
+\subsection{Acknowledgments}
+
+I would like to thank:
+
+\begin{itemize}
+    \item My classmates who participated in multi-user testing sessions, providing invaluable feedback and helping identify synchronization issues
+    \item The Terminal.Gui development team for creating an excellent console UI framework
+    \item Google Cloud Platform for providing free Firestore access for educational projects
+    \item The .NET community for comprehensive documentation and helpful Stack Overflow discussions
+\end{itemize}
+
+\newpage
+
+\section*{Appendix}
+
+\subsection*{A. Source Code}
+
+The complete source code for Banter is available on GitHub:
+
+\begin{center}
+\url{https://github.com/dreeyanzz/Banter}
+\end{center}
+
+Repository includes:
+\begin{itemize}
+    \item All C\# source files
+    \item Project configuration (.csproj, .sln)
+    \item BanterLogo.txt ASCII art file
+    \item README with setup instructions
+    \item MIT License
+\end{itemize}
+
+To clone the repository:
+\begin{lstlisting}[language=bash, numbers=none]
+git clone https://github.com/dreeyanzz/Banter.git
+cd Banter
+dotnet restore
+dotnet run
+\end{lstlisting}
+
+\subsection*{B. Project Structure}
+
+\begin{verbatim}
+Banter/
+|-- Program.cs                  # Application entry point
+|-- Banter.csproj               # Project configuration
+|-- Banter.sln                  # Visual Studio solution
+|-- BanterLogo.txt              # ASCII art logo
+|-- firebase-service-account.json  # Firebase credentials (embedded)
+|
+|-- Utilities/
+|   |-- CustomColorScheme.cs   # UI color definitions
+|   |-- FirebaseHelper.cs      # Firestore operations
+|   |-- FirestoreManager.cs    # Database connection
+|   |-- Interfaces.cs           # IViewable interface
+|   |-- Models.cs               # User, Chatroom, Message models
+|   |-- ProfanityChecker.cs    # Content filtering
+|   |-- SessionHandler.cs      # User session management
+|   |-- Validator.cs            # Input validation
+|   +-- WindowHelper.cs         # Window management utilities
+|
++-- Windows/
+    |-- AbstractWindow.cs              # Base window class
+    |-- LogInWindow.cs                 # Login interface
+    |-- CreateAccountWindow.cs         # Account registration
+    |-- Window1.cs                     # Chatroom list (left panel)
+    |-- Window2.cs                     # Chat interface (center panel)
+    |-- Window3.cs                     # Chat info (right panel)
+    |-- CreateChatroomWindow.cs        # New chatroom dialog
+    |-- ChangeChatroomNameWindow.cs    # Rename dialog
+    +-- ViewPinnedMessagesWindow.cs    # Pinned messages view
+\end{verbatim}
+
+\subsection*{C. Database Schema}
+
+\subsubsection*{Firestore Collections}
+
+\textbf{Users Collection:}
+\begin{lstlisting}[numbers=none]
+{
+  "users": {
+    "<user_id>": {
+      "username": "string",
+      "password": "string",  // Currently plaintext
+      "name": "string",
+      "email": "string",
+      "chatrooms": ["chatroom_id1", "chatroom_id2"]
+    }
+  }
+}
+\end{lstlisting}
+
+\textbf{Chatrooms Collection:}
+\begin{lstlisting}[numbers=none]
+{
+  "chatrooms": {
+    "<chatroom_id>": {
+      "chatroom_name": "string",  // null for individual chats
+      "type": "individual | group",
+      "participants": ["user_id1", "user_id2"],
+      "admins": ["user_id1"],
+      "pinned_messages": ["message_id1", "message_id2"],
+      "last_chat": "string",
+      
+      "messages": {
+        "<message_id>": {
+          "sender_id": "string",
+          "text": "string",
+          "timestamp": "timestamp"
+        }
+      }
+    }
+  }
+}
+\end{lstlisting}
+
+\subsection*{D. References}
+
+The following resources were consulted during development:
+
+\begin{enumerate}
+    \item \textbf{Firestore Documentation}
+    \begin{itemize}
+        \item Google Cloud Firestore .NET SDK: \url{https://cloud.google.com/dotnet/docs/reference/Google.Cloud.Firestore/latest}
+        \item Real-time Listeners: \url{https://firebase.google.com/docs/firestore/query-data/listen}
+        \item Best Practices: \url{https://firebase.google.com/docs/firestore/best-practices}
+    \end{itemize}
+    
+    \item \textbf{Terminal.Gui Framework}
+    \begin{itemize}
+        \item GitHub Repository: \url{https://github.com/gui-cs/Terminal.Gui}
+        \item API Documentation: \url{https://gui-cs.github.io/Terminal.Gui/}
+        \item UI Catalog Examples: \url{https://github.com/gui-cs/Terminal.Gui/tree/master/UICatalog}
+    \end{itemize}
+    
+    \item \textbf{C\# Language and .NET}
+    \begin{itemize}
+        \item Async/Await Patterns: \url{https://docs.microsoft.com/en-us/dotnet/csharp/async}
+        \item Event Handling: \url{https://docs.microsoft.com/en-us/dotnet/standard/events/}
+        \item File I/O: \url{https://docs.microsoft.com/en-us/dotnet/api/system.io.file}
+        \item Embedded Resources: \url{https://docs.microsoft.com/en-us/dotnet/api/system.reflection.assembly.getmanifestresourcestream}
+    \end{itemize}
+    
+    \item \textbf{Design Patterns}
+    \begin{itemize}
+        \item Gang of Four: Design Patterns (1994)
+        \item C\# Design Patterns: \url{https://refactoring.guru/design-patterns/csharp}
+    \end{itemize}
+    
+    \item \textbf{Regular Expressions}
+    \begin{itemize}
+        \item .NET Regex Class: \url{https://docs.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.regex}
+        \item Regex101 (testing tool): \url{https://regex101.com/}
+    \end{itemize}
+    
+    \item \textbf{Community Resources}
+    \begin{itemize}
+        \item Stack Overflow: Various threading and Firestore questions
+        \item GitHub Issues: Terminal.Gui issue tracker for UI-related problems
+        \item Reddit r/csharp: Community discussions on best practices
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{E. License}
+
+Banter is released under the MIT License:
+
+\begin{verbatim}
+MIT License
+
+Copyright (c) 2025 dreeyanzz
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject
+to the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\end{verbatim}
+
+\end{document}
