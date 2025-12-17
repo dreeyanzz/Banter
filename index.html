@@ -14,17 +14,15 @@
         --card-hover: #333333;
         --text: #dcdcdc;
         --text-muted: #888;
-        --accent: #00bfff; /* Cyan */
-        --green: #2ecc71; /* Green */
-        --yellow: #f1c40f; /* Yellow */
-        --purple: #9b59b6; /* Purple for Installer */
+        --accent: #00bfff;
+        --green: #2ecc71;
+        --yellow: #f1c40f;
+        --purple: #9b59b6;
+        --google-blue: #4285f4;
       }
 
-      /* --- NEW STYLES FOR DOCS SELECTION --- */
-
-      /* Allow the card to be a div but keep the layout */
       div.nav-card {
-        cursor: default; /* The card itself isn't clickable, only the buttons inside */
+        cursor: default;
       }
 
       .action-buttons {
@@ -43,7 +41,7 @@
         border-radius: 6px;
         border: 1px solid rgba(255, 255, 255, 0.1);
         transition: all 0.2s ease;
-        flex: 1; /* Make them split the width evenly */
+        flex: 1;
         text-align: center;
         display: flex;
         align-items: center;
@@ -51,7 +49,6 @@
         gap: 6px;
       }
 
-      /* Specific styling for the Docs buttons */
       .docs .sub-link {
         color: var(--yellow);
         background-color: rgba(241, 196, 15, 0.05);
@@ -59,7 +56,7 @@
 
       .docs .sub-link:hover {
         background-color: var(--yellow);
-        color: #1a1a1a; /* Dark text on yellow background */
+        color: #1a1a1a;
         box-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
       }
 
@@ -67,15 +64,16 @@
         box-sizing: border-box;
       }
 
+      /* --- FIXED BODY STYLING --- */
       body {
         margin: 0;
-        padding: 0;
+        padding: 40px 20px; /* Added padding to prevent edges touching */
         font-family: "Inter", sans-serif;
         background-color: var(--bg);
         color: var(--text);
-        height: 100vh;
+        min-height: 100vh; /* Changed from height: 100vh to allow scrolling */
         width: 100vw;
-        overflow-x: hidden; /* Prevent horizontal scroll */
+        overflow-x: hidden;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -90,14 +88,20 @@
       main {
         text-align: center;
         width: 100%;
-        max-width: 1400px; /* Increased to fit 4 cards if screen allows */
-        padding: 20px;
+        max-width: 1600px;
+        /* Animation setup */
         animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        /* Flex setup to push footer down */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex-grow: 1;
       }
 
-      /* --- THE LOGO AREA --- */
       .logo-container {
         margin-bottom: 40px;
+        margin-top: 20px;
       }
 
       .prompt-icon {
@@ -126,13 +130,13 @@
         letter-spacing: -0.5px;
       }
 
-      /* --- NAVIGATION CARDS --- */
       .nav-grid {
         display: flex;
         gap: 25px;
         justify-content: center;
         margin-top: 50px;
         flex-wrap: wrap;
+        width: 100%;
       }
 
       .nav-card {
@@ -151,7 +155,6 @@
         overflow: hidden;
       }
 
-      /* Card Accents */
       .nav-card.docs::before {
         content: "";
         position: absolute;
@@ -185,7 +188,6 @@
         transition: width 0.3s ease;
       }
 
-      /* NEW: Installer Card Accent */
       .nav-card.install::before {
         content: "";
         position: absolute;
@@ -197,14 +199,23 @@
         transition: width 0.3s ease;
       }
 
-      /* Hover States */
+      .nav-card.wiki::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6px;
+        height: 100%;
+        background-color: var(--google-blue);
+        transition: width 0.3s ease;
+      }
+
       .nav-card:hover {
         transform: translateY(-8px);
         background-color: var(--card-hover);
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
       }
 
-      /* Subtle glow on hover */
       .nav-card.docs:hover {
         border-color: rgba(241, 196, 15, 0.3);
       }
@@ -214,9 +225,11 @@
       .nav-card.repo:hover {
         border-color: rgba(46, 204, 113, 0.3);
       }
-      /* NEW: Installer Glow */
       .nav-card.install:hover {
         border-color: rgba(155, 89, 182, 0.3);
+      }
+      .nav-card.wiki:hover {
+        border-color: rgba(66, 133, 244, 0.3);
       }
 
       .nav-card h2 {
@@ -255,20 +268,23 @@
       .repo .action-link {
         color: var(--green);
       }
-      /* NEW: Installer Link Color */
       .install .action-link {
         color: var(--purple);
       }
+      .wiki .action-link {
+        color: var(--google-blue);
+      }
 
-      /* --- FOOTER --- */
+      /* --- FIXED FOOTER STYLING --- */
       footer {
-        position: absolute;
-        bottom: 40px;
+        position: relative; /* Changed from absolute */
+        margin-top: 80px; /* Space between cards and footer */
         text-align: center;
         width: 100%;
         font-family: "Fira Code", monospace;
         font-size: 0.9rem;
         animation: fadeIn 1.2s ease-out;
+        flex-shrink: 0; /* Prevents footer from squishing */
       }
 
       .author-name {
@@ -302,7 +318,6 @@
         background-color: rgba(255, 255, 255, 0.05);
       }
 
-      /* --- ANIMATIONS --- */
       @keyframes fadeIn {
         from {
           opacity: 0;
@@ -327,35 +342,20 @@
         }
       }
 
-      /* --- RESPONSIVE --- */
       @media (max-width: 1300px) {
-        /* Allow wrapping earlier so cards don't get squished */
         .nav-grid {
           justify-content: center;
         }
       }
 
       @media (max-width: 1000px) {
-        body {
-          overflow-y: auto;
-          height: auto;
-          min-height: 100vh;
-          padding: 60px 20px;
-          background: var(--bg);
-        }
         .nav-grid {
           flex-direction: column;
           align-items: center;
-          width: 100%;
         }
         .nav-card {
           width: 100%;
           max-width: 400px;
-        }
-        footer {
-          position: relative;
-          margin-top: 60px;
-          bottom: auto;
         }
         .prompt-icon {
           font-size: 4rem;
@@ -401,22 +401,19 @@
             Technical breakdown, schema definitions, C# source code analysis,
             and implementation details.
           </p>
-
           <div class="action-buttons">
             <a
               href="./documentation-website/index.html"
               target="_blank"
               class="sub-link"
+              ><span>&lt;web/&gt;</span></a
             >
-              <span>&lt;web/&gt;</span>
-            </a>
             <a
               href="./documentation/documentation.pdf"
               target="_blank"
               class="sub-link"
+              ><span>.pdf</span></a
             >
-              <span>.pdf</span>
-            </a>
           </div>
         </div>
 
@@ -445,6 +442,38 @@
             highlights.
           </p>
           <span class="action-link">./run_slides.exe &rarr;</span>
+        </a>
+
+        <a
+          href="https://codewiki.google/github.com/dreeyanzz/banter"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="nav-card wiki"
+        >
+          <h2>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path
+                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+              ></path>
+            </svg>
+            Wiki
+          </h2>
+          <p>
+            Documentation, references, and repository insights hosted on Google
+            Code Wiki.
+          </p>
+          <span class="action-link">codewiki.google &rarr;</span>
         </a>
 
         <a
@@ -505,7 +534,6 @@
 
     <footer>
       <span class="author-name">Adrian Seth Tabotabo</span>
-
       <div class="social-links">
         <a
           href="https://github.com/dreeyanzz"
@@ -528,7 +556,6 @@
           </svg>
           GitHub
         </a>
-
         <a
           href="https://www.facebook.com/dreeyanzz"
           target="_blank"
